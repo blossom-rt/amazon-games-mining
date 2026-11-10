@@ -43,24 +43,25 @@ amazon-games-mining/
 ├── results/
 │   ├── figures/            图表输出
 │   └── tables/             表格输出
-├── docs/                   数据说明与字段字典
+├── docs/                   数据说明、字段字典与环境配置
 ├── requirements.txt
 └── README.md
 ```
 
 ## 环境
 
-使用独立 conda 环境，Python 3.11：
+使用独立 conda 环境，Python 3.11，依赖版本已在 `requirements.txt` 中固定。
+
+首次配置按 [docs/setup.md](docs/setup.md) 操作，其中覆盖环境创建、依赖安装、Jupyter 内核注册、数据下载与自检。最短路径：
 
 ```
 conda create -n amazon-games python=3.11 -y
 conda activate amazon-games
 pip install -r requirements.txt
+python -m ipykernel install --user --name amazon-games --display-name "Python (amazon-games)"
 ```
 
-环境目录不入库，换机器按上面的命令重建即可。若默认的 pip 镜像不可用，安装时加 `-i https://pypi.org/simple`。
-
-图表中文标注需要系统安装中文字体。Windows 下一般已带 `SimHei` 与 `Microsoft YaHei`，Linux 与 macOS 需另行安装并修改 `src/config.py` 中的字体设置。
+若默认的 pip 镜像不可用，安装时加 `-i https://pypi.org/simple`。图表中文标注需要系统中文字体，Windows 一般已带 `SimHei`，Linux 与 macOS 的处理见 setup 文档。
 
 ## 快速开始
 
