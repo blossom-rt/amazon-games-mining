@@ -120,4 +120,4 @@ IsolationForest 与长度 IQR 在同一份样本上的重叠为 1,937 条，两�
 python src/governance.py --force
 ```
 
-耗时 16.3 秒；环境为 Windows-10-10.0.26200-SP0，28 核，15.7 GB 内存，Python 3.11.18，pyarrow 26.0.1。
+耗时 17.8 秒；环境为 Windows-10-10.0.26200-SP0，28 核，15.7 GB 内存，Python 3.11.18，pyarrow 26.0.1。
