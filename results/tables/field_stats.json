@@ -1,0 +1,295 @@
+{
+  "reviews_rows": 2565349,
+  "reviews_fields": {
+    "reviewerID": {
+      "dtype": "string",
+      "nulls": 0,
+      "null_rate": 0.0
+    },
+    "asin": {
+      "dtype": "string",
+      "nulls": 0,
+      "null_rate": 0.0
+    },
+    "reviewerName": {
+      "dtype": "string",
+      "nulls": 280,
+      "null_rate": 0.0001,
+      "empty": 0,
+      "len_p50": 10.0,
+      "len_p90": 16.0,
+      "len_p99": 23.0,
+      "len_max": 1262.0
+    },
+    "overall": {
+      "dtype": "float",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "min": 1.0,
+      "max": 5.0,
+      "mean": 4.022,
+      "median": 5.0
+    },
+    "verified": {
+      "dtype": "bool",
+      "nulls": 0,
+      "null_rate": 0.0
+    },
+    "reviewTime": {
+      "dtype": "string",
+      "nulls": 0,
+      "null_rate": 0.0
+    },
+    "unixReviewTime": {
+      "dtype": "int64",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "min": 878947200.0,
+      "max": 1538438400.0,
+      "mean": 1388666182.928,
+      "median": 1421884800.0
+    },
+    "reviewText": {
+      "dtype": "string",
+      "nulls": 1720,
+      "null_rate": 0.0007,
+      "empty": 0,
+      "len_p50": 151.0,
+      "len_p90": 958.0,
+      "len_p99": 3879.0,
+      "len_max": 32721.0
+    },
+    "summary": {
+      "dtype": "string",
+      "nulls": 822,
+      "null_rate": 0.0003,
+      "empty": 0,
+      "len_p50": 16.0,
+      "len_p90": 50.0,
+      "len_p99": 90.0,
+      "len_max": 300.0
+    },
+    "style": {
+      "dtype": "string",
+      "nulls": 1245377,
+      "null_rate": 0.4855,
+      "empty": 0,
+      "len_p50": 17.0,
+      "len_p90": 40.0,
+      "len_p99": 55.0,
+      "len_max": 101.0
+    },
+    "vote": {
+      "dtype": "int32",
+      "nulls": 2122633,
+      "null_rate": 0.8274,
+      "min": 2.0,
+      "max": 5154.0,
+      "mean": 8.397,
+      "median": 4.0
+    },
+    "image_count": {
+      "dtype": "int32",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "min": 0.0,
+      "max": 54.0,
+      "mean": 0.023,
+      "median": 0.0
+    }
+  },
+  "rating_counts": {
+    "1.0": 311891,
+    "3.0": 212346,
+    "4.0": 412413,
+    "5.0": 1487366,
+    "2.0": 141333
+  },
+  "verified_true": 1948309,
+  "unique_reviewer": 1540618,
+  "unique_review_asin": 71982,
+  "time_min": "1997-11-08 00:00:00",
+  "time_max": "2018-10-02 00:00:00",
+  "meta_rows": 71911,
+  "meta_fields": {
+    "asin": {
+      "dtype": "string",
+      "nulls": 0,
+      "null_rate": 0.0
+    },
+    "title": {
+      "dtype": "string",
+      "nulls": 8,
+      "null_rate": 0.0001
+    },
+    "brand": {
+      "dtype": "string",
+      "nulls": 3617,
+      "null_rate": 0.0503
+    },
+    "price_raw": {
+      "dtype": "string",
+      "nulls": 22487,
+      "null_rate": 0.3127
+    },
+    "price": {
+      "dtype": "double",
+      "nulls": 60003,
+      "null_rate": 0.8344,
+      "min": 0.0,
+      "max": 1672.15,
+      "mean": 38.13,
+      "median": 16.99,
+      "p90": 83.86400000000009
+    },
+    "main_cat": {
+      "dtype": "string",
+      "nulls": 120,
+      "null_rate": 0.0017
+    },
+    "category": {
+      "dtype": "list<element: string>",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "p50": 4.0,
+      "p90": 9.0,
+      "p99": 11.0,
+      "max": 22.0,
+      "nonzero_share": 0.9709
+    },
+    "also_buy": {
+      "dtype": "list<element: string>",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "p50": 0.0,
+      "p90": 57.0,
+      "p99": 99.0,
+      "max": 100.0,
+      "nonzero_share": 0.3987
+    },
+    "also_view": {
+      "dtype": "list<element: string>",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "p50": 1.0,
+      "p90": 52.0,
+      "p99": 59.0,
+      "max": 60.0,
+      "nonzero_share": 0.521
+    },
+    "feature": {
+      "dtype": "list<element: string>",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "p50": 4.0,
+      "p90": 5.0,
+      "p99": 10.0,
+      "max": 57.0,
+      "nonzero_share": 0.7477
+    },
+    "description": {
+      "dtype": "string",
+      "nulls": 8993,
+      "null_rate": 0.1251
+    },
+    "rank": {
+      "dtype": "list<element: string>",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "p50": 2.0,
+      "p90": 4.0,
+      "p99": 4.0,
+      "max": 4.0,
+      "nonzero_share": 0.9411
+    },
+    "imageURL": {
+      "dtype": "list<element: string>",
+      "nulls": 0,
+      "null_rate": 0.0,
+      "p50": 2.0,
+      "p90": 8.0,
+      "p99": 9.0,
+      "max": 42.0,
+      "nonzero_share": 0.7371
+    },
+    "imageURLHighRes": {
+      "dtype": "list<element: string>",
+      "nulls": 0,
+      "null_rate": 0.0
+    },
+    "tech1": {
+      "dtype": "string",
+      "nulls": 69086,
+      "null_rate": 0.9607
+    },
+    "tech2": {
+      "dtype": "string",
+      "nulls": 71678,
+      "null_rate": 0.9968
+    },
+    "fit": {
+      "dtype": "string",
+      "nulls": 71911,
+      "null_rate": 1.0
+    },
+    "similar_item": {
+      "dtype": "string",
+      "nulls": 71650,
+      "null_rate": 0.9964
+    },
+    "date": {
+      "dtype": "string",
+      "nulls": 62351,
+      "null_rate": 0.8671
+    }
+  },
+  "main_cat_counts": {
+    "Toys &amp; Games": 24,
+    "Video Games": 61076,
+    "Books": 61,
+    "Toys & Games": 362,
+    "Home Audio &amp; Theater": 14,
+    "Computers": 6091,
+    "Software": 1519,
+    "Movies &amp; TV": 8,
+    "All Electronics": 1229,
+    "<img src=\"https://images-na.ssl-images-amazon.com/images/G/01/digital/music/logos/amzn_music_logo_subnav._CB471835632_.png\" class=\"nav-categ-image\" alt=\"Digital Music\"/>": 9,
+    "Sports &amp; Outdoors": 4,
+    "Home Audio & Theater": 139,
+    "Sports & Outdoors": 124,
+    "Movies & TV": 23,
+    "Entertainment": 1,
+    "Office Products": 90,
+    "Arts, Crafts & Sewing": 16,
+    "Amazon Home": 139,
+    "Industrial & Scientific": 52,
+    "Camera & Photo": 31,
+    "Cell Phones & Accessories": 424,
+    "Automotive": 33,
+    "Portable Audio & Accessories": 24,
+    "Car Electronics": 11,
+    "Musical Instruments": 42,
+    "All Beauty": 44,
+    "Tools &amp; Home Improvement": 1,
+    "Baby": 11,
+    "<img src=\"https://images-na.ssl-images-amazon.com/images/G/01/digital/music/logos/amzn_music_logo_subnav._CB471835632_.png\" class=\"nav-categ-image\" alt=\"Digital Music\" />": 1,
+    "Grocery": 7,
+    "<img src=\"https://images-na.ssl-images-amazon.com/images/G/01/nav2/images/gui/amazon-fashion-store-new._CB520838675_.png\" class=\"nav-categ-image\" alt=\"AMAZON FASHION\"/>": 26,
+    "Tools & Home Improvement": 88,
+    "Industrial &amp; Scientific": 2,
+    "<img src=\"https://images-na.ssl-images-amazon.com/images/G/01/nav2/images/gui/amazon-fashion-store-new._CB520838675_.png\" class=\"nav-categ-image\" alt=\"AMAZON FASHION\" />": 1,
+    "GPS & Navigation": 6,
+    "Health &amp; Personal Care": 1,
+    "None": 120,
+    "Pet Supplies": 5,
+    "Health & Personal Care": 43,
+    "Collectible Coins": 1,
+    "<img src=\"https://m.media-amazon.com/images/G/01/nav2/images/gui/amazon-fashion-store-new._CB520838675_.png\" class=\"nav-categ-image\" alt=\"AMAZON FASHION\"/>": 1,
+    "Appliances": 5,
+    "Gift Cards": 1,
+    "Amazon Devices": 1
+  },
+  "category_first": {
+    "Video Games": 69820
+  }
+}
