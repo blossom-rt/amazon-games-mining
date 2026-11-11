@@ -278,8 +278,6 @@ def build_profiles(products, labels, profile_frame, feature_names, k):
     frame = products.copy()
     frame["cluster"] = labels
     cluster_means = profile_frame.groupby(labels).mean()
-    reviews_median = float(frame["n_reviews"].median())
-    price_median = float(np.expm1(profile_frame["log_price"]).median())
 
     rows = []
     names = []
@@ -318,6 +316,13 @@ def build_profiles(products, labels, profile_frame, feature_names, k):
                 "size": int(len(part)),
                 "share": round(len(part) / len(frame), 4),
                 "mean_overall": round(float(part["mean_overall"].mean()), 4),
+                "price_median_usd": (
+                    round(float(part["price"].median()), 2)
+                    if part["price"].notna().any()
+                    else float("nan")
+                ),
+                "n_price_observed": int(part["price"].notna().sum()),
+                "price_missing_share": round(float(part["price_missing"].mean()), 4),
                 "top_titles": "; ".join(short(title, 60) for title in representatives.head(3)),
             }
         )
@@ -337,10 +342,15 @@ def build_profiles(products, labels, profile_frame, feature_names, k):
     for feature in feature_names:
         means = cluster_means[feature].reindex(profiles["cluster"]).to_numpy()
         profiles[f"mean_{feature}"] = np.round(means, 4)
+    profiles["mean_log_price"] = np.round(
+        cluster_means["log_price"].reindex(profiles["cluster"]).to_numpy(), 4
+    )
 
-    columns = ["cluster", "size", "share", "name", "mean_overall", "top_titles"] + [
-        f"mean_{feature}" for feature in feature_names
-    ]
+    columns = [
+        "cluster", "size", "share", "name", "mean_overall",
+        "price_median_usd", "n_price_observed", "price_missing_share",
+        "mean_log_price", "top_titles",
+    ] + [f"mean_{feature}" for feature in feature_names]
     return profiles[columns]
 
 
@@ -532,9 +542,15 @@ def main() -> None:
         "ari_ge_0_6": bool(ari_mean >= MIN_ARI),
         "scope_only": bool(scope_only),
         "features_standardized": standardized,
+        "price_profile_complete": bool(
+            profiles[
+                ["price_median_usd", "n_price_observed", "price_missing_share"]
+            ].notna().all().all()
+        ),
     }
     assert scope_only, "聚类样本中出现范围外商品"
     assert standardized, "特征未标准化"
+    assert assertions["price_profile_complete"], "簇画像价格列存在缺失"
 
     summary = {
         "generated_at": datetime.now().astimezone().isoformat(timespec="seconds"),

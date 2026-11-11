@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-11T16:40:40+08:00",
-  "git_commit": "09211df",
+  "generated_at": "2026-11-11T19:18:23+08:00",
+  "git_commit": "886ecda",
   "seed": 42,
   "input": {
     "n_products": 40259,
@@ -19,7 +19,7 @@
       "category_leaf_freq",
       "main_cat_freq"
     ],
-    "source": "D:\\deskFlie\\课程作业\\2026年秋数据挖掘\\code\\amazon-games-mining\\data\\processed\\features.parquet"
+    "source": "D:\\CodeField\\amazon-games-mining\\data\\processed\\features.parquet"
   },
   "k_selection": {
     "k": [
@@ -86,24 +86,25 @@
     18430,
     2155
   ],
-  "runtime_seconds": 28.1,
+  "runtime_seconds": 69.1,
   "assertions": {
     "k_ge_2": true,
     "each_cluster_nonempty": true,
     "ari_ge_0_6": true,
     "scope_only": true,
-    "features_standardized": true
+    "features_standardized": true,
+    "price_profile_complete": true
   },
   "hardware": {
-    "platform": "Windows-10-10.0.26300-SP0",
-    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
-    "cpu_count": 20,
-    "ram_gb": 31.7,
-    "python": "3.11.15",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "ram_gb": 15.7,
+    "python": "3.11.18",
     "pyarrow": "26.0.1"
   },
   "outputs": {
-    "profiles": "D:\\deskFlie\\课程作业\\2026年秋数据挖掘\\code\\amazon-games-mining\\results\\tables\\cluster_profiles.csv",
-    "stability": "D:\\deskFlie\\课程作业\\2026年秋数据挖掘\\code\\amazon-games-mining\\results\\tables\\cluster_stability.csv"
+    "profiles": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_profiles.csv",
+    "stability": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_stability.csv"
   }
 }
