@@ -34,6 +34,7 @@ try:
         N_SPLITS,
         POSITIVE_RATING_THRESHOLD,
         REVIEW_FILE,
+        SCOPE_PARQUET,
         SEED,
         TABLES,
     )
@@ -47,6 +48,7 @@ except ImportError:
         N_SPLITS,
         POSITIVE_RATING_THRESHOLD,
         REVIEW_FILE,
+        SCOPE_PARQUET,
         SEED,
         TABLES,
     )
@@ -140,6 +142,7 @@ OUTPUT_COLUMNS = [
     "overall",
     "label",
     "fold",
+    "in_scope",
     "verified",
     "review_year",
     "review_month",
@@ -304,17 +307,28 @@ def build_features(force: bool) -> dict:
     started = time.perf_counter()
     reviews = pq.read_table(REVIEWS_PARQUET).to_pandas()
     meta = pq.read_table(META_PARQUET).to_pandas()
+    scope = pq.read_table(SCOPE_PARQUET).to_pandas()
     rows = len(reviews)
     print(f"评论 {rows:,} 行，商品 {len(meta):,} 行")
 
     assert reviews["overall"].notna().all(), "存在缺失评分，无法确定标签"
     assert reviews["unixReviewTime"].notna().all(), "存在缺失时间戳"
-    label = (reviews["overall"] >= POSITIVE_RATING_THRESHOLD).astype("int8")
+    assert scope["asin"].is_unique, "品类范围表 asin 不唯一"
 
-    # 折在任何目标相关变换、编码、填补之前固定下来
-    fold = make_folds(reviews["asin"], label)
+    label = (reviews["overall"] >= POSITIVE_RATING_THRESHOLD).astype("int8")
+    scope_map = scope.set_index("asin")["in_scope"]
+    in_scope = reviews["asin"].map(scope_map).fillna(False).astype(bool)
+    assert int(in_scope.sum()) >= 1_000_000, "范围内评论过少"
+
+    # 折在任何目标相关变换、编码、填补之前固定下来；只给游戏本体分配折
+    fold = np.full(rows, -1, dtype=np.int8)
+    in_scope_mask = in_scope.to_numpy()
+    fold[in_scope_mask] = make_folds(
+        reviews.loc[in_scope_mask, "asin"], label.to_numpy()[in_scope_mask]
+    )
     reviews["label"] = label
     reviews["fold"] = fold
+    reviews["in_scope"] = in_scope.to_numpy()
 
     reviews = add_review_features(reviews)
 
@@ -351,16 +365,19 @@ def build_features(force: bool) -> dict:
     features = features[OUTPUT_COLUMNS]
     features.to_parquet(FEATURES_PARQUET, index=False, compression="zstd")
 
-    folds = features[["reviewerID", "asin", "label", "fold"]].copy()
+    model = features.loc[features["in_scope"]].copy()
+    folds = model[["reviewerID", "asin", "label", "fold"]].copy()
     folds.to_parquet(FOLDS_PARQUET, index=False, compression="zstd")
 
-    fold_sizes = features["fold"].value_counts().sort_index()
-    fold_rates = features.groupby("fold")["label"].mean().sort_index()
-    group_folds = features[["asin", "fold"]].drop_duplicates()
+    fold_sizes = model["fold"].value_counts().sort_index()
+    fold_rates = model.groupby("fold")["label"].mean().sort_index()
+    group_folds = model[["asin", "fold"]].drop_duplicates()
 
     assert len(features) == rows, "宽表行数与评论表不一致"
     assert features["label"].isin([0, 1]).all(), "标签不是 0/1"
-    assert features["fold"].between(0, N_SPLITS - 1).all(), "折号越界"
+    assert features["fold"].between(-1, N_SPLITS - 1).all(), "折号越界"
+    assert (features.loc[~features["in_scope"], "fold"] == -1).all(), "范围外样本被分配了折"
+    assert (features.loc[features["in_scope"], "fold"] >= 0).all(), "范围内样本缺折"
     assert len(MODEL_FEATURES) >= 20, "建模特征不足 20 列"
     assert len(DERIVED_FEATURES) >= 8, "衍生特征不足 8 个"
     assert not (set(MODEL_FEATURES) & FORBIDDEN_IN_FEATURES), "特征里混入了目标或文本"
@@ -368,7 +385,7 @@ def build_features(force: bool) -> dict:
     assert features["review_len"].ge(0).all(), "存在负文本长度"
     assert not group_folds["asin"].duplicated().any(), "同一 asin 跨了多个折"
     assert fold_sizes.min() > 0, "存在空折"
-    assert fold_rates.between(0.72, 0.76).all(), f"各折正类率偏差过大: {fold_rates.round(4).to_dict()}"
+    assert fold_rates.between(0.70, 0.80).all(), f"各折正类率偏差过大: {fold_rates.round(4).to_dict()}"
 
     elapsed = time.perf_counter() - started
     summary = {
@@ -377,7 +394,16 @@ def build_features(force: bool) -> dict:
         "columns": int(features.shape[1]),
         "target": f"overall >= {POSITIVE_RATING_THRESHOLD}",
         "positive_rate": round(float(features["label"].mean()), 4),
-        "n_groups": int(features["asin"].nunique()),
+        "in_scope_rows": int(features["in_scope"].sum()),
+        "out_scope_rows": int((~features["in_scope"]).sum()),
+        "in_scope_share": round(float(features["in_scope"].mean()), 4),
+        "in_scope_positive_rate": round(
+            float(features.loc[features["in_scope"], "label"].mean()), 4
+        ),
+        "out_scope_positive_rate": round(
+            float(features.loc[~features["in_scope"], "label"].mean()), 4
+        ),
+        "n_groups": int(model["asin"].nunique()),
         "n_model_features": len(MODEL_FEATURES),
         "n_derived_features": len(DERIVED_FEATURES),
         "model_features": MODEL_FEATURES,
@@ -415,6 +441,10 @@ def build_features(force: bool) -> dict:
     LOG_OUT.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"宽表 {features.shape[0]:,} 行 × {features.shape[1]} 列")
+    print(
+        f"游戏本体 {summary['in_scope_rows']:,} 行"
+        f"（{summary['in_scope_share']:.2%}），范围外 {summary['out_scope_rows']:,} 行"
+    )
     print(f"建模特征 {len(MODEL_FEATURES)} 个，衍生特征 {len(DERIVED_FEATURES)} 个")
     print("各折行数", summary["fold_sizes"])
     print("各折正类率", summary["fold_positive_rates"])

@@ -4,8 +4,8 @@
 
 | 文件 | 规模 | 说明 |
 |---|---|---|
-| `data/processed/features.parquet` | 2,565,349 行 × 44 列，493.4 MB | 评论 × 商品宽表，一行一条评论 |
-| `data/processed/folds.parquet` | 2,565,349 行 × 4 列，24.6 MB | `reviewerID`、`asin`、`label`、`fold` |
+| `data/processed/features.parquet` | 2,565,349 行 × 45 列，493.4 MB | 评论 × 商品宽表，一行一条评论，含 `in_scope` |
+| `data/processed/folds.parquet` | 1,456,092 行 × 4 列，13.8 MB | 只含游戏本体，`reviewerID`、`asin`、`label`、`fold` |
 | `results/tables/feature_summary.json` | — | 折分布、缺失率、耗时与硬件 |
 
 构建命令：
@@ -14,29 +14,32 @@
 python src/build_features.py --force
 ```
 
-本次耗时 72.5 秒，环境为 Windows 10、28 核、15.7 GB 内存、Python 3.11.18、pyarrow 26.0.1。
+本次耗时 129.5 秒，环境为 Windows 10、28 核、15.7 GB 内存、Python 3.11.18、pyarrow 26.0.1。
 
 ## 连接口径
 
 - 评论表 2,565,349 行左连接商品表 71,911 行，连接键 `asin`，校验 `many_to_one`。
 - 商品表已按 `asin` 去重，原始 84,819 条记录中的 12,908 条完全重复记录不再进入宽表。
-- 3,676 条评论的 `asin` 不在商品表，`has_meta=False`，商品字段为缺失值或 `False`；这些评论没有删除。
+- 品类边界由 `src/scope.py` 判定：71,911 件商品中 40,259 件为游戏本体，覆盖 1,456,092 条评论（56.76%）；规则与排除原因见 `docs/scope_definition.md`。
+- 宽表保留全部评论，`in_scope` 标记是否进入建模样本；`folds.parquet` 只写 `in_scope=True` 的行。
+- 3,676 条评论的 `asin` 不在商品表，`has_meta=False`，`in_scope=False`，商品字段为缺失值或 `False`；这些评论没有删除。
 - 宽表保留原始 `reviewText` 与 `summary`，文本清洗与向量化留到 P4，在训练折内拟合。
 
 ## 标签与折
 
-- 标签定义：`label = 1` 当且仅当 `overall >= 4.0`；正类 1,899,779 条，占 74.06%。
-- 折划分：`StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)`，分组键 `asin`。
+- 标签定义：`label = 1` 当且仅当 `overall >= 4.0`；全量正类 1,899,779 条（74.06%），游戏本体正类率 74.75%。
+- 折划分：`StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)`，分组键 `asin`，只在 `in_scope=True` 的 1,456,092 条评论上拟合。
 - 折在任何编码、填补、标准化与特征选择之前生成，后续脚本只读取 `fold` 列，不允许重新划分。
 - 同一 `asin` 的评论只落在一个折里，避免同一商品的评论同时出现在训练与验证。
+- 范围外评论保留在宽表中，`fold = -1`，不进入建模与折统计。
 
 | 折 | 行数 | 正类率 |
 |---|---|---|
-| 0 | 513,054 | 74.06% |
-| 1 | 513,091 | 74.05% |
-| 2 | 513,057 | 74.06% |
-| 3 | 513,052 | 74.06% |
-| 4 | 513,095 | 74.05% |
+| 0 | 291,217 | 74.75% |
+| 1 | 291,221 | 74.75% |
+| 2 | 291,204 | 74.75% |
+| 3 | 291,208 | 74.75% |
+| 4 | 291,242 | 74.75% |
 
 ## 字段表
 
@@ -49,7 +52,8 @@ python src/build_features.py --force
 | `unixReviewTime` | int64 | 评论时间戳，秒 | 无缺失 |
 | `overall` | float32 | 原始评分 1–5，仅审计用 | 无缺失 |
 | `label` | int8 | 目标变量，`overall >= 4` 为 1 | 无缺失 |
-| `fold` | int8 | 分层分组折号 0–4 | 无缺失 |
+| `fold` | int8 | 分层分组折号 0–4；范围外为 -1 | 无缺失 |
+| `in_scope` | bool | 是否属于游戏本体，由 `src/scope.py` 判定 | 无缺失 |
 
 ### 评论文本
 
@@ -122,14 +126,17 @@ python src/build_features.py --force
 构建脚本在写出后检查以下条件，任一失败即中断：
 
 - 宽表行数等于评论表行数 2,565,349。
-- 标签只含 0/1，折号在 0–4。
+- 标签只含 0/1；游戏本体折号 0–4，范围外折号 -1。
+- 游戏本体不少于 100 万条，五折均非空。
 - 建模特征 34 个，衍生特征 29 个，均超过表 1 的下限。
-- `MODEL_FEATURES` 与 `overall`、`label`、`fold`、`reviewText`、`summary` 无交集。
-- 同一 `asin` 不跨折，五折均非空，正类率均在 72%–76%。
+- `MODEL_FEATURES` 与 `overall`、`label`、`fold`、`in_scope`、`reviewText`、`summary` 无交集。
+- 同一 `asin` 不跨折，五折正类率均在 70%–80%。
 - 价格非负，文本长度非负。
 
 ## 已知限制
 
+- 品类边界规则会漏掉部分 Retro Gaming 类目下的老游戏，也会把少量标题未命中硬件词的平台配件当作游戏；规则与示例见 `docs/scope_definition.md`，报告里作为口径限制说明。
+- 范围外 1,109,257 条评论保留在宽表中，只用于对照与审计，不进入 P4/P5 的建模样本。
 - 15,259 条评论的时间早于商品 `date`，已把 `days_since_product` 截为 0；商品 `date` 的含义更接近上架/收录时间，不宜当精确上市日。
 - `price` 按评论加权仍缺失 80.71%，P4 需要缺失指示与训练折内分层填补。
 - `category_leaf` 缺失 0.79%，主要来自空类目商品与无商品评论。

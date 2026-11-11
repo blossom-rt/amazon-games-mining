@@ -28,6 +28,7 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 文件校验值、官方字段说明与引用格式见 [docs/data_source.md](docs/data_source.md)。
 各字段的类型、缺失率与取值范围见 [docs/data_dictionary.md](docs/data_dictionary.md)。
 宽表字段、衍生特征与折划分口径见 [docs/feature_dictionary.md](docs/feature_dictionary.md)。
+游戏本体边界规则与覆盖范围见 [docs/scope_definition.md](docs/scope_definition.md)。
 一致性检查、缺失填补对比与异常值检测结果见 [docs/governance_report.md](docs/governance_report.md)。
 
 ## 目录结构
@@ -41,6 +42,7 @@ amazon-games-mining/
 │   ├── config.py           路径、常量、随机种子
 │   ├── download.py         数据下载与完整性校验
 │   ├── parse.py            gzip JSON Lines 转 parquet
+│   ├── scope.py            判定商品是否为游戏本体
 │   ├── build_features.py   评论 × 商品宽表与固定折
 │   ├── governance.py       一致性检查、填补与异常值验证
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
@@ -88,7 +90,13 @@ python src/download.py
 python src/parse.py
 ```
 
-构建评论 × 商品宽表，并固定分层分组折：
+构建评论 × 商品宽表前，先判定游戏本体边界：
+
+```
+python src/scope.py
+```
+
+构建评论 × 商品宽表，并给游戏本体固定分层分组折：
 
 ```
 python src/build_features.py

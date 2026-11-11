@@ -36,6 +36,7 @@ SEED = 42
 N_SPLITS = 5
 
 # 中间产物
+SCOPE_PARQUET = DATA_PROCESSED / "scope.parquet"
 FEATURES_PARQUET = DATA_PROCESSED / "features.parquet"
 FOLDS_PARQUET = DATA_PROCESSED / "folds.parquet"
 

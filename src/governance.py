@@ -55,6 +55,7 @@ FEATURE_COLUMNS = [
     "overall",
     "label",
     "fold",
+    "in_scope",
     "review_len",
     "review_word_count",
     "review_sentence_count",
@@ -149,7 +150,9 @@ def _consistency(features: pd.DataFrame, meta: pd.DataFrame) -> dict:
     duplicate_groups = int((group_sizes > 1).sum())
     max_group = int(group_sizes.max())
 
-    fold_per_asin = features.groupby("asin")["fold"].nunique()
+    in_scope = features["in_scope"]
+    model = features.loc[in_scope]
+    fold_per_asin = model.groupby("asin")["fold"].nunique()
     asin_cross_fold = int((fold_per_asin > 1).sum())
 
     utc_time = pd.to_datetime(features["unixReviewTime"], unit="s", utc=True)
@@ -172,7 +175,9 @@ def _consistency(features: pd.DataFrame, meta: pd.DataFrame) -> dict:
     check("商品 asin 唯一", bool(meta["asin"].is_unique))
     check("宽表行数等于评论 parquet", len(features) == expected_rows)
     check("标签只含 0/1", bool(features["label"].isin([0, 1]).all()))
-    check("折号在 0–4", bool(features["fold"].between(0, 4).all()))
+    check("游戏本体折号在 0–4", bool(model["fold"].between(0, 4).all()))
+    check("范围外折号为 -1", bool((features.loc[~in_scope, "fold"] == -1).all()))
+    check("游戏本体评论不少于 100 万", len(model) >= 1_000_000)
     check("同一 asin 不跨折", asin_cross_fold == 0)
     check("价格非负", bool(price_all.ge(0).all()))
     check("派生年份与 UTC 一致", year_mismatch == 0)
@@ -194,6 +199,10 @@ def _consistency(features: pd.DataFrame, meta: pd.DataFrame) -> dict:
                 "1": int((features["label"] == 1).sum()),
             },
             "positive_rate": round(float(features["label"].mean()), 4),
+            "in_scope_rows": int(in_scope.sum()),
+            "out_scope_rows": int((~in_scope).sum()),
+            "in_scope_share": round(float(in_scope.mean()), 4),
+            "in_scope_positive_rate": round(float(model["label"].mean()), 4),
             "verified_rate": round(float(features["verified"].mean()), 4),
             "unix_min": int(features["unixReviewTime"].min()),
             "unix_max": int(features["unixReviewTime"].max()),
@@ -263,6 +272,7 @@ def _consistency(features: pd.DataFrame, meta: pd.DataFrame) -> dict:
                     "overall",
                     "label",
                     "fold",
+                    "in_scope",
                     "price",
                     "review_len",
                 ]
@@ -497,11 +507,14 @@ def _markdown(report: dict) -> str:
     lines.append("| 项目 | 数值 |")
     lines.append("|---|---|")
     lines.append(f"| 评论宽表行数 | {reviews['rows']:,} |")
+    lines.append(f"| 游戏本体评论 | {reviews['in_scope_rows']:,}（{reviews['in_scope_share']:.2%}） |")
+    lines.append(f"| 范围外评论 | {reviews['out_scope_rows']:,} |")
     lines.append(f"| 唯一评论人 | {reviews['unique_reviewer']:,} |")
     lines.append(f"| 唯一商品 asin | {reviews['unique_asin']:,} |")
     lines.append(f"| 商品表行数 | {meta['rows']:,} |")
     lines.append(f"| 商品表唯一 asin | {meta['unique_asin']:,} |")
     lines.append(f"| 评论正向占比 | {reviews['positive_rate']:.2%} |")
+    lines.append(f"| 游戏本体正向占比 | {reviews['in_scope_positive_rate']:.2%} |")
     lines.append(f"| 已验证购买占比 | {reviews['verified_rate']:.2%} |")
     lines.append("")
     lines.append(

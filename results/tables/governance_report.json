@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-10T23:32:29+08:00",
-  "seconds": 11.11,
+  "generated_at": "2026-11-11T09:40:09+08:00",
+  "seconds": 10.29,
   "hardware": {
     "platform": "Windows-10-10.0.26200-SP0",
     "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
@@ -19,6 +19,10 @@
         "1": 1899779
       },
       "positive_rate": 0.7406,
+      "in_scope_rows": 1456092,
+      "out_scope_rows": 1109257,
+      "in_scope_share": 0.5676,
+      "in_scope_positive_rate": 0.7475,
       "verified_rate": 0.7595,
       "unix_min": 878947200,
       "unix_max": 1538438400,
@@ -86,6 +90,7 @@
         "overall": "float32",
         "label": "int8",
         "fold": "int8",
+        "in_scope": "bool",
         "price": "float32",
         "review_len": "int32"
       },
@@ -111,7 +116,15 @@
         "passed": true
       },
       {
-        "name": "折号在 0–4",
+        "name": "游戏本体折号在 0–4",
+        "passed": true
+      },
+      {
+        "name": "范围外折号为 -1",
+        "passed": true
+      },
+      {
+        "name": "游戏本体评论不少于 100 万",
         "passed": true
       },
       {

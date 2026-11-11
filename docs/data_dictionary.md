@@ -96,6 +96,10 @@
 - `brand` 常见 `"by\n    \n    EA Games"` 形式，需去前缀与空白。
 - `price` 的 `price_raw` 去重后约 3.68 万条是 `<div>`、`<span>`、`<script>` 片段，解析脚本只接受以 `$` 开头且后接数字的字符串。
 
+## 建模样本边界
+
+`src/scope.py` 用类目路径与标题判定商品是否为游戏本体，不读取评分：71,911 件商品中 40,259 件在范围内（55.98%），覆盖 1,456,092 条评论（56.76%），在范围正类率 74.75%，范围外 73.15%。规则、排除原因与边界案例见 [scope_definition.md](scope_definition.md)；范围表落在 `data/processed/scope.parquet`，宽表用 `in_scope` 标记，`folds.parquet` 只含范围内评论。
+
 ## 治理验证补充
 
 缺失填补对比、异常值检测与一致性复算的完整结果见 [governance_report.md](governance_report.md)，原始数值落在 `results/tables/governance_report.json`。
