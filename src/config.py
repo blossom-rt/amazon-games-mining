@@ -32,6 +32,13 @@ SHA256 = {
 
 # 复现约定
 SEED = 42
+# 分类任务的分层分组折数
+N_SPLITS = 5
+
+# 中间产物
+SCOPE_PARQUET = DATA_PROCESSED / "scope.parquet"
+FEATURES_PARQUET = DATA_PROCESSED / "features.parquet"
+FOLDS_PARQUET = DATA_PROCESSED / "folds.parquet"
 
 # 业务常量
 # 评分预测的正类划分：4 星及以上视为正向评价

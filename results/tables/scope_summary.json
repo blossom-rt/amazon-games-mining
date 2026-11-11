@@ -1,0 +1,176 @@
+{
+  "generated_at": "2026-11-11T09:36:02+08:00",
+  "seconds": 2.7,
+  "seed": 42,
+  "products_total": 71911,
+  "products_in_scope": 40259,
+  "products_out_scope": 31652,
+  "product_scope_share": 0.5598,
+  "reviews_total": 2565349,
+  "reviews_in_scope": 1456092,
+  "reviews_out_scope": 1109257,
+  "review_scope_share": 0.5676,
+  "positive_rate_in_scope": 0.7475,
+  "positive_rate_out_scope": 0.7315,
+  "reasons": {
+    "software_node": 38907,
+    "accessories": 25894,
+    "empty_category": 2091,
+    "hardware_leaf": 1564,
+    "platform_only": 1352,
+    "no_software_node": 1312,
+    "dlc": 437,
+    "hardware_title": 354
+  },
+  "in_scope_main_cat": {
+    "Video Games": 38104,
+    "Software": 1466,
+    "Toys & Games": 167,
+    "All Electronics": 161,
+    "Computers": 68,
+    "Books": 36,
+    "Office Products": 32,
+    "Industrial & Scientific": 31,
+    "(缺失)": 30,
+    "Sports & Outdoors": 28
+  },
+  "top_in_scope_paths": {
+    "Video Games > PC > Games": 15762,
+    "Video Games > Retro Gaming & Microconsoles > PlayStation 2 > Games": 1879,
+    "Video Games > Kids & Family > Nintendo DS > Games": 1595,
+    "Video Games > Xbox 360 > Games": 1262,
+    "Video Games > PlayStation 3 > Games": 1161,
+    "Video Games > Kids & Family > Wii > Games": 1012,
+    "Video Games > Retro Gaming & Microconsoles > PlayStation > Games": 996,
+    "Video Games > Mac > Games": 788,
+    "Video Games > PC": 783,
+    "Video Games > Retro Gaming & Microconsoles > Game Boy Advance > Games": 727,
+    "Video Games > Retro Gaming & Microconsoles > Xbox > Games": 721,
+    "Video Games > Kids & Family > Xbox 360 > Games": 611,
+    "Video Games > Retro Gaming &amp; Microconsoles > PlayStation 2 > Games": 600,
+    "Video Games > Kids & Family > PlayStation 3 > Games": 573,
+    "Video Games > Retro Gaming & Microconsoles > Super Nintendo > Games": 561
+  },
+  "examples": {
+    "software_node": [
+      {
+        "title": "Reversi Sensory Challenger",
+        "path": "Video Games > PC > Games"
+      },
+      {
+        "title": "Medal of Honor: Warfighter - Includes Battlefield 4 Beta - Limited Edition",
+        "path": "Video Games > Xbox 360 > Games"
+      },
+      {
+        "title": "street fighter 2 II turbo super nintendo snes super nes video game",
+        "path": "Video Games > Retro Gaming & Microconsoles > Super Nintendo > Games"
+      }
+    ],
+    "accessories": [
+      {
+        "title": "Xbox 360 MAS STICK",
+        "path": "Video Games > Xbox 360 > Accessories > Controllers > Joysticks"
+      },
+      {
+        "title": "Motion Plus Sensor For Wii Remote Controller Black",
+        "path": "Video Games > Wii > Accessories > Controllers > Remotes"
+      },
+      {
+        "title": "Quickverse 3.0 King James Version for Windows",
+        "path": "Video Games > PC > Accessories"
+      }
+    ],
+    "hardware_leaf": [
+      {
+        "title": "Sony PlayStation 4 PS4 500GB Original Matte Black CUH-1215A System (Used)",
+        "path": "Video Games > PlayStation 4 > Consoles"
+      },
+      {
+        "title": "Street Fighter EX Plus Alpha",
+        "path": "Video Games > Retro Gaming & Microconsoles"
+      },
+      {
+        "title": "Game Boy Color - Atomic Purple",
+        "path": "Video Games > Retro Gaming & Microconsoles > Game Boy Color > Consoles"
+      }
+    ],
+    "empty_category": [
+      {
+        "title": "Legend of Zelda Box Set Prima Official Game Guide",
+        "path": ""
+      },
+      {
+        "title": "Ai Yori Aoshi - Interactive Visual Novel [PC Game]",
+        "path": ""
+      },
+      {
+        "title": "ZAERO - Mission Pack for Quake II",
+        "path": ""
+      }
+    ],
+    "platform_only": [
+      {
+        "title": "Urban Runner                         C/W95/Us",
+        "path": "Video Games > PC"
+      },
+      {
+        "title": "Fantasy Flight Games Descent: Well of Darkness",
+        "path": "Video Games > PC"
+      },
+      {
+        "title": "Mafia 3 (PS4)",
+        "path": "Video Games > PlayStation 4"
+      }
+    ],
+    "hardware_title": [
+      {
+        "title": "YTTL&reg; New Touch Screen Repair Replacement Part For Wii U Gamepad+FREE GIFT",
+        "path": "Video Games > Wii U"
+      },
+      {
+        "title": "Dance Dance Revolution Multi-Platform Super Sensors Non-Slip Dance Pad &amp; DDR PC GameThe Groove",
+        "path": "Video Games > PC"
+      },
+      {
+        "title": "PSP 3000 Silicone Skin Case with LCD Screen Protector - Black (2 Pack)",
+        "path": "Video Games > Sony PSP"
+      }
+    ],
+    "no_software_node": [
+      {
+        "title": "Dance Dance Revolution Non-Slip DanceCube Dance Pad (Gamecube)",
+        "path": "Video Games > Retro Gaming &amp; Microconsoles > GameCube"
+      },
+      {
+        "title": "Son Nefesim",
+        "path": "Video Games > Retro Gaming & Microconsoles > PlayStation 2"
+      },
+      {
+        "title": "GRAND THEFT AUTO SAN ANDREAS",
+        "path": "Video Games > Retro Gaming & Microconsoles > PlayStation 2"
+      }
+    ],
+    "dlc": [
+      {
+        "title": "Xbox 360 Live 12 Month Halo 3 Gold Card",
+        "path": "Video Games > Xbox 360 > Digital Games & DLC > Downloadable Content"
+      },
+      {
+        "title": "Xbox LIVE 1200 Microsoft Points for Call of Duty: Black Ops II Revolution - Xbox 360 Digital Code",
+        "path": "Video Games > Xbox 360 > Digital Games & DLC > Downloadable Content"
+      },
+      {
+        "title": "Xbox LIVE 1600 Microsoft Points for Minecraft: Xbox 360 Edition - Xbox 360 Digital Code",
+        "path": "Video Games > Xbox 360 > Digital Games & DLC > Downloadable Content"
+      }
+    ]
+  },
+  "hardware": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "ram_gb": 15.7,
+    "python": "3.11.18",
+    "pyarrow": "26.0.1"
+  }
+}

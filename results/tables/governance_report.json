@@ -1,0 +1,247 @@
+{
+  "generated_at": "2026-11-11T10:32:29+08:00",
+  "seconds": 16.29,
+  "hardware": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "ram_gb": 15.7,
+    "python": "3.11.18",
+    "pyarrow": "26.0.1"
+  },
+  "consistency": {
+    "reviews": {
+      "rows": 2565349,
+      "unique_reviewer": 1540618,
+      "unique_asin": 71982,
+      "label_counts": {
+        "0": 665570,
+        "1": 1899779
+      },
+      "positive_rate": 0.7406,
+      "in_scope_rows": 1456092,
+      "out_scope_rows": 1109257,
+      "in_scope_share": 0.5676,
+      "in_scope_positive_rate": 0.7475,
+      "verified_rate": 0.7595,
+      "unix_min": 878947200,
+      "unix_max": 1538438400,
+      "date_min": "1997-11-08T00:00:00+00:00",
+      "date_max": "2018-10-02T00:00:00+00:00",
+      "year_min": 1997,
+      "year_max": 2018,
+      "has_meta": 2561673,
+      "without_meta": 3676,
+      "days_since_null_share": 0.8463,
+      "duplicate_key_rows": 75256,
+      "duplicate_key_groups": 75048,
+      "max_duplicate_group": 70,
+      "asin_cross_fold": 0
+    },
+    "meta": {
+      "rows": 71911,
+      "unique_asin": 71911,
+      "price_notnull": 11908,
+      "price_observed_positive": 11907,
+      "review_rows_with_price": 494765,
+      "price_zero": 1,
+      "price_negative": 0,
+      "price_min": 0.0,
+      "price_max": 1672.15,
+      "brand_null": 3617,
+      "main_cat_null": 120,
+      "main_cat_with_amp": 54,
+      "main_cat_with_span": 0,
+      "main_cat_literal_none": 0,
+      "category_empty": 2091,
+      "category_with_span": 48388,
+      "category_with_amp": 3730,
+      "price_raw_empty": 22487,
+      "price_raw_div": 25477,
+      "price_raw_span": 11279,
+      "price_raw_script": 18,
+      "also_buy_nonempty": 28668,
+      "also_buy_max": 100
+    },
+    "join": {
+      "meta_rows": 71911,
+      "unique_meta_asin": 71911,
+      "feature_rows": 2565349,
+      "review_to_meta": "N:1",
+      "meta_to_review": "1:N",
+      "coverage": 0.9986
+    },
+    "timezone": {
+      "source": "unixReviewTime 为 UTC epoch 秒",
+      "derived": "review_year/month/dow 均按 UTC 提取",
+      "reviewTime_string_used": false,
+      "year_mismatch": 0
+    },
+    "units": {
+      "price": "美元",
+      "review_len": "字符数",
+      "days_since_product": "天，负值截为 0"
+    },
+    "types": {
+      "review": {
+        "reviewerID": "str",
+        "asin": "str",
+        "unixReviewTime": "int64",
+        "overall": "float32",
+        "label": "int8",
+        "fold": "int8",
+        "in_scope": "bool",
+        "price": "float32",
+        "review_len": "int32"
+      },
+      "meta": {
+        "asin": "str",
+        "price": "float64",
+        "main_cat": "str",
+        "category": "object",
+        "date": "str"
+      }
+    },
+    "assertions": [
+      {
+        "name": "商品 asin 唯一",
+        "passed": true
+      },
+      {
+        "name": "宽表行数等于评论 parquet",
+        "passed": true
+      },
+      {
+        "name": "标签只含 0/1",
+        "passed": true
+      },
+      {
+        "name": "游戏本体折号在 0–4",
+        "passed": true
+      },
+      {
+        "name": "范围外折号为 -1",
+        "passed": true
+      },
+      {
+        "name": "游戏本体评论不少于 100 万",
+        "passed": true
+      },
+      {
+        "name": "同一 asin 不跨折",
+        "passed": true
+      },
+      {
+        "name": "价格非负",
+        "passed": true
+      },
+      {
+        "name": "派生年份与 UTC 一致",
+        "passed": true
+      },
+      {
+        "name": "关键数值列类型正确",
+        "passed": true
+      }
+    ]
+  },
+  "imputation": {
+    "target": "price",
+    "n_observed_positive": 11907,
+    "n_train": 9525,
+    "n_test": 2382,
+    "masking": "在观测价格中按品类分层抽 20% 作为测试，其余作为训练",
+    "strategies": [
+      {
+        "name": "全局中位数",
+        "detail": "训练集价格中位数，忽略品类",
+        "mae": 31.2463,
+        "rmse": 76.5322,
+        "medae": 11.0,
+        "r2": -0.1004
+      },
+      {
+        "name": "品类中位数",
+        "detail": "按 main_cat_clean 分组取中位数，缺失组回退全局中位数",
+        "mae": 29.9693,
+        "rmse": 74.9442,
+        "medae": 11.435,
+        "r2": -0.0552
+      },
+      {
+        "name": "KNN 近邻",
+        "detail": "标准化后取 5 个近邻加权平均，特征含商品列表长度与文本长度",
+        "mae": 40.1016,
+        "rmse": 83.1414,
+        "medae": 17.9537,
+        "r2": -0.2987
+      },
+      {
+        "name": "迭代回归",
+        "detail": "IterativeImputer 以其余商品特征迭代回归价格",
+        "mae": 40.1055,
+        "rmse": 83.215,
+        "medae": 17.8721,
+        "r2": -0.301
+      }
+    ],
+    "best": "品类中位数",
+    "iterative_error": null,
+    "limitations": [
+      "测试集来自已观测价格，无法代表 83% 未观测价格的 MNAR 机制",
+      "这里的误差是回填误差，不等于下游分类收益；P4 需在训练折内重新拟合"
+    ]
+  },
+  "outliers": {
+    "price_iqr": {
+      "scope": "商品价格，仅 price>0",
+      "n": 11907,
+      "q1": 8.65,
+      "q3": 39.98,
+      "lower": -38.35,
+      "upper": 86.97,
+      "below": 0,
+      "above": 1129,
+      "zero_count": 1
+    },
+    "review_len_iqr": {
+      "scope": "评论正文字符数，全量",
+      "n": 2565349,
+      "q1": 55.0,
+      "q3": 398.0,
+      "lower": -459.5,
+      "upper": 912.5,
+      "below": 0,
+      "above": 271666
+    },
+    "review_len_zscore": {
+      "scope": "评论正文字符数，全量",
+      "mean": 400.78,
+      "std": 811.1,
+      "threshold": "|z| > 3",
+      "flagged": 48758,
+      "share": 0.019
+    },
+    "isolation_forest": {
+      "scope": "评论数值特征，20 万条随机样本",
+      "n": 200000,
+      "features": [
+        "review_len",
+        "review_word_count",
+        "review_sentence_count",
+        "summary_len",
+        "vote_count",
+        "image_count"
+      ],
+      "contamination": 0.01,
+      "flagged": 2000,
+      "share": 0.01,
+      "overlap_with_iqr": 1937
+    },
+    "treatment": [
+      "评论长度与词数进入模型前做 log1p，并在训练折内按 p99 截断；保留原始值供审计",
+      "价格不删除 0 值，建模时用 price_missing 指示缺失，观测价格在训练折内按 p1/p99 缩尾",
+      "IsolationForest 只用于抽样人工核查，不直接删行；长评论可能是真实长文本"
+    ]
+  }
+}
