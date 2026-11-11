@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-11T19:15:37+08:00",
-  "git_commit": "886ecda",
+  "generated_at": "2026-11-11T19:29:07+08:00",
+  "git_commit": "6897032",
   "seed": 42,
   "input": {
     "transactions": 19032,
@@ -31,8 +31,8 @@
     ]
   },
   "runtime_seconds": {
-    "apriori": 96.35,
-    "fpgrowth": 1.15
+    "apriori": 41.3,
+    "fpgrowth": 0.99
   },
   "rule_counts": {
     "apriori": 1855,
