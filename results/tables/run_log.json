@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-11T12:31:18+08:00",
+  "generated_at": "2026-11-11T19:37:50+08:00",
   "git": {
-    "branch": "feat/repro",
-    "commit": "09211df2c33b33eadacc88ca64c43f46a3ee3661",
-    "dirty": true,
-    "dirty_files": 1
+    "branch": "dev",
+    "commit": "6897032411d9961fd0643220d5b38b3b6bbef0af",
+    "dirty": false,
+    "dirty_files": 0
   },
   "hardware": {
     "platform": "Windows-10-10.0.26200-SP0",
@@ -39,10 +39,10 @@
       "name": "parse",
       "required": true,
       "script": "src/parse.py",
-      "started_at": "2026-11-11T12:16:01+08:00",
+      "started_at": "2026-11-11T19:23:42+08:00",
       "command": "D:\\Anoconda3\\envs\\amazon-games\\python.exe D:\\CodeField\\amazon-games-mining\\src\\parse.py --force",
-      "finished_at": "2026-11-11T12:17:11+08:00",
-      "seconds": 69.4,
+      "finished_at": "2026-11-11T19:25:16+08:00",
+      "seconds": 93.4,
       "exit_code": 0,
       "outputs": [
         {
@@ -71,10 +71,10 @@
       "name": "scope",
       "required": true,
       "script": "src/scope.py",
-      "started_at": "2026-11-11T12:17:11+08:00",
+      "started_at": "2026-11-11T19:25:16+08:00",
       "command": "D:\\Anoconda3\\envs\\amazon-games\\python.exe D:\\CodeField\\amazon-games-mining\\src\\scope.py --force",
-      "finished_at": "2026-11-11T12:17:15+08:00",
-      "seconds": 4.8,
+      "finished_at": "2026-11-11T19:25:20+08:00",
+      "seconds": 4.7,
       "exit_code": 0,
       "outputs": [
         {
@@ -97,10 +97,10 @@
       "name": "build_features",
       "required": true,
       "script": "src/build_features.py",
-      "started_at": "2026-11-11T12:17:15+08:00",
+      "started_at": "2026-11-11T19:25:20+08:00",
       "command": "D:\\Anoconda3\\envs\\amazon-games\\python.exe D:\\CodeField\\amazon-games-mining\\src\\build_features.py --force",
-      "finished_at": "2026-11-11T12:19:06+08:00",
-      "seconds": 111.0,
+      "finished_at": "2026-11-11T19:27:10+08:00",
+      "seconds": 109.9,
       "exit_code": 0,
       "outputs": [
         {
@@ -129,10 +129,10 @@
       "name": "governance",
       "required": true,
       "script": "src/governance.py",
-      "started_at": "2026-11-11T12:19:06+08:00",
+      "started_at": "2026-11-11T19:27:10+08:00",
       "command": "D:\\Anoconda3\\envs\\amazon-games\\python.exe D:\\CodeField\\amazon-games-mining\\src\\governance.py --force",
-      "finished_at": "2026-11-11T12:19:28+08:00",
-      "seconds": 21.9,
+      "finished_at": "2026-11-11T19:27:26+08:00",
+      "seconds": 15.3,
       "exit_code": 0,
       "outputs": [
         {
@@ -155,48 +155,55 @@
       "name": "rules",
       "required": false,
       "script": "src/rules.py",
-      "started_at": "2026-11-11T12:19:28+08:00",
-      "status": "missing",
-      "command": null,
-      "finished_at": "2026-11-11T12:19:28+08:00",
-      "seconds": 0.0,
-      "exit_code": null,
+      "started_at": "2026-11-11T19:27:26+08:00",
+      "command": "D:\\Anoconda3\\envs\\amazon-games\\python.exe D:\\CodeField\\amazon-games-mining\\src\\rules.py --force",
+      "finished_at": "2026-11-11T19:29:07+08:00",
+      "seconds": 101.5,
+      "exit_code": 0,
       "outputs": [
         {
           "path": "results/tables/rules_summary.json",
-          "exists": false,
+          "exists": true,
           "rows": null,
-          "size_mb": null
+          "size_mb": 0.0
         },
         {
           "path": "results/tables/rules_top.csv",
-          "exists": false,
-          "rows": null,
-          "size_mb": null
+          "exists": true,
+          "rows": 200,
+          "size_mb": 0.03
         },
         {
           "path": "results/tables/rules_thresholds.csv",
-          "exists": false,
-          "rows": null,
-          "size_mb": null
+          "exists": true,
+          "rows": 3,
+          "size_mb": 0.0
         },
         {
           "path": "results/tables/rules_runtime.csv",
-          "exists": false,
-          "rows": null,
-          "size_mb": null
+          "exists": true,
+          "rows": 6,
+          "size_mb": 0.0
         }
       ],
-      "figures": []
+      "figures": [
+        "results/figures/fig11_basket_length.png",
+        "results/figures/fig12_rule_scatter.png",
+        "results/figures/fig13_top_lift.png",
+        "results/figures/fig14_runtime.png",
+        "results/figures/fig15_lift_distribution.png",
+        "results/figures/fig16_top_items.png"
+      ],
+      "status": "ok"
     },
     {
       "name": "classify",
       "required": true,
       "script": "src/classify.py",
-      "started_at": "2026-11-11T12:19:28+08:00",
+      "started_at": "2026-11-11T19:29:07+08:00",
       "command": "D:\\Anoconda3\\envs\\amazon-games\\python.exe D:\\CodeField\\amazon-games-mining\\src\\classify.py",
-      "finished_at": "2026-11-11T12:31:18+08:00",
-      "seconds": 709.1,
+      "finished_at": "2026-11-11T19:37:20+08:00",
+      "seconds": 492.5,
       "exit_code": 0,
       "outputs": [
         {
@@ -273,35 +280,43 @@
       "name": "cluster",
       "required": false,
       "script": "src/cluster.py",
-      "started_at": "2026-11-11T12:31:18+08:00",
-      "status": "missing",
-      "command": null,
-      "finished_at": "2026-11-11T12:31:18+08:00",
-      "seconds": 0.0,
-      "exit_code": null,
+      "started_at": "2026-11-11T19:37:20+08:00",
+      "command": "D:\\Anoconda3\\envs\\amazon-games\\python.exe D:\\CodeField\\amazon-games-mining\\src\\cluster.py --force",
+      "finished_at": "2026-11-11T19:37:50+08:00",
+      "seconds": 29.6,
+      "exit_code": 0,
       "outputs": [
         {
           "path": "results/tables/cluster_summary.json",
-          "exists": false,
+          "exists": true,
           "rows": null,
-          "size_mb": null
+          "size_mb": 0.0
         },
         {
           "path": "results/tables/cluster_profiles.csv",
-          "exists": false,
-          "rows": null,
-          "size_mb": null
+          "exists": true,
+          "rows": 4,
+          "size_mb": 0.0
         },
         {
           "path": "results/tables/cluster_stability.csv",
-          "exists": false,
-          "rows": null,
-          "size_mb": null
+          "exists": true,
+          "rows": 50,
+          "size_mb": 0.0
         }
       ],
-      "figures": []
+      "figures": [
+        "results/figures/fig20_elbow.png",
+        "results/figures/fig21_silhouette.png",
+        "results/figures/fig22_clusters_pca.png",
+        "results/figures/fig23_profile_heatmap.png",
+        "results/figures/fig24_cluster_sizes.png",
+        "results/figures/fig25_bootstrap_ari.png",
+        "results/figures/fig26_price_reviews.png"
+      ],
+      "status": "ok"
     }
   ],
-  "total_seconds": 916.4,
-  "status": "partial"
+  "total_seconds": 847.3,
+  "status": "ok"
 }
