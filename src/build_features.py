@@ -94,6 +94,8 @@ MODEL_FEATURES = [
     "tech1_present",
     "tech2_present",
     "days_since_product",
+    "reviews_prev_30d_same_asin",
+    "days_since_prev_review_same_asin",
     "verified_x_log_len",
     "log_price_x_verified",
     "helpful_x_len",
@@ -127,6 +129,8 @@ DERIVED_FEATURES = [
     "tech1_present",
     "tech2_present",
     "days_since_product",
+    "reviews_prev_30d_same_asin",
+    "days_since_prev_review_same_asin",
     "verified_x_log_len",
     "log_price_x_verified",
     "helpful_x_len",
@@ -177,6 +181,8 @@ OUTPUT_COLUMNS = [
     "tech1_present",
     "tech2_present",
     "days_since_product",
+    "reviews_prev_30d_same_asin",
+    "days_since_prev_review_same_asin",
     "verified_x_log_len",
     "log_price_x_verified",
     "helpful_x_len",
@@ -298,6 +304,38 @@ def add_review_features(reviews: pd.DataFrame) -> pd.DataFrame:
     return reviews
 
 
+def add_time_window_features(reviews: pd.DataFrame) -> pd.DataFrame:
+    window = 30 * 86400
+    asin_codes, _ = pd.factorize(reviews["asin"], sort=False)
+    times = reviews["unixReviewTime"].to_numpy(dtype="int64")
+    order = np.lexsort((times, asin_codes))
+    sorted_codes = asin_codes[order]
+    sorted_times = times[order]
+    rows = len(reviews)
+    prev_30 = np.zeros(rows, dtype="int32")
+    gap_days = np.full(rows, np.nan, dtype="float32")
+
+    start = 0
+    while start < rows:
+        end = start + 1
+        code = sorted_codes[start]
+        while end < rows and sorted_codes[end] == code:
+            end += 1
+        group_times = sorted_times[start:end]
+        if len(group_times) > 1:
+            gap = np.diff(group_times) / 86400.0
+            gap_days[order[start + 1 : end]] = gap.astype("float32")
+        left = np.searchsorted(group_times, group_times - window, side="right")
+        prev_30[order[start:end]] = np.arange(len(group_times), dtype="int32") - left.astype(
+            "int32"
+        )
+        start = end
+
+    reviews["reviews_prev_30d_same_asin"] = prev_30
+    reviews["days_since_prev_review_same_asin"] = gap_days
+    return reviews
+
+
 def build_features(force: bool) -> dict:
     if FEATURES_PARQUET.exists() and not force:
         raise SystemExit(f"输出已存在，加 --force 覆盖: {FEATURES_PARQUET}")
@@ -331,6 +369,7 @@ def build_features(force: bool) -> dict:
     reviews["in_scope"] = in_scope.to_numpy()
 
     reviews = add_review_features(reviews)
+    reviews = add_time_window_features(reviews)
 
     prod = build_product_frame(meta)
     assert prod["asin"].is_unique, "商品表 asin 不唯一"
@@ -383,6 +422,10 @@ def build_features(force: bool) -> dict:
     assert not (set(MODEL_FEATURES) & FORBIDDEN_IN_FEATURES), "特征里混入了目标或文本"
     assert features["price"].dropna().ge(0).all(), "存在负价格"
     assert features["review_len"].ge(0).all(), "存在负文本长度"
+    assert features["reviews_prev_30d_same_asin"].ge(0).all(), "过去 30 天评论数出现负值"
+    assert (
+        features["days_since_prev_review_same_asin"].dropna().ge(0).all()
+    ), "同商品评论间隔出现负值"
     assert not group_folds["asin"].duplicated().any(), "同一 asin 跨了多个折"
     assert fold_sizes.min() > 0, "存在空折"
     assert fold_rates.between(0.70, 0.80).all(), f"各折正类率偏差过大: {fold_rates.round(4).to_dict()}"
@@ -424,6 +467,25 @@ def build_features(force: bool) -> dict:
                 "summary",
                 "reviewText",
             ]
+        },
+        "time_window": {
+            "reviews_prev_30d_same_asin": {
+                "mean": round(float(model["reviews_prev_30d_same_asin"].mean()), 2),
+                "p50": int(model["reviews_prev_30d_same_asin"].median()),
+                "p90": int(model["reviews_prev_30d_same_asin"].quantile(0.90)),
+                "p99": int(model["reviews_prev_30d_same_asin"].quantile(0.99)),
+                "max": int(model["reviews_prev_30d_same_asin"].max()),
+            },
+            "days_since_prev_review_same_asin": {
+                "missing_rate": round(
+                    float(model["days_since_prev_review_same_asin"].isna().mean()), 4
+                ),
+                "median": round(float(model["days_since_prev_review_same_asin"].median()), 2),
+                "p90": round(
+                    float(model["days_since_prev_review_same_asin"].quantile(0.90)), 2
+                ),
+                "max": round(float(model["days_since_prev_review_same_asin"].max()), 2),
+            },
         },
         "seconds": round(elapsed, 1),
         "hardware": _hardware(),

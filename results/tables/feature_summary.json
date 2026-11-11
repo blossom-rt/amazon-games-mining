@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-11T09:39:24+08:00",
+  "generated_at": "2026-11-11T09:55:40+08:00",
   "rows": 2565349,
-  "columns": 45,
+  "columns": 47,
   "target": "overall >= 4.0",
   "positive_rate": 0.7406,
   "in_scope_rows": 1456092,
@@ -10,8 +10,8 @@
   "in_scope_positive_rate": 0.7475,
   "out_scope_positive_rate": 0.7315,
   "n_groups": 40257,
-  "n_model_features": 34,
-  "n_derived_features": 29,
+  "n_model_features": 36,
+  "n_derived_features": 31,
   "model_features": [
     "verified",
     "review_year",
@@ -43,6 +43,8 @@
     "tech1_present",
     "tech2_present",
     "days_since_product",
+    "reviews_prev_30d_same_asin",
+    "days_since_prev_review_same_asin",
     "verified_x_log_len",
     "log_price_x_verified",
     "helpful_x_len",
@@ -74,6 +76,8 @@
     "tech1_present",
     "tech2_present",
     "days_since_product",
+    "reviews_prev_30d_same_asin",
+    "days_since_prev_review_same_asin",
     "verified_x_log_len",
     "log_price_x_verified",
     "helpful_x_len",
@@ -105,7 +109,7 @@
     "summary": 0.0003,
     "reviewText": 0.0007
   },
-  "seconds": 129.5,
+  "seconds": 106.4,
   "hardware": {
     "platform": "Windows-10-10.0.26200-SP0",
     "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
@@ -117,7 +121,7 @@
   "outputs": {
     "features": {
       "path": "D:\\CodeField\\amazon-games-mining\\data\\processed\\features.parquet",
-      "size_mb": 493.4
+      "size_mb": 497.3
     },
     "folds": {
       "path": "D:\\CodeField\\amazon-games-mining\\data\\processed\\folds.parquet",

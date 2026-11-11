@@ -80,6 +80,8 @@ FEATURE_COLUMNS = [
     "image_count_meta",
     "title_len",
     "days_since_product",
+    "reviews_prev_30d_same_asin",
+    "days_since_prev_review_same_asin",
 ]
 
 META_COLUMNS = [

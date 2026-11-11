@@ -4,7 +4,7 @@
 
 | 文件 | 规模 | 说明 |
 |---|---|---|
-| `data/processed/features.parquet` | 2,565,349 行 × 45 列，493.4 MB | 评论 × 商品宽表，一行一条评论，含 `in_scope` |
+| `data/processed/features.parquet` | 2,565,349 行 × 47 列，497.3 MB | 评论 × 商品宽表，一行一条评论，含 `in_scope` |
 | `data/processed/folds.parquet` | 1,456,092 行 × 4 列，13.8 MB | 只含游戏本体，`reviewerID`、`asin`、`label`、`fold` |
 | `results/tables/feature_summary.json` | — | 折分布、缺失率、耗时与硬件 |
 
@@ -14,7 +14,7 @@
 python src/build_features.py --force
 ```
 
-本次耗时 129.5 秒，环境为 Windows 10、28 核、15.7 GB 内存、Python 3.11.18、pyarrow 26.0.1。
+本次耗时 106.4 秒，环境为 Windows 10、28 核、15.7 GB 内存、Python 3.11.18、pyarrow 26.0.1。
 
 ## 连接口径
 
@@ -104,6 +104,15 @@ python src/build_features.py --force
 | `tech2_present` | bool | 是否填了 `tech2` | 无商品记 `False` |
 | `days_since_product` | float32 | 评论日期减商品 `date` 的天数，负值截为 0 | 商品日期缺失时缺失，占 84.63% |
 
+### 时间窗特征
+
+| 列名 | 类型 | 含义 | 缺失处理 |
+|---|---|---|---|
+| `reviews_prev_30d_same_asin` | int32 | 同一商品按 `unixReviewTime` 排序，当前评论之前 30 天内该商品的评论数，不含当前评论 | 无缺失；首条为 0 |
+| `days_since_prev_review_same_asin` | float32 | 距同商品上一条评论的天数 | 每个商品首条评论缺失，占 2.76% |
+
+时间窗只用当前评论之前的同商品记录，不看未来；按 `asin` 分组后计算，训练折与验证折不会共享同一商品的评论。游戏本体范围内 `reviews_prev_30d_same_asin` 均值 30.61、中位 4、p90 61、p99 425、最大 3,585；`days_since_prev_review_same_asin` 中位 4 天、p90 108 天、最大 6,662 天。
+
 ### 交互特征
 
 | 列名 | 类型 | 计算方式 | 用途 |
@@ -128,10 +137,10 @@ python src/build_features.py --force
 - 宽表行数等于评论表行数 2,565,349。
 - 标签只含 0/1；游戏本体折号 0–4，范围外折号 -1。
 - 游戏本体不少于 100 万条，五折均非空。
-- 建模特征 34 个，衍生特征 29 个，均超过表 1 的下限。
+- 建模特征 36 个，衍生特征 31 个，均超过表 1 的下限。
 - `MODEL_FEATURES` 与 `overall`、`label`、`fold`、`in_scope`、`reviewText`、`summary` 无交集。
 - 同一 `asin` 不跨折，五折正类率均在 70%–80%。
-- 价格非负，文本长度非负。
+- 价格非负，文本长度非负，时间窗计数与间隔非负。
 
 ## 已知限制
 
