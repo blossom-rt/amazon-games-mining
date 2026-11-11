@@ -15,7 +15,7 @@
 | 品类 | Video_Games |
 | 商品数 | 84,819（官方标称 84,893） |
 | 评论数 | 2,565,349 |
-| 时间范围 | 1996 年 5 月 — 2018 年 10 月 |
+| 时间范围 | 1997 年 11 月 — 2018 年 10 月 |
 | 许可 | 仅限学术研究使用 |
 
 两个源文件放在 `data/raw/`，不纳入版本控制：
@@ -27,6 +27,8 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 
 文件校验值、官方字段说明与引用格式见 [docs/data_source.md](docs/data_source.md)。
 各字段的类型、缺失率与取值范围见 [docs/data_dictionary.md](docs/data_dictionary.md)。
+宽表字段、衍生特征与折划分口径见 [docs/feature_dictionary.md](docs/feature_dictionary.md)。
+一致性检查、缺失填补对比与异常值检测结果见 [docs/governance_report.md](docs/governance_report.md)。
 
 ## 目录结构
 
@@ -38,12 +40,15 @@ amazon-games-mining/
 ├── src/                    可执行脚本
 │   ├── config.py           路径、常量、随机种子
 │   ├── download.py         数据下载与完整性校验
+│   ├── parse.py            gzip JSON Lines 转 parquet
+│   ├── build_features.py   评论 × 商品宽表与固定折
+│   ├── governance.py       一致性检查、填补与异常值验证
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
 ├── notebooks/              探索性分析与出图
 ├── results/
 │   ├── figures/            图表输出
 │   └── tables/             表格输出
-├── docs/                   数据说明、字段字典与环境配置
+├── docs/                   数据说明、字段字典、治理报告与环境配置
 ├── requirements.txt
 └── README.md
 ```
@@ -75,6 +80,24 @@ python src/download.py --verify
 
 ```
 python src/download.py
+```
+
+解析两个 gzip 文件，生成 parquet：
+
+```
+python src/parse.py
+```
+
+构建评论 × 商品宽表，并固定分层分组折：
+
+```
+python src/build_features.py
+```
+
+复算一致性、比较缺失填补策略与异常值检测：
+
+```
+python src/governance.py
 ```
 
 ## 复现约定
