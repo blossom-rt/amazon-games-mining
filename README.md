@@ -17,9 +17,9 @@
 | P4 | 评论情感分类、五折评估、错误分析与 SHAP | 完成 |
 | P3 | `also_buy` 共购关联规则、Apriori 与 FP-Growth 对比 | 待开始，`feat/rules` |
 | P5 | 商品聚类、肘部法与轮廓系数、bootstrap ARI | 待开始，`feat/cluster` |
-| P6 | `run_all.py` 一键复现、`04_repro.ipynb`、运行日志与报告统稿 | 待开始，`feat/repro` |
+| P6 | `run_all.py` 一键复现、`04_repro.ipynb`、运行日志与报告统稿 | 框架完成，待 P3/P5 合入后联调 |
 
-P0–P4 已合入 `dev` 并推送。P3、P5 由协作成员完成，P6 与报告统稿由仓库维护者完成。
+P0–P4 已合入 `dev` 并推送；P6 框架在 `feat/repro`，尚未合并。P3、P5 由协作成员完成，P6 与报告统稿由仓库维护者完成。
 
 ## 数据
 
@@ -53,6 +53,7 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 - 宽表 47 列，其中 36 个建模特征、31 个衍生特征；按 `asin` 分组做 5 折，同一商品不跨折。
 - 分类最佳模型为线性 SVM（SGD）：宏 F1 0.8635、PR-AUC 0.9837、ROC-AUC 0.9569；与 Dummy 的 Wilcoxon 检验 `p=0.0625`，在 5 折下不显著，报告中按“优于基线但未达统计显著”表述。
 - 已有中文标注图 16 张：fig01–fig10 为 EDA，fig30–fig35 为分类；P3、P5 将补充 fig11–fig19、fig20–fig29。
+- P6 框架已跑通现有五步，总耗时 916.4 秒；`rules`、`cluster` 在脚本缺失时记为 `missing`，整条流水线状态为 `partial`，等 P3、P5 合入后补全。
 
 ## 目录结构
 
@@ -69,9 +70,11 @@ amazon-games-mining/
 │   ├── build_features.py   评论 × 商品宽表与固定折
 │   ├── governance.py       一致性检查、填补与异常值验证
 │   ├── classify.py         评论情感分类、评估与解释
+│   ├── run_all.py          一键串联各步骤并写运行日志
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
 ├── notebooks/              探索性分析与出图
-│   └── 01_eda.ipynb
+│   ├── 01_eda.ipynb
+│   └── 04_repro.ipynb      复现入口与结果校验
 ├── results/
 │   ├── figures/            图表输出
 │   └── tables/             表格与运行日志
@@ -80,7 +83,7 @@ amazon-games-mining/
 └── README.md
 ```
 
-`src/rules.py`、`src/cluster.py`、`src/run_all.py` 分别在 P3、P5、P6 阶段加入，当前尚未实现；`notebooks/02_rules.ipynb`、`03_cluster.ipynb`、`04_repro.ipynb` 同阶段补充。
+`src/rules.py`、`src/cluster.py` 分别在 P3、P5 阶段加入，当前尚未实现；`src/run_all.py` 已能串起现有步骤，`notebooks/02_rules.ipynb`、`03_cluster.ipynb` 同阶段补充，`notebooks/04_repro.ipynb` 已可运行。
 
 ## 环境
 
@@ -176,15 +179,19 @@ python src/governance.py
 python src/classify.py
 ```
 
-P3、P5、P6 的入口在对应分支完成后补充：
+一键复现入口已可用。首次可先校验现有产物，不重跑：
 
 ```
-python src/rules.py
-python src/cluster.py
+python src/run_all.py --check
+```
+
+全量重跑：
+
+```
 python src/run_all.py
 ```
 
-`run_all.py` 将按 parse → scope → build_features → governance → rules → classify → cluster 的顺序串起整条流水线，并写入 `results/run_log.json`。
+P3、P5 的分支合入后，`rules`、`cluster` 会自动接入；要强制要求这两步存在，使用 `--require-all`。`run_all.py` 按 parse → scope → build_features → governance → rules → classify → cluster 的顺序串起整条流水线，并写入 `results/tables/run_log.json`。
 
 ## 复现约定
 
