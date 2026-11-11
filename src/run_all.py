@@ -103,6 +103,7 @@ STEPS: list[dict] = [
             TABLES / "rules_runtime.csv",
         ],
         "figures": ["fig1[1-9]_*.png"],
+        "min_figures": 5,
     },
     {
         "name": "classify",
@@ -135,6 +136,7 @@ STEPS: list[dict] = [
             TABLES / "cluster_stability.csv",
         ],
         "figures": ["fig2[0-9]_*.png"],
+        "min_figures": 5,
     },
 ]
 
@@ -266,9 +268,12 @@ def _figure_paths(step: dict) -> list[Path]:
 
 def _missing(step: dict) -> tuple[list[Path], list[str]]:
     missing = [path for path in step["outputs"] if not path.exists()]
-    missing_figures = [
-        pattern for pattern in step.get("figures", []) if not list(FIGURES.glob(pattern))
-    ]
+    missing_figures: list[str] = []
+    min_figures = step.get("min_figures", 0)
+    if min_figures:
+        found = len(set(_figure_paths(step)))
+        if found < min_figures:
+            missing_figures.append(f"figures={found} (<{min_figures})")
     return missing, missing_figures
 
 
