@@ -2,7 +2,7 @@
 
 ## 项目简介
 
-基于 Amazon Review Data (2018) 的 Video_Games 品类，融合用户评论（非结构化文本）与商品元数据（半结构化 JSON）两类异构数据源，完成一条完整的数据挖掘流程：数据治理、商品共购关联规则挖掘、商品评分预测、商品分群与结果可解释性分析。
+基于 Amazon Review Data (2018) 的 Video_Games 品类，融合用户评论（非结构化文本）与商品元数据（半结构化 JSON）两类异构数据源，完成一条完整的数据挖掘流程：数据治理、商品共购关联规则挖掘、评论情感分类、商品分群与结果可解释性分析。
 
 数据来源与引用见 [docs/data_source.md](docs/data_source.md)。
 
@@ -30,6 +30,7 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 宽表字段、衍生特征与折划分口径见 [docs/feature_dictionary.md](docs/feature_dictionary.md)。
 游戏本体边界规则与覆盖范围见 [docs/scope_definition.md](docs/scope_definition.md)。
 一致性检查、缺失填补对比与异常值检测结果见 [docs/governance_report.md](docs/governance_report.md)。
+评论情感分类的模型、指标与错误分析见 [docs/classification_report.md](docs/classification_report.md)。
 
 ## 目录结构
 
@@ -45,6 +46,7 @@ amazon-games-mining/
 │   ├── scope.py            判定商品是否为游戏本体
 │   ├── build_features.py   评论 × 商品宽表与固定折
 │   ├── governance.py       一致性检查、填补与异常值验证
+│   ├── classify.py         评论情感分类、评估与解释
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
 ├── notebooks/              探索性分析与出图
 ├── results/
@@ -106,6 +108,12 @@ python src/build_features.py
 
 ```
 python src/governance.py
+```
+
+训练评论情感分类模型，输出指标、曲线、错误样本与 SHAP：
+
+```
+python src/classify.py
 ```
 
 ## 复现约定

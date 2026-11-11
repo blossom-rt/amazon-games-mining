@@ -1,0 +1,173 @@
+{
+  "generated_at": "2026-11-11T10:31:59+08:00",
+  "rows": 1456092,
+  "target": "overall >= 4.0",
+  "positive_rate": 0.7475,
+  "n_splits": 5,
+  "n_model_features": 36,
+  "numeric_features": [
+    "verified",
+    "review_year",
+    "review_month",
+    "review_dow",
+    "review_len",
+    "review_word_count",
+    "review_sentence_count",
+    "summary_len",
+    "has_style",
+    "has_vote",
+    "vote_count",
+    "has_review_image",
+    "image_count",
+    "has_meta",
+    "title_len",
+    "price",
+    "price_missing",
+    "log_price",
+    "category_depth",
+    "also_buy_len",
+    "also_view_len",
+    "feature_count",
+    "description_len",
+    "rank_count",
+    "image_count_meta",
+    "tech1_present",
+    "tech2_present",
+    "days_since_product",
+    "reviews_prev_30d_same_asin",
+    "days_since_prev_review_same_asin",
+    "verified_x_log_len",
+    "log_price_x_verified",
+    "helpful_x_len",
+    "days_since_verified"
+  ],
+  "categorical_features": [
+    "main_cat_clean",
+    "category_leaf"
+  ],
+  "text": {
+    "vectorizer": "HashingVectorizer + TfidfTransformer",
+    "n_features": 262144,
+    "max_chars": 3000,
+    "svd_components": 20,
+    "svd_fit_rows": 100000
+  },
+  "models": {
+    "dummy": {
+      "accuracy": {
+        "mean": 0.7475,
+        "std": 0.0
+      },
+      "macro_f1": {
+        "mean": 0.4277,
+        "std": 0.0
+      },
+      "pr_auc": {
+        "mean": 0.7475,
+        "std": 0.0
+      },
+      "roc_auc": {
+        "mean": 0.5,
+        "std": 0.0
+      },
+      "seconds": 0.1
+    },
+    "logistic_sgd": {
+      "accuracy": {
+        "mean": 0.8849,
+        "std": 0.01
+      },
+      "macro_f1": {
+        "mean": 0.8583,
+        "std": 0.0097
+      },
+      "pr_auc": {
+        "mean": 0.9838,
+        "std": 0.0011
+      },
+      "roc_auc": {
+        "mean": 0.9551,
+        "std": 0.0023
+      },
+      "seconds": 11.9
+    },
+    "linear_svm": {
+      "accuracy": {
+        "mean": 0.8894,
+        "std": 0.0064
+      },
+      "macro_f1": {
+        "mean": 0.8635,
+        "std": 0.0065
+      },
+      "pr_auc": {
+        "mean": 0.9837,
+        "std": 0.0016
+      },
+      "roc_auc": {
+        "mean": 0.9569,
+        "std": 0.0024
+      },
+      "seconds": 16.9
+    },
+    "hist_gb": {
+      "accuracy": {
+        "mean": 0.8164,
+        "std": 0.0028
+      },
+      "macro_f1": {
+        "mean": 0.7849,
+        "std": 0.0027
+      },
+      "pr_auc": {
+        "mean": 0.9701,
+        "std": 0.0005
+      },
+      "roc_auc": {
+        "mean": 0.916,
+        "std": 0.0016
+      },
+      "seconds": 23.1
+    },
+    "random_forest": {
+      "accuracy": {
+        "mean": 0.8066,
+        "std": 0.0033
+      },
+      "macro_f1": {
+        "mean": 0.7747,
+        "std": 0.0031
+      },
+      "pr_auc": {
+        "mean": 0.9673,
+        "std": 0.0005
+      },
+      "roc_auc": {
+        "mean": 0.9086,
+        "std": 0.0016
+      },
+      "seconds": 55.4
+    }
+  },
+  "best_model": "linear_svm",
+  "best_model_label": "线性 SVM（SGD）",
+  "wilcoxon_best_vs_dummy": {
+    "test": "wilcoxon",
+    "statistic": 0.0,
+    "p_value": 0.0625
+  },
+  "seconds": 779.7,
+  "hardware": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "memory_gb": 15.7,
+    "python": "3.11.18"
+  },
+  "outputs": {
+    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_metrics.csv",
+    "errors": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_errors.csv",
+    "importance": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_importance.csv",
+    "shap": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_shap.json"
+  }
+}
