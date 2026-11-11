@@ -6,6 +6,21 @@
 
 数据来源与引用见 [docs/data_source.md](docs/data_source.md)。
 
+## 当前进度
+
+| 阶段 | 内容 | 状态 |
+|---|---|---|
+| P0 | gzip JSON Lines 解析为 parquet，字段字典回填 | 完成 |
+| P1 | 缺失机制、填补策略、异常值、一致性检查与 EDA | 完成 |
+| P2 | 评论 × 商品宽表、时间窗与交互特征、分层分组折 | 完成 |
+| P2.5 | 游戏本体边界判定，固定 P3/P4/P5 的样本口径 | 完成 |
+| P4 | 评论情感分类、五折评估、错误分析与 SHAP | 完成 |
+| P3 | `also_buy` 共购关联规则、Apriori 与 FP-Growth 对比 | 待开始，`feat/rules` |
+| P5 | 商品聚类、肘部法与轮廓系数、bootstrap ARI | 待开始，`feat/cluster` |
+| P6 | `run_all.py` 一键复现、`04_repro.ipynb`、运行日志与报告统稿 | 待开始，`feat/repro` |
+
+P0–P4 已合入 `dev` 并推送。P3、P5 由协作成员完成，P6 与报告统稿由仓库维护者完成。
+
 ## 数据
 
 | 项目 | 内容 |
@@ -13,7 +28,7 @@
 | 数据集 | Amazon Review Data (2018) |
 | 发布方 | University of California, San Diego, McAuley Lab |
 | 品类 | Video_Games |
-| 商品数 | 84,819（官方标称 84,893） |
+| 商品数 | 84,819（官方标称 84,893，去重后 71,911） |
 | 评论数 | 2,565,349 |
 | 时间范围 | 1997 年 11 月 — 2018 年 10 月 |
 | 许可 | 仅限学术研究使用 |
@@ -32,6 +47,13 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 一致性检查、缺失填补对比与异常值检测结果见 [docs/governance_report.md](docs/governance_report.md)。
 评论情感分类的模型、指标与错误分析见 [docs/classification_report.md](docs/classification_report.md)。
 
+## 已产出结果
+
+- 解析后评论 2,565,349 行、商品 71,911 行；游戏本体 40,259 件商品、1,456,092 条评论，正向率 74.75%。
+- 宽表 47 列，其中 36 个建模特征、31 个衍生特征；按 `asin` 分组做 5 折，同一商品不跨折。
+- 分类最佳模型为线性 SVM（SGD）：宏 F1 0.8635、PR-AUC 0.9837、ROC-AUC 0.9569；与 Dummy 的 Wilcoxon 检验 `p=0.0625`，在 5 折下不显著，报告中按“优于基线但未达统计显著”表述。
+- 已有中文标注图 16 张：fig01–fig10 为 EDA，fig30–fig35 为分类；P3、P5 将补充 fig11–fig19、fig20–fig29。
+
 ## 目录结构
 
 ```
@@ -49,13 +71,16 @@ amazon-games-mining/
 │   ├── classify.py         评论情感分类、评估与解释
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
 ├── notebooks/              探索性分析与出图
+│   └── 01_eda.ipynb
 ├── results/
 │   ├── figures/            图表输出
-│   └── tables/             表格输出
-├── docs/                   数据说明、字段字典、治理报告与环境配置
+│   └── tables/             表格与运行日志
+├── docs/                   数据说明、字段字典、治理与分类报告、环境配置
 ├── requirements.txt
 └── README.md
 ```
+
+`src/rules.py`、`src/cluster.py`、`src/run_all.py` 分别在 P3、P5、P6 阶段加入，当前尚未实现；`notebooks/02_rules.ipynb`、`03_cluster.ipynb`、`04_repro.ipynb` 同阶段补充。
 
 ## 环境
 
@@ -72,7 +97,42 @@ python -m ipykernel install --user --name amazon-games --display-name "Python (a
 
 若默认的 pip 镜像不可用，安装时加 `-i https://pypi.org/simple`。图表中文标注需要系统中文字体，Windows 一般已带 `SimHei`，Linux 与 macOS 的处理见 setup 文档。
 
-## 快速开始
+## 分支与协作
+
+仓库只保留两条长期分支：
+
+- `main`：稳定版本，只通过 Pull Request 合入，不直接提交。
+- `dev`：集成分支，日常开发基线，P0–P4 已在此分支。
+
+并行开发使用短期功能分支，完成后开 PR 合入 `dev`，合并后删除：
+
+| 分支 | 内容 | 负责人 |
+|---|---|---|
+| `feat/rules` | P3 关联规则、阈值敏感性、业务解读 | 协作成员 |
+| `feat/cluster` | P5 商品聚类、簇画像、bootstrap ARI | 协作成员 |
+| `feat/repro` | P6 一键复现、运行日志、报告素材汇总 | 仓库维护者 |
+
+开始新工作前先同步 `dev`：
+
+```
+git switch dev
+git pull --ff-only
+git switch -c feat/rules
+```
+
+提交并推送功能分支：
+
+```
+git add <本阶段文件>
+git commit -m "feat(rules): ..."
+git push -u origin feat/rules
+```
+
+然后在 GitHub 开 PR，目标分支选 `dev`，不要直接推 `dev`，也不要自己合并。合并由仓库维护者完成。每天开始前执行 `git fetch origin` 与 `git rebase origin/dev`；只解决自己文件里的冲突。
+
+不要提交 `data/` 下的 parquet、`__pycache__`、`.ipynb_checkpoints` 或任何原始数据。
+
+## 运行顺序
 
 检查本地数据是否完整（不下载、不解压）：
 
@@ -92,7 +152,7 @@ python src/download.py
 python src/parse.py
 ```
 
-构建评论 × 商品宽表前，先判定游戏本体边界：
+判定游戏本体边界：
 
 ```
 python src/scope.py
@@ -116,7 +176,18 @@ python src/governance.py
 python src/classify.py
 ```
 
+P3、P5、P6 的入口在对应分支完成后补充：
+
+```
+python src/rules.py
+python src/cluster.py
+python src/run_all.py
+```
+
+`run_all.py` 将按 parse → scope → build_features → governance → rules → classify → cluster 的顺序串起整条流水线，并写入 `results/run_log.json`。
+
 ## 复现约定
 
 所有涉及随机性的步骤统一使用 `src/config.py` 中的 `SEED = 42`，并在文档中注明。
 运行脚本前确保工作目录为项目根目录，或直接使用 `python -m src.脚本名`。
+中间产物统一写入 `data/processed/`，图表与表格写入 `results/`，均不纳入版本控制。
