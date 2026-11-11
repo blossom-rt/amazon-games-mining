@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-11-10T22:48:22+08:00",
+  "hardware": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "ram_gb": 15.7,
+    "python": "3.11.18",
+    "pyarrow": "26.0.1"
+  },
+  "args": {
+    "chunk_size": 100000,
+    "limit": null,
+    "force": true,
+    "skip_reviews": false,
+    "skip_meta": false
+  },
+  "reviews": {
+    "rows": 2565349,
+    "source_lines": 2565349,
+    "empty_lines": 0,
+    "bad_lines": 0,
+    "rating_min": 1.0,
+    "rating_max": 5.0,
+    "null_asin": 0,
+    "style_rows": 1319972,
+    "vote_rows": 442716,
+    "image_rows": 28305,
+    "seconds": 47.7,
+    "output": "D:\\CodeField\\amazon-games-mining\\data\\processed\\reviews.parquet",
+    "size_mb": 493.6
+  },
+  "meta": {
+    "rows": 71911,
+    "source_lines": 84819,
+    "duplicate_asins": 12908,
+    "null_asin": 0,
+    "price_parsed": 11908,
+    "also_buy_nonempty": 28668,
+    "seconds": 5.1,
+    "output": "D:\\CodeField\\amazon-games-mining\\data\\processed\\meta.parquet",
+    "size_mb": 37.9
+  },
+  "total_seconds": 63.8
+}
