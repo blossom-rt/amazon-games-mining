@@ -14,12 +14,12 @@
 | P1 | 缺失机制、填补策略、异常值、一致性检查与 EDA | 完成 |
 | P2 | 评论 × 商品宽表、时间窗与交互特征、分层分组折 | 完成 |
 | P2.5 | 游戏本体边界判定，固定 P3/P4/P5 的样本口径 | 完成 |
+| P3 | `also_buy` 共购关联规则、Apriori 与 FP-Growth 对比 | 完成 |
 | P4 | 评论情感分类、五折评估、错误分析与 SHAP | 完成 |
-| P3 | `also_buy` 共购关联规则、Apriori 与 FP-Growth 对比 | 待开始，`feat/rules` |
-| P5 | 商品聚类、肘部法与轮廓系数、bootstrap ARI | 待开始，`feat/cluster` |
-| P6 | `run_all.py` 一键复现、`04_repro.ipynb`、运行日志与报告统稿 | 框架完成，待 P3/P5 合入后联调 |
+| P5 | 商品聚类、肘部法与轮廓系数、bootstrap ARI | 完成 |
+| P6 | `run_all.py` 一键复现、`04_repro.ipynb`、运行日志与报告统稿 | 流水线完成，报告统稿待做 |
 
-P0–P4 已合入 `dev` 并推送；P6 框架在 `feat/repro`，尚未合并。P3、P5 由协作成员完成，P6 与报告统稿由仓库维护者完成。
+P0–P6 的代码与流水线已合入 `dev` 并推送；P3、P5 由[协作成员](https://github.com/coldcodefish)完成，P6 与报告统稿由[仓库维护者](https://github.com/blossom-rt)负责。`main` 只保留稳定版本，待报告定稿后由 `dev` 合并。
 
 ## 数据
 
@@ -46,14 +46,17 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 游戏本体边界规则与覆盖范围见 [docs/scope_definition.md](docs/scope_definition.md)。
 一致性检查、缺失填补对比与异常值检测结果见 [docs/governance_report.md](docs/governance_report.md)。
 评论情感分类的模型、指标与错误分析见 [docs/classification_report.md](docs/classification_report.md)。
+关联规则的强度、阈值敏感性与运行时见 `results/tables/rules_*.csv/json`；聚类画像与 bootstrap 稳定性见 `results/tables/cluster_*.csv/json`。
 
 ## 已产出结果
 
 - 解析后评论 2,565,349 行、商品 71,911 行；游戏本体 40,259 件商品、1,456,092 条评论，正向率 74.75%。
 - 宽表 47 列，其中 36 个建模特征、31 个衍生特征；按 `asin` 分组做 5 折，同一商品不跨折。
-- 分类最佳模型为线性 SVM（SGD）：宏 F1 0.8635、PR-AUC 0.9837、ROC-AUC 0.9569；与 Dummy 的 Wilcoxon 检验 `p=0.0625`，在 5 折下不显著，报告中按“优于基线但未达统计显著”表述。
-- 已有中文标注图 16 张：fig01–fig10 为 EDA，fig30–fig35 为分类；P3、P5 将补充 fig11–fig19、fig20–fig29。
-- P6 框架已跑通现有五步，总耗时 916.4 秒；`rules`、`cluster` 在脚本缺失时记为 `missing`，整条流水线状态为 `partial`，等 P3、P5 合入后补全。
+- P3 关联规则：19,032 个购物篮；Apriori 与 FP-Growth 均得到 1,855 条规则、去重后 932 条，Apriori 96.35 秒、FP-Growth 1.15 秒；三组阈值分别得到 0、21、932 条规则，`support=0.02, confidence=0.15` 过高导致无规则；平凡规则去除 0 条、lift≤1 过滤 0 条。
+- P4 分类最佳模型为线性 SVM（SGD）：宏 F1 0.8635、PR-AUC 0.9837、ROC-AUC 0.9569；与 Dummy 的 Wilcoxon 检验 `p=0.0625`，在 5 折下不显著，报告中按“优于基线但未达统计显著”表述。
+- P5 聚类：40,259 件游戏本体商品、13 个聚类特征，轮廓系数选 `k=4`，bootstrap ARI 均值 0.9849（95% 区间 0.9296–0.9976）；`cluster_profiles.csv` 含每簇价格中位数、观测价格数、价格缺失率，其中一簇仅 1 件商品有观测价格，价格中位数不可单独解读。
+- 已有中文标注图 29 张：fig01–fig10 为 EDA，fig11–fig16 为规则，fig20–fig26 为聚类，fig30–fig35 为分类。
+- P6 七步全量已跑通，总耗时 847.3 秒，状态 `ok`；各步为 parse 93.4、scope 4.7、build_features 109.9、governance 15.3、rules 101.5、classify 492.5、cluster 29.6 秒。
 
 ## 目录结构
 
@@ -70,10 +73,14 @@ amazon-games-mining/
 │   ├── build_features.py   评论 × 商品宽表与固定折
 │   ├── governance.py       一致性检查、填补与异常值验证
 │   ├── classify.py         评论情感分类、评估与解释
+│   ├── rules.py            also_buy 共购关联规则与阈值对比
+│   ├── cluster.py          商品聚类、簇画像与稳定性
 │   ├── run_all.py          一键串联各步骤并写运行日志
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
 ├── notebooks/              探索性分析与出图
 │   ├── 01_eda.ipynb
+│   ├── 02_rules.ipynb
+│   ├── 03_cluster.ipynb
 │   └── 04_repro.ipynb      复现入口与结果校验
 ├── results/
 │   ├── figures/            图表输出
@@ -83,7 +90,7 @@ amazon-games-mining/
 └── README.md
 ```
 
-`src/rules.py`、`src/cluster.py` 分别在 P3、P5 阶段加入，当前尚未实现；`src/run_all.py` 已能串起现有步骤，`notebooks/02_rules.ipynb`、`03_cluster.ipynb` 同阶段补充，`notebooks/04_repro.ipynb` 已可运行。
+`src/rules.py`、`src/cluster.py` 与对应 notebook 已在 P3、P5 合入；`src/run_all.py` 串起 parse → scope → build_features → governance → rules → classify → cluster 七步，`notebooks/04_repro.ipynb` 展示运行日志与关键指标。
 
 ## 环境
 
@@ -105,30 +112,30 @@ python -m ipykernel install --user --name amazon-games --display-name "Python (a
 仓库只保留两条长期分支：
 
 - `main`：稳定版本，只通过 Pull Request 合入，不直接提交。
-- `dev`：集成分支，日常开发基线，P0–P4 已在此分支。
+- `dev`：集成分支，日常开发基线，P0–P6 已在此分支。
 
 并行开发使用短期功能分支，完成后开 PR 合入 `dev`，合并后删除：
 
-| 分支 | 内容 | 负责人 |
+| 分支 | 内容 | 状态 |
 |---|---|---|
-| `feat/rules` | P3 关联规则、阈值敏感性、业务解读 | 协作成员 |
-| `feat/cluster` | P5 商品聚类、簇画像、bootstrap ARI | 协作成员 |
-| `feat/repro` | P6 一键复现、运行日志、报告素材汇总 | 仓库维护者 |
+| `feat/rules` | P3 关联规则、阈值敏感性、业务解读 | 已合并到 `dev` |
+| `feat/cluster` | P5 商品聚类、簇画像、bootstrap ARI | 已合并到 `dev` |
+| `feat/repro` | P6 一键复现、运行日志、复现 Notebook | 已合并到 `dev` |
 
 开始新工作前先同步 `dev`：
 
 ```
 git switch dev
 git pull --ff-only
-git switch -c feat/rules
+git switch -c feat/<阶段名>
 ```
 
 提交并推送功能分支：
 
 ```
 git add <本阶段文件>
-git commit -m "feat(rules): ..."
-git push -u origin feat/rules
+git commit -m "feat(<阶段>): ..."
+git push -u origin feat/<阶段名>
 ```
 
 然后在 GitHub 开 PR，目标分支选 `dev`，不要直接推 `dev`，也不要自己合并。合并由仓库维护者完成。每天开始前执行 `git fetch origin` 与 `git rebase origin/dev`；只解决自己文件里的冲突。
@@ -173,10 +180,22 @@ python src/build_features.py
 python src/governance.py
 ```
 
+挖掘 `also_buy` 共购规则，比较 Apriori 与 FP-Growth，并输出阈值敏感性：
+
+```
+python src/rules.py
+```
+
 训练评论情感分类模型，输出指标、曲线、错误样本与 SHAP：
 
 ```
 python src/classify.py
+```
+
+商品聚类、轮廓系数、bootstrap ARI 与簇画像：
+
+```
+python src/cluster.py
 ```
 
 一键复现入口已可用。首次可先校验现有产物，不重跑：
@@ -185,13 +204,19 @@ python src/classify.py
 python src/run_all.py --check
 ```
 
-全量重跑：
+七步都必须存在时使用：
+
+```
+python src/run_all.py --check --require-all
+```
+
+全量重跑约 14 分钟：
 
 ```
 python src/run_all.py
 ```
 
-P3、P5 的分支合入后，`rules`、`cluster` 会自动接入；要强制要求这两步存在，使用 `--require-all`。`run_all.py` 按 parse → scope → build_features → governance → rules → classify → cluster 的顺序串起整条流水线，并写入 `results/tables/run_log.json`。
+`run_all.py` 按 parse → scope → build_features → governance → rules → classify → cluster 的顺序串起整条流水线，并写入 `results/tables/run_log.json`。本机本次全量为 847.3 秒、状态 `ok`，其中分类 492.5 秒、规则 101.5 秒、聚类 29.6 秒。
 
 ## 复现约定
 
