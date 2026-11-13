@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import time
 from collections import Counter
@@ -165,13 +166,31 @@ def mine(frame, algorithm, min_support, min_confidence, max_len, n_transactions)
     return rules, n_itemsets, time.perf_counter() - started
 
 
+def series_key(title: str) -> str:
+    """从标题提取系列键，用于标记同系列续作规则。
+
+    去掉平台、版本、通用词与末尾编号，保留前三个实词；只有至少两个实词
+    才返回键，避免把 "Game" 之类的短标题误判为同系列。
+    """
+    generic = {
+        "the", "a", "an", "game", "games", "edition", "special", "download",
+        "pc", "mac", "windows", "ps2", "ps3", "ps4", "psp", "vita", "xbox",
+        "360", "one", "wii", "ds", "3ds", "switch", "console",
+    }
+    text = re.sub(r"[^a-z0-9]+", " ", str(title).lower())
+    tokens = [token for token in text.split() if token and token not in generic]
+    while tokens and (tokens[-1].isdigit() or tokens[-1] in {"ii", "iii", "iv", "v"}):
+        tokens.pop()
+    return " ".join(tokens[:3]) if len(tokens) >= 2 else ""
+
+
 def clean_rules(rules, n_transactions, titles):
     if rules.empty:
         empty = pd.DataFrame(
             columns=[
                 "antecedents", "consequents", "support", "confidence", "lift",
-                "antecedent", "consequent", "count", "pair_key",
-                "antecedent_titles", "consequent_title",
+                "conviction", "same_series", "antecedent", "consequent", "count",
+                "pair_key", "antecedent_titles", "consequent_title",
             ]
         )
         empty.attrs["trivial_removed"] = 0
@@ -188,6 +207,13 @@ def clean_rules(rules, n_transactions, titles):
     lift_removed = before_lift - len(rules)
     rules["antecedent"] = rules["antecedents"].map(lambda s: "|".join(sorted(s)))
     rules["consequent"] = rules["consequents"].map(lambda s: "|".join(sorted(s)))
+    consequent_support = (rules["confidence"] / rules["lift"]).clip(0.0, 1.0)
+    denominator = (1.0 - rules["confidence"]).clip(lower=1e-12)
+    rules["conviction"] = ((1.0 - consequent_support) / denominator).clip(upper=10_000.0)
+    rules["same_series"] = [
+        bool(series_key(titles.get(a, "")) and series_key(titles.get(a, "")) == series_key(titles.get(b, "")))
+        for a, b in zip(rules["antecedent"], rules["consequent"])
+    ]
     rules["count"] = (rules["support"] * n_transactions).round().astype(int)
     rules["pair_key"] = [
         " <=> ".join(sorted([a, b]))
@@ -391,7 +417,8 @@ def main() -> None:
     top[
         [
             "rank", "antecedent", "consequent", "support", "confidence",
-            "lift", "count", "antecedent_titles", "consequent_title",
+            "lift", "conviction", "same_series", "count",
+            "antecedent_titles", "consequent_title",
         ]
     ].to_csv(TOP_CSV, index=False, encoding="utf-8-sig")
 
@@ -463,6 +490,7 @@ def main() -> None:
         "confidence_in_range": bool(base["confidence"].between(0, 1).all()),
         "runtime_recorded": all(row["seconds"] >= 0 for row in runtime_rows),
         "no_trivial_rules": bool(trivial_remaining == 0),
+        "conviction_nonnegative": bool((cleaned["conviction"] >= 0).all()),
     }
     summary = {
         "generated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -493,6 +521,8 @@ def main() -> None:
             "after_dedup": len(cleaned),
             "trivial_removed": int(cleaned.attrs.get("trivial_removed", 0)),
             "lift_filtered": int(cleaned.attrs.get("lift_removed", 0)),
+            "same_series": int(cleaned["same_series"].sum()),
+            "conviction_median": round(float(cleaned["conviction"].median()), 2),
         },
         "assertions": assertions,
         "figure_errors": figure_errors,
