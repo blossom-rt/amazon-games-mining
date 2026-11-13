@@ -1,0 +1,5 @@
+﻿inertia,method,n,n_clusters,silhouette,seconds,bic,noise_share,features
+330239.4,kmeans,40259,4,0.211,5.1,,,
+,gmm,40259,4,0.1441,5.9,797306.8,,
+,hdbscan,40259,2,0.3119,31.9,,0.0016,
+,price_subset_kmeans,5985,4,0.2102,,,,13.0

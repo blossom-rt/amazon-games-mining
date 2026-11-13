@@ -1,0 +1,110 @@
+{
+  "generated_at": "2026-11-11T19:37:49+08:00",
+  "git_commit": "6897032",
+  "seed": 42,
+  "input": {
+    "n_products": 40259,
+    "feature_names": [
+      "n_reviews",
+      "mean_review_len",
+      "verified_share",
+      "mean_vote",
+      "also_buy_len",
+      "also_view_len",
+      "feature_count",
+      "description_len",
+      "category_depth",
+      "rank_count",
+      "image_count_meta",
+      "category_leaf_freq",
+      "main_cat_freq"
+    ],
+    "source": "D:\\CodeField\\amazon-games-mining\\data\\processed\\features.parquet"
+  },
+  "k_selection": {
+    "k": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "inertia": [
+      432774.55,
+      373732.68,
+      334281.11,
+      295383.73,
+      280529.79,
+      265513.07,
+      254801.68,
+      242512.42,
+      234759.01
+    ],
+    "silhouette": [
+      0.1662,
+      0.1951,
+      0.209,
+      0.2013,
+      0.1894,
+      0.2082,
+      0.1803,
+      0.1675,
+      0.1552
+    ],
+    "min_size": [
+      14718,
+      7863,
+      3467,
+      2155,
+      2155,
+      2123,
+      2070,
+      2067,
+      2053
+    ],
+    "chosen_k": 4,
+    "method": "轮廓系数最大，且每个簇不少于样本的 2%"
+  },
+  "model": "KMeans(n_init=20, random_state=42)",
+  "stability": {
+    "n_bootstrap": 50,
+    "ari_mean": 0.9849,
+    "ari_ci95": [
+      0.9296,
+      0.9976
+    ],
+    "min_required": 0.6,
+    "bootstrap_fraction": 0.8
+  },
+  "cluster_sizes": [
+    7797,
+    11877,
+    18430,
+    2155
+  ],
+  "runtime_seconds": 26.0,
+  "assertions": {
+    "k_ge_2": true,
+    "each_cluster_nonempty": true,
+    "ari_ge_0_6": true,
+    "scope_only": true,
+    "features_standardized": true,
+    "price_profile_complete": true
+  },
+  "hardware": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "ram_gb": 15.7,
+    "python": "3.11.18",
+    "pyarrow": "26.0.1"
+  },
+  "outputs": {
+    "profiles": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_profiles.csv",
+    "stability": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_stability.csv"
+  }
+}

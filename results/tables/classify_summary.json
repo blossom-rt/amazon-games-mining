@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T10:31:59+08:00",
+  "generated_at": "2026-11-11T19:37:18+08:00",
   "rows": 1456092,
   "target": "overall >= 4.0",
   "positive_rate": 0.7475,
@@ -70,7 +70,7 @@
         "mean": 0.5,
         "std": 0.0
       },
-      "seconds": 0.1
+      "seconds": 0.0
     },
     "logistic_sgd": {
       "accuracy": {
@@ -89,7 +89,7 @@
         "mean": 0.9551,
         "std": 0.0023
       },
-      "seconds": 11.9
+      "seconds": 7.5
     },
     "linear_svm": {
       "accuracy": {
@@ -108,7 +108,7 @@
         "mean": 0.9569,
         "std": 0.0024
       },
-      "seconds": 16.9
+      "seconds": 9.7
     },
     "hist_gb": {
       "accuracy": {
@@ -127,7 +127,7 @@
         "mean": 0.916,
         "std": 0.0016
       },
-      "seconds": 23.1
+      "seconds": 12.1
     },
     "random_forest": {
       "accuracy": {
@@ -146,7 +146,7 @@
         "mean": 0.9086,
         "std": 0.0016
       },
-      "seconds": 55.4
+      "seconds": 31.2
     }
   },
   "best_model": "linear_svm",
@@ -156,7 +156,7 @@
     "statistic": 0.0,
     "p_value": 0.0625
   },
-  "seconds": 779.7,
+  "seconds": 485.6,
   "hardware": {
     "platform": "Windows-10-10.0.26200-SP0",
     "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",

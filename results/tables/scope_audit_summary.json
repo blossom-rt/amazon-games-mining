@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-11-13T21:03:10+08:00",
+  "seed": 42,
+  "current_in_scope_products": 40259,
+  "current_in_scope_reviews": 1456092,
+  "strong_hardware_candidates": 226,
+  "candidate_reviews": 7105,
+  "if_excluded_products": 40033,
+  "if_excluded_reviews": 1448987,
+  "retro_products": 14486,
+  "retro_no_software_node": 1154,
+  "retro_no_software_node_reviews": 17109,
+  "notes": [
+    "强硬件词清单只用于人工复核，不自动改样本口径；",
+    "同捆（游戏 + 手柄/主机）与纯硬件需要逐条判断；",
+    "Retro 缺 Games 节点的商品无法确认是否游戏本体，保守排除。"
+  ],
+  "outputs": {
+    "candidates": "D:\\CodeField\\amazon-games-mining\\results\\tables\\scope_audit_candidates.csv",
+    "retro": "D:\\CodeField\\amazon-games-mining\\results\\tables\\scope_audit_retro.csv"
+  }
+}
