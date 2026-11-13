@@ -1,0 +1,149 @@
+{
+  "generated_at": "2026-11-13T21:00:15+08:00",
+  "seed": 42,
+  "n_folds": 10,
+  "n_rows": 1456092,
+  "positive_rate": 0.7475,
+  "fold_sizes": [
+    145602,
+    145613,
+    145603,
+    145599,
+    145612,
+    145637,
+    145599,
+    145606,
+    145618,
+    145603
+  ],
+  "models": {
+    "dummy": {
+      "accuracy": {
+        "mean": 0.7475,
+        "std": 0.0
+      },
+      "macro_f1": {
+        "mean": 0.4277,
+        "std": 0.0
+      },
+      "pr_auc": {
+        "mean": 0.7475,
+        "std": 0.0
+      },
+      "roc_auc": {
+        "mean": 0.5,
+        "std": 0.0
+      },
+      "seconds": 0.1
+    },
+    "logistic_sgd": {
+      "accuracy": {
+        "mean": 0.8833,
+        "std": 0.0084
+      },
+      "macro_f1": {
+        "mean": 0.857,
+        "std": 0.0081
+      },
+      "pr_auc": {
+        "mean": 0.9835,
+        "std": 0.002
+      },
+      "roc_auc": {
+        "mean": 0.9556,
+        "std": 0.0025
+      },
+      "seconds": 20.0
+    },
+    "linear_svm": {
+      "accuracy": {
+        "mean": 0.8903,
+        "std": 0.0084
+      },
+      "macro_f1": {
+        "mean": 0.8642,
+        "std": 0.0088
+      },
+      "pr_auc": {
+        "mean": 0.9844,
+        "std": 0.001
+      },
+      "roc_auc": {
+        "mean": 0.9576,
+        "std": 0.0026
+      },
+      "seconds": 29.3
+    }
+  },
+  "best_model": "linear_svm",
+  "primary_test": {
+    "n_pairs": 10,
+    "mean_difference": 0.4364835888491966,
+    "std_difference": 0.008811333568044089,
+    "cohen_dz": 49.536609354137276,
+    "rank_biserial": 1.0,
+    "wilcoxon_statistic": 0.0,
+    "p_value": 0.001953125,
+    "bootstrap_ci95": [
+      0.43137671364920116,
+      0.4416977084428934
+    ],
+    "best_model": "linear_svm",
+    "comparison": "linear_svm - dummy"
+  },
+  "secondary_test": {
+    "n_pairs": 10,
+    "mean_difference": 0.007200658361317979,
+    "std_difference": 0.01060968959341597,
+    "cohen_dz": 0.67868699625166,
+    "rank_biserial": 0.6363636363636364,
+    "wilcoxon_statistic": 10.0,
+    "p_value": 0.083984375,
+    "bootstrap_ci95": [
+      0.0010171554875934128,
+      0.013424509322008692
+    ],
+    "comparison": "linear_svm - logistic_sgd"
+  },
+  "calibration": {
+    "raw": {
+      "brier": 0.0848780626233525,
+      "log_loss": 0.28365295581858646,
+      "ece": 0.08814159625942153
+    },
+    "isotonic": {
+      "brier": 0.06946026330542841,
+      "log_loss": 0.23107484735599193,
+      "ece": 0.00036342330093544305
+    },
+    "method": "grouped 10-fold isotonic，校准器只在其余折的 OOF 概率上拟合"
+  },
+  "thresholds": {
+    "f1_optimal": {
+      "threshold": 0.4545,
+      "precision": 0.9229,
+      "recall": 0.9524,
+      "f1": 0.9374
+    },
+    "cost_sensitive": {
+      "threshold": 0.17,
+      "fn_cost": 5.0,
+      "fp_cost": 1.0,
+      "total_cost": 247044.0
+    }
+  },
+  "runtime_seconds": 909.8,
+  "hardware": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "memory_gb": 15.7,
+    "python": "3.11.18"
+  },
+  "outputs": {
+    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_10fold_metrics.csv",
+    "calibration": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_calibration.csv",
+    "fig_calibration": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig36_calibration.png",
+    "fig_threshold": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig37_threshold.png"
+  }
+}
