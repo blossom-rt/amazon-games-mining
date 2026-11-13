@@ -17,7 +17,8 @@
 | P3 | `also_buy` 共购关联规则、Apriori 与 FP-Growth 对比 | 完成 |
 | P4 | 评论情感分类、五折评估、错误分析与 SHAP | 完成 |
 | P5 | 商品聚类、肘部法与轮廓系数、bootstrap ARI | 完成 |
-| P6 | `run_all.py` 一键复现、`04_repro.ipynb`、运行日志与报告统稿 | 流水线完成，报告统稿待做 |
+| P6 | `run_all.py` 一键复现、`04_repro.ipynb`、运行日志与报告统稿 | 完成 |
+| 改进实验 | 10 折稳健性、概率校准、句向量对照、规则增强、聚类对比、边界复核 | 完成 |
 
 P0–P6 的代码与流水线已合入 `dev` 并推送；P3、P5 由[协作成员](https://github.com/coldcodefish)完成，P6 与报告统稿由[仓库维护者](https://github.com/blossom-rt)负责。`main` 只保留稳定版本，待报告定稿后由 `dev` 合并。
 
@@ -47,16 +48,35 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 一致性检查、缺失填补对比与异常值检测结果见 [docs/governance_report.md](docs/governance_report.md)。
 评论情感分类的模型、指标与错误分析见 [docs/classification_report.md](docs/classification_report.md)。
 关联规则的强度、阈值敏感性与运行时见 `results/tables/rules_*.csv/json`；聚类画像与 bootstrap 稳定性见 `results/tables/cluster_*.csv/json`。
+10 折稳健性、校准与阈值见 `results/tables/classify_robustness.json`；句向量对照见 `results/tables/classify_embedding.json`；聚类方法对比见 `results/tables/cluster_compare.json`。
+边界复核见 [docs/scope_audit.md](docs/scope_audit.md)，规则复核见 [docs/rules_review.md](docs/rules_review.md)。
 
 ## 已产出结果
 
 - 解析后评论 2,565,349 行、商品 71,911 行；游戏本体 40,259 件商品、1,456,092 条评论，正向率 74.75%。
 - 宽表 47 列，其中 36 个建模特征、31 个衍生特征；按 `asin` 分组做 5 折，同一商品不跨折。
-- P3 关联规则：19,032 个购物篮；Apriori 与 FP-Growth 均得到 1,855 条规则、去重后 932 条，Apriori 96.35 秒、FP-Growth 1.15 秒；三组阈值分别得到 0、21、932 条规则，`support=0.02, confidence=0.15` 过高导致无规则；平凡规则去除 0 条、lift≤1 过滤 0 条。
-- P4 分类最佳模型为线性 SVM（SGD）：宏 F1 0.8635、PR-AUC 0.9837、ROC-AUC 0.9569；与 Dummy 的 Wilcoxon 检验 `p=0.0625`，在 5 折下不显著，报告中按“优于基线但未达统计显著”表述。
+- P3 关联规则：19,032 个购物篮；Apriori 与 FP-Growth 均得到 1,855 条规则、去重后 932 条，Apriori 43.2 秒、FP-Growth 1.0 秒；三组阈值分别得到 0、21、932 条规则，`support=0.02, confidence=0.15` 过高导致无规则；平凡规则去除 0 条、lift≤1 过滤 0 条；932 条中 34 条前件与后件同系列，conviction 中位数 3.21。
+- P4 分类最佳模型为线性 SVM（SGD）：5 折宏 F1 0.8635、PR-AUC 0.9837、ROC-AUC 0.9569；与 Dummy 的 Wilcoxon 检验 `p=0.0625`，在 5 折下不显著。10 折复核宏 F1 0.8642±0.0088，配对差 0.4365（95% CI 0.4314–0.4417），`p=0.001953`，说明 5 折的 p 值主要是样本量下限。
+- 概率校准：逻辑回归原始 ECE 0.088，分组 isotonic 校准后 0.00036，Brier 0.0849→0.0695；F1 最优阈值 0.4545，正类 F1 0.9374；代价敏感（FN=5×FP）阈值 0.17。
+- 文本表示对照（20,000 条抽样、600 字符、5 折）：哈希 TF-IDF 宏 F1 0.7562，BGE-small 0.8548，配对差 0.0986（95% CI 0.0690–0.1282），`p=0.0625`；方向与效应量支持句向量，但小样本、短文本，不能外推全量。
 - P5 聚类：40,259 件游戏本体商品、13 个聚类特征，轮廓系数选 `k=4`，bootstrap ARI 均值 0.9849（95% 区间 0.9296–0.9976）；`cluster_profiles.csv` 含每簇价格中位数、观测价格数、价格缺失率，其中一簇仅 1 件商品有观测价格，价格中位数不可单独解读。
-- 已有中文标注图 29 张：fig01–fig10 为 EDA，fig11–fig16 为规则，fig20–fig26 为聚类，fig30–fig35 为分类。
-- P6 七步全量已跑通，总耗时 847.3 秒，状态 `ok`；各步为 parse 93.4、scope 4.7、build_features 109.9、governance 15.3、rules 101.5、classify 492.5、cluster 29.6 秒。
+- 聚类方法对比：GMM 轮廓 0.1441、HDBSCAN 2 簇轮廓 0.3119（但只有 Software 与其余两类）、有价子集 KMeans 轮廓 0.2102；KMeans k=4 仍适合运营分层。
+- 边界复核：226 件强硬件词候选、7,105 条评论；前 30 条中 21 件纯硬件/主机、8 件游戏+配件同捆、1 件纯游戏，不能按标题一刀切；Retro 另有 1,154 件因缺 Games 节点被排除。
+- 已有中文标注图 33 张：fig01–fig10 为 EDA，fig11–fig16 为规则，fig20–fig26 为聚类，fig30–fig35 为分类，fig36–fig39 为改进实验。
+- P6 七步全量已跑通，总耗时 847.3 秒，状态 `ok`；各步为 parse 93.4、scope 4.7、build_features 109.9、governance 15.3、rules 101.5、classify 492.5、cluster 29.6 秒。该数字是 P6 合入时的基线；后续改进只单独重跑了 rules 与 cluster，未重跑整链。
+
+## 改进实验
+
+这组实验不改变主流水线的样本口径与七步结果，只用于回答“结论是否稳、还能怎么改进”：
+
+- 10 折分组复验：线性 SVM 宏 F1 0.8642±0.0088，与 Dummy 的配对差 0.4365（95% CI 0.4314–0.4417），`p=0.001953`；5 折的 0.0625 主要是样本量下限，不是“无差异”。
+- 概率校准：逻辑回归原始 ECE 0.0881，分组 isotonic 校准后 0.00036；Brier 0.0849→0.0695。校准后 F1 最优阈值 0.4545，代价敏感（FN=5×FP）阈值 0.17。
+- 文本表示对照：20,000 条抽样、600 字符、5 折，BGE-small 宏 F1 0.8548，哈希 TF-IDF 0.7562；配对差 0.0986（95% CI 0.0690–0.1282），`p=0.0625`。方向支持句向量，但小样本、短文本，不能外推到全量。
+- 规则增强：给 932 条规则增加 conviction 与同系列标记；conviction 中位数 3.21，34 条同系列，top 规则仍集中在 hidden-object 下载版互推。`also_buy` 仍只是推荐位，不是真实订单。
+- 聚类对比：GMM 轮廓 0.1441；HDBSCAN 只分 2 簇（轮廓 0.3119）；有价子集 KMeans k=4 轮廓 0.2102；均未优于 KMeans k=4 的四段运营分层。
+- 边界复核：226 件强硬件词候选（7,105 条评论），前 30 条中 21 件纯硬件/主机、8 件同捆、1 件纯游戏；主口径不按标题一刀切，Retro 另有 1,154 件缺 Games 节点。详见 [docs/scope_audit.md](docs/scope_audit.md)。
+
+这些脚本默认不写入 `run_all.py` 的七步主链，避免把可选的解释性实验变成每次全量重跑的成本；单独命令见“运行顺序”。
 
 ## 目录结构
 
@@ -73,8 +93,12 @@ amazon-games-mining/
 │   ├── build_features.py   评论 × 商品宽表与固定折
 │   ├── governance.py       一致性检查、填补与异常值验证
 │   ├── classify.py         评论情感分类、评估与解释
+│   ├── classify_robustness.py  10 折复核、校准与业务阈值
+│   ├── classify_embedding.py   哈希 TF-IDF 与 BGE 句向量对照
 │   ├── rules.py            also_buy 共购关联规则与阈值对比
 │   ├── cluster.py          商品聚类、簇画像与稳定性
+│   ├── cluster_compare.py  KMeans / GMM / HDBSCAN / 有价子集对比
+│   ├── scope_audit.py      强硬件词与 Retro 边界复核清单
 │   ├── run_all.py          一键串联各步骤并写运行日志
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
 ├── notebooks/              探索性分析与出图
@@ -87,6 +111,7 @@ amazon-games-mining/
 │   └── tables/             表格与运行日志
 ├── docs/                   数据说明、字段字典、治理与分类报告、环境配置
 ├── requirements.txt
+├── requirements-optional.txt  句向量对照的可选依赖
 └── README.md
 ```
 
@@ -196,6 +221,27 @@ python src/classify.py
 
 ```
 python src/cluster.py
+```
+
+10 折稳健性、效应量、校准与业务阈值：
+
+```
+python src/classify_robustness.py
+```
+
+句向量对照（可选，需先安装 `fastembed`，首次会下载 BGE 模型）：
+
+```
+pip install -r requirements-optional.txt
+set HF_ENDPOINT=https://hf-mirror.com
+python src/classify_embedding.py --limit 20000 --text-chars 600
+```
+
+聚类方法对比与边界复核：
+
+```
+python src/cluster_compare.py
+python src/scope_audit.py
 ```
 
 一键复现入口已可用。首次可先校验现有产物，不重跑：
