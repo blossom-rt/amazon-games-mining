@@ -301,7 +301,7 @@ pip install -r requirements-dashboard.txt
 streamlit run src/dashboard_app.py --server.port 8501
 ```
 
-浏览器访问 `http://127.0.0.1:8501`。健康检查 `http://127.0.0.1:8501/_stcore/health` 返回 `ok`。不启动服务时，直接打开 `results/dashboard.html` 看静态 fallback。
+浏览器访问 `http://127.0.0.1:8501`。健康检查 `http://127.0.0.1:8501/_stcore/health` 返回 `ok`。不启动服务时，直接打开 `results/dashboard.html` 看静态 fallback。完整运行说明、联动验收与常见问题见 [docs/dashboard_guide.md](docs/dashboard_guide.md)。
 
 一键复现入口已可用。首次可先校验现有产物，不重跑：
 
