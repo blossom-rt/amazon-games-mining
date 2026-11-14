@@ -1,0 +1,238 @@
+{
+  "n_products": 40259,
+  "n_reviewers_sampled": 20000,
+  "also_buy": {
+    "edges": 1207676,
+    "cross_leaf_share": 0.2342,
+    "cross_main_share": 0.0115,
+    "multi_edge_share": 0.4372,
+    "median_edge_weight": 1.0
+  },
+  "also_view": {
+    "edges": 1091164,
+    "cross_leaf_share": 0.2925,
+    "cross_main_share": 0.0177,
+    "multi_edge_share": 0.4302,
+    "median_edge_weight": 1.0
+  },
+  "co_reviewer": {
+    "edges": 45951,
+    "cross_leaf_share": 0.3957,
+    "cross_main_share": 0.0259,
+    "multi_edge_share": 0.0413,
+    "median_edge_weight": 1.0
+  },
+  "overlap": {
+    "buy_view_jaccard": 0.2539,
+    "buy_co_jaccard": 0.0102,
+    "view_co_jaccard": 0.0111,
+    "buy_edges_in_view": 0.3854,
+    "buy_edges_in_co": 0.0104
+  },
+  "top_cross_buy": [
+    {
+      "network": "also_buy",
+      "left": "B00000F1GM",
+      "right": "B00000ID61",
+      "left_title": "Super Mario 64",
+      "right_title": "Star Fox 64 (without Rumble Pak)",
+      "left_leaf": "Games",
+      "right_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "weight": 153
+    },
+    {
+      "network": "also_buy",
+      "left": "B0053BCO00",
+      "right": "B01AC3Z9J6",
+      "left_title": "Mario Kart 7",
+      "right_title": "Nintendo Selects: Donkey Kong Country Returns 3D",
+      "left_leaf": "Nintendo 3DS & 2DS",
+      "right_leaf": "Games",
+      "weight": 149
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000DMB3",
+      "right": "B00000ID61",
+      "left_title": "The Legend of Zelda: Ocarina of Time",
+      "right_title": "Star Fox 64 (without Rumble Pak)",
+      "left_leaf": "Games",
+      "right_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "weight": 142
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000ID61",
+      "right": "B00002STEZ",
+      "left_title": "Star Fox 64 (without Rumble Pak)",
+      "right_title": "Donkey Kong 64 - Nintendo 64",
+      "left_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "right_leaf": "Games",
+      "weight": 141
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000DMAX",
+      "right": "B00000ID61",
+      "left_title": "Mario Kart 64",
+      "right_title": "Star Fox 64 (without Rumble Pak)",
+      "left_leaf": "Games",
+      "right_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "weight": 139
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000ID61",
+      "right": "B00002STH0",
+      "left_title": "Star Fox 64 (without Rumble Pak)",
+      "right_title": "Diddy Kong Racing",
+      "left_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "right_leaf": "Games",
+      "weight": 137
+    },
+    {
+      "network": "also_buy",
+      "left": "B0014CN2H6",
+      "right": "B001C6GVI6",
+      "left_title": "Shin Megami Tensei: Persona 3 FES - PlayStation 2",
+      "right_title": "Shin Megami Tensei: Persona 4 - PlayStation 2",
+      "left_leaf": "Includes the ability to change your characters clothes",
+      "right_leaf": "Manage and integrate your activities withing each day to determine your progress",
+      "weight": 131
+    },
+    {
+      "network": "also_buy",
+      "left": "B00004SVV8",
+      "right": "B00004SVV9",
+      "left_title": "Super Mario Bros. 2",
+      "right_title": "Super Mario Bros. 3",
+      "left_leaf": "Games",
+      "right_leaf": "For 1 or 2 players",
+      "weight": 127
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000ID61",
+      "right": "B00000J2W7",
+      "left_title": "Star Fox 64 (without Rumble Pak)",
+      "right_title": "Super Smash Bros.",
+      "left_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "right_leaf": "Games",
+      "weight": 124
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000ID61",
+      "right": "B00000J2OO",
+      "left_title": "Star Fox 64 (without Rumble Pak)",
+      "right_title": "Star Wars - Episode I - Racer",
+      "left_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "right_leaf": "Games",
+      "weight": 122
+    },
+    {
+      "network": "also_buy",
+      "left": "B00005UK88",
+      "right": "B00009WAUO",
+      "left_title": "Super Mario World: Super Mario Advance 2",
+      "right_title": "Super Mario Advance 4: Super Mario Bros 3",
+      "left_leaf": "Use a link cable for up to four players (single and mulitcartrige support).",
+      "right_leaf": "Games",
+      "weight": 122
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000ID61",
+      "right": "B00003OTI3",
+      "left_title": "Star Fox 64 (without Rumble Pak)",
+      "right_title": "Pokemon Stadium",
+      "left_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "right_leaf": "Games",
+      "weight": 122
+    },
+    {
+      "network": "also_buy",
+      "left": "B000FQ9R4E",
+      "right": "B002BRZ9G0",
+      "left_title": "Super Smash Bros. Brawl",
+      "right_title": "New Super Mario Bros. Wii",
+      "left_leaf": "New items and assist trophies",
+      "right_leaf": "Games",
+      "weight": 120
+    },
+    {
+      "network": "also_buy",
+      "left": "B00004SVV9",
+      "right": "B000TUZCQI",
+      "left_title": "Super Mario Bros. 3",
+      "right_title": "Super Mario Bros. / Duck Hunt",
+      "left_leaf": "For 1 or 2 players",
+      "right_leaf": "Games",
+      "weight": 119
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000DMAQ",
+      "right": "B00000ID61",
+      "left_title": "Banjo-Kazooie",
+      "right_title": "Star Fox 64 (without Rumble Pak)",
+      "left_leaf": "Games",
+      "right_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "weight": 117
+    },
+    {
+      "network": "also_buy",
+      "left": "B00024W1U6",
+      "right": "B0014CN2H6",
+      "left_title": "Shin Megami Tensei Nocturne",
+      "right_title": "Shin Megami Tensei: Persona 3 FES - PlayStation 2",
+      "left_leaf": "Games",
+      "right_leaf": "Includes the ability to change your characters clothes",
+      "weight": 115
+    },
+    {
+      "network": "also_buy",
+      "left": "B000FQ9R4E",
+      "right": "B001GIUWX0",
+      "left_title": "Super Smash Bros. Brawl",
+      "right_title": "Mario Kart Wii",
+      "left_leaf": "New items and assist trophies",
+      "right_leaf": "Games",
+      "weight": 114
+    },
+    {
+      "network": "also_buy",
+      "left": "B001G33V8S",
+      "right": "B00JQHU9RC",
+      "left_title": "Sonic Ultimate Genesis Collection - Playstation 3",
+      "right_title": "Minecraft - PlayStation 3",
+      "left_leaf": "Games",
+      "right_leaf": "Team up with friends in eight-player online multiplayer and four-player split-screen modes",
+      "weight": 114
+    },
+    {
+      "network": "also_buy",
+      "left": "B004X56OU8",
+      "right": "B00B98HF1O",
+      "left_title": "Sonic Generations - Xbox 360",
+      "right_title": "Lego: Marvel Super Heroes, XBOX 360",
+      "left_leaf": "Games",
+      "right_leaf": "Perform new and powerful moves as BIG-fig characters like Hulk and Abomination. Leave a path of destruction as you smash through LEGO walls and throw cars using hyper strength.",
+      "weight": 113
+    },
+    {
+      "network": "also_buy",
+      "left": "B00000ID61",
+      "right": "B00002STI2",
+      "left_title": "Star Fox 64 (without Rumble Pak)",
+      "right_title": "Wave Race 64",
+      "left_leaf": "Outstanding cinema scenes tell the Star Fox saga",
+      "right_leaf": "Games",
+      "weight": 112
+    }
+  ],
+  "outputs": {
+    "top_csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\network_compare_top.csv",
+    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig46_network_compare.png"
+  }
+}
