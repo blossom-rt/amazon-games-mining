@@ -62,12 +62,12 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 - P5 聚类：40,259 件游戏本体商品、13 个聚类特征，轮廓系数选 `k=4`，bootstrap ARI 均值 0.9849（95% 区间 0.9296–0.9976）；`cluster_profiles.csv` 含每簇价格中位数、观测价格数、价格缺失率，其中一簇仅 1 件商品有观测价格，价格中位数不可单独解读。
 - 聚类方法对比：GMM 轮廓 0.1441、HDBSCAN 2 簇轮廓 0.3119（但只有 Software 与其余两类）、有价子集 KMeans 轮廓 0.2102；KMeans k=4 仍适合运营分层。
 - 边界复核：226 件强硬件词候选、7,105 条评论；前 30 条中 21 件纯硬件/主机、8 件游戏+配件同捆、1 件纯游戏，不能按标题一刀切；Retro 另有 1,154 件因缺 Games 节点被排除。
-- 已有中文标注图 41 张：fig01–fig10 为 EDA，fig11–fig16 为规则，fig20–fig26 为聚类，fig30–fig35 为分类，fig36–fig39 为改进实验，fig40–fig42 为补充分析，fig43–fig46 为时间/否定/网络/留出验证。
+- 已有中文标注图 40 张：fig01–fig10 为 EDA，fig11–fig16 为规则，fig20–fig26 为聚类，fig30–fig35 为分类，fig36–fig39 为改进实验，fig40–fig42 为补充分析，fig43–fig46 为时间/否定/网络/留出验证。
 - 时间外推（300,000 条抽样）：≤2014→2015+ 宏 F1 0.9048、PR-AUC 0.9934；2015+→≤2014 宏 F1 0.8249、PR-AUC 0.9738。2015 后逐年 0.9028–0.9133，没有衰减；用后期文本回测早期明显更难。
 - 否定范围特征（150,000 条抽样）：宏 F1 0.8689→0.8785，否定子集错误率 15.95%→14.39%，转折 17.64%→16.35%；有效但未根治转折。
 - 三张网络：also_buy 1,207,676 边、also_view 1,091,164 边、共同评论人 45,951 边；跨主品类占比 1.15%/1.77%/2.59%；also_buy 与 also_view 的 Jaccard 0.2539，与共同评论人仅 0.0102，说明推荐位网络比浏览/评论网络更窄。
 - 聚类留出验证：按 asin 70/30 切分，12,078 件留出商品；评论量 ε²=0.437、also_buy ε²=0.479、评分仅 0.006，四簇仍按热度/共购分层而非评分高低。
-- 静态业务看板：`results/dashboard.html`，含关键指标、四个运营分层、留出验证表与两张对比图。
+- 交互式业务看板：`src/dashboard_app.py`（Streamlit + Plotly），4 个视图——总览、分群、时间、网络；侧边栏“运营簇”和“评论年份”两个筛选器会同时联动总览 KPI、分群图和时间曲线。另有静态 fallback `results/dashboard.html`，便于无服务打开。
 - P6 七步全量已跑通，总耗时 847.3 秒，状态 `ok`；各步为 parse 93.4、scope 4.7、build_features 109.9、governance 15.3、rules 101.5、classify 492.5、cluster 29.6 秒。该数字是 P6 合入时的基线；后续改进只单独重跑了 rules 与 cluster，未重跑整链。
 
 ## 改进实验
@@ -84,7 +84,7 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 - 否定专项：否定范围特征把宏 F1 从 0.8689 提到 0.8785，否定/转折子集错误率分别下降 1.56/1.29 个百分点；仍是“小增益”，不是根治。
 - 三张网络：also_buy 与 also_view 的边重叠 Jaccard 0.2539，与共同评论人仅 0.0102；跨主品类边占比 1.15%/1.77%/2.59%，都不能支持“跨品类购买”结论。
 - 聚类外部验证：训练集拟合、留出集按最近质心分配后，评论量/also_buy 的 ε² 为 0.437/0.479，评分仅 0.006，簇的运营含义仍是热度与共购，而非评分。
-- 业务看板：`results/dashboard.html` 把四个分层、留出验证、时间/否定/网络结论放到一页；静态 HTML，无服务依赖。
+- 静态看板 fallback：`results/dashboard.html` 把四个分层、留出验证、时间/否定/网络结论放到一页；无服务依赖，适合直接打开。交互版见下方“交互看板”。
 
 这些脚本默认不写入 `run_all.py` 的七步主链，避免把可选的解释性实验变成每次全量重跑的成本；单独命令见“运行顺序”。
 
@@ -126,7 +126,8 @@ amazon-games-mining/
 │   ├── classify_time.py     按评论年份做时间外推回测
 │   ├── classify_negation.py 否定范围特征与否定/转折错误率
 │   ├── network_compare.py   also_buy / also_view / 共同评论人三网对比
-│   ├── build_dashboard.py   生成 results/dashboard.html 静态看板
+│   ├── dashboard_app.py     Streamlit 交互看板（4 视图、2 个联动筛选）
+│   ├── build_dashboard.py   生成 results/dashboard.html 静态 fallback
 │   ├── scope_audit.py      强硬件词与 Retro 边界复核清单
 │   ├── run_all.py          一键串联各步骤并写运行日志
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
@@ -141,6 +142,7 @@ amazon-games-mining/
 ├── docs/                   数据说明、字段字典、治理与分类报告、环境配置
 ├── requirements.txt
 ├── requirements-optional.txt  句向量对照的可选依赖
+├── requirements-dashboard.txt  Streamlit + Plotly 看板依赖
 └── README.md
 ```
 
@@ -291,6 +293,15 @@ python src/network_compare.py
 python src/cluster_validate.py
 python src/build_dashboard.py
 ```
+
+交互看板（4 个视图：总览、分群、时间、网络；运营簇与评论年份两个筛选器联动）：
+
+```
+pip install -r requirements-dashboard.txt
+streamlit run src/dashboard_app.py --server.port 8501
+```
+
+浏览器访问 `http://127.0.0.1:8501`。健康检查 `http://127.0.0.1:8501/_stcore/health` 返回 `ok`。不启动服务时，直接打开 `results/dashboard.html` 看静态 fallback。
 
 一键复现入口已可用。首次可先校验现有产物，不重跑：
 
