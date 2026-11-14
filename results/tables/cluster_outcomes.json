@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-11-13T23:29:51+08:00",
+  "seed": 42,
+  "n_products": 40259,
+  "clusters": [
+    {
+      "cluster": 0,
+      "n_products": 7797,
+      "mean_overall": 3.6413,
+      "n_reviews": 25.4,
+      "mean_review_len": 427.7,
+      "verified_share": 0.6999,
+      "price_observed": 0.0001,
+      "mean_also_buy": 9.2
+    },
+    {
+      "cluster": 1,
+      "n_products": 11877,
+      "mean_overall": 4.0107,
+      "n_reviews": 94.5,
+      "mean_review_len": 503.2,
+      "verified_share": 0.6381,
+      "price_observed": 0.1511,
+      "mean_also_buy": 47.5
+    },
+    {
+      "cluster": 2,
+      "n_products": 18430,
+      "mean_overall": 3.7472,
+      "n_reviews": 5.9,
+      "mean_review_len": 414.5,
+      "verified_share": 0.6618,
+      "price_observed": 0.1814,
+      "mean_also_buy": 2.5
+    },
+    {
+      "cluster": 3,
+      "n_products": 2155,
+      "mean_overall": 3.671,
+      "n_reviews": 12.5,
+      "mean_review_len": 398.6,
+      "verified_share": 0.7088,
+      "price_observed": 0.3926,
+      "mean_also_buy": 5.0
+    }
+  ],
+  "kruskal": {
+    "mean_overall": {
+      "statistic": 291.72,
+      "p_value": 0.0,
+      "epsilon_squared": 0.0072
+    },
+    "n_reviews": {
+      "statistic": 17476.35,
+      "p_value": 0.0,
+      "epsilon_squared": 0.4341
+    },
+    "mean_review_len": {
+      "statistic": 2108.49,
+      "p_value": 0.0,
+      "epsilon_squared": 0.0523
+    },
+    "verified_share": {
+      "statistic": 896.36,
+      "p_value": 5.452982687677472e-194,
+      "epsilon_squared": 0.0222
+    },
+    "price_observed": {
+      "statistic": 2528.49,
+      "p_value": 0.0,
+      "epsilon_squared": 0.0627
+    },
+    "mean_also_buy": {
+      "statistic": 19417.5,
+      "p_value": 0.0,
+      "epsilon_squared": 0.4823
+    }
+  },
+  "notes": "聚类未使用评分；评分、verified、价格只在事后检验。",
+  "outputs": {
+    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_outcomes.csv",
+    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig42_cluster_outcomes.png"
+  }
+}

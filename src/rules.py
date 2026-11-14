@@ -57,6 +57,7 @@ META_PARQUET = DATA_PROCESSED / "meta.parquet"
 SCOPE_PARQUET = DATA_PROCESSED / "scope.parquet"
 SUMMARY_JSON = TABLES / "rules_summary.json"
 TOP_CSV = TABLES / "rules_top.csv"
+ALL_CSV = TABLES / "rules_all.csv"
 THRESHOLDS_CSV = TABLES / "rules_thresholds.csv"
 RUNTIME_CSV = TABLES / "rules_runtime.csv"
 
@@ -421,6 +422,16 @@ def main() -> None:
             "antecedent_titles", "consequent_title",
         ]
     ].to_csv(TOP_CSV, index=False, encoding="utf-8-sig")
+
+    all_rules = cleaned.reset_index(drop=True).copy()
+    all_rules.insert(0, "rank", np.arange(1, len(all_rules) + 1))
+    all_rules[
+        [
+            "rank", "antecedent", "consequent", "support", "confidence",
+            "lift", "conviction", "same_series", "count",
+            "antecedent_titles", "consequent_title",
+        ]
+    ].to_csv(ALL_CSV, index=False, encoding="utf-8-sig")
 
     threshold_rows = []
     runtime_rows = []
