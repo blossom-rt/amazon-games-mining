@@ -513,6 +513,9 @@ def main() -> None:
     labels = model.fit_predict(matrix)
     counts = np.bincount(labels, minlength=chosen_k)
     assert len(counts) == chosen_k and counts.min() > 0, "存在空簇"
+    assignments = products[["asin"]].copy()
+    assignments["cluster"] = labels.astype(np.int8)
+    assignments.to_parquet(TABLES / "cluster_assignments.parquet", index=False)
 
     stability = bootstrap_stability(matrix, labels, chosen_k, args.bootstrap)
     ari_mean = float(stability["ari"].mean())

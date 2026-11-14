@@ -1,0 +1,61 @@
+﻿term,coefficient,direction,train_documents
+not,-10.471,negative,72046
+worst,-10.0104,negative,3510
+boring,-9.3638,negative,6347
+star,-8.84,negative,10524
+disappointing,-8.8202,negative,2148
+not worth,-8.5892,negative,2168
+disappointment,-8.0078,negative,1903
+terrible,-7.9151,negative,3676
+horrible,-7.4704,negative,2966
+disappointed,-7.2224,negative,6190
+poor,-6.9817,negative,2773
+awful,-6.6002,negative,1644
+waste,-6.5135,negative,4403
+garbage,-6.3311,negative,1206
+meh,-6.3113,negative,675
+not fun,-6.2151,negative,1690
+mediocre,-5.846,negative,842
+ruined,-5.7171,negative,773
+worse,-5.6874,negative,2140
+frustrating,-5.6743,negative,4139
+useless,-5.5651,negative,1307
+repetitive,-5.5584,negative,3512
+no,-5.4917,negative,33229
+sucks,-5.458,negative,2430
+unplayable,-5.453,negative,994
+okay,-5.3225,negative,3098
+not great,-5.3106,negative,1728
+lame,-5.2846,negative,1340
+not best,-5.2372,negative,1219
+not recommend,-5.221,negative,740
+great,11.7161,positive,69033
+best,11.0043,positive,28072
+awesome,10.8558,positive,17000
+love,9.5312,positive,33214
+amazing,9.022,positive,12353
+excellent,8.5273,positive,9684
+perfect,8.3712,positive,8432
+loves,7.3629,positive,9476
+not disappointed,7.0526,positive,625
+fun,6.2366,positive,56064
+fantastic,6.1657,positive,4750
+can't wait,5.9468,positive,1417
+addictive,5.8654,positive,2716
+favorite,5.7481,positive,8025
+happy,5.7094,positive,6165
+awsome,5.4529,positive,1106
+no problems,5.3889,positive,1317
+addicting,5.2468,positive,1857
+wonderful,5.0713,positive,2926
+great game,4.8577,positive,23118
+blast,4.8363,positive,2959
+loved,4.6937,positive,9754
+good,4.4592,positive,53318
+incredible,4.4014,positive,2330
+won't disappointed,4.338,positive,403
+no scratches,4.2865,positive,356
+no issues,4.2543,positive,513
+not bad,4.2267,positive,2540
+challenging,4.2116,positive,6339
+perfectly,4.1471,positive,2514

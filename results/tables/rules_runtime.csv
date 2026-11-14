@@ -1,7 +1,7 @@
 ﻿algorithm,min_support,min_confidence,n_transactions,n_itemsets,n_rules,seconds
 apriori,0.02,0.15,19032,0,0,0.0
 fpgrowth,0.02,0.15,19032,0,0,0.04
-apriori,0.01,0.2,19032,21,42,0.28
+apriori,0.01,0.2,19032,21,42,0.34
 fpgrowth,0.01,0.2,19032,21,42,0.09
-apriori,0.005,0.1,19032,932,1864,45.49
-fpgrowth,0.005,0.1,19032,932,1864,0.74
+apriori,0.005,0.1,19032,932,1864,58.98
+fpgrowth,0.005,0.1,19032,932,1864,0.79
