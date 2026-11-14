@@ -1,0 +1,79 @@
+{
+  "generated_at": "2026-11-14T12:56:23+08:00",
+  "seed": 42,
+  "n_products": 40259,
+  "train_n": 28181,
+  "test_n": 12078,
+  "k": 4,
+  "train_silhouette": 0.2109,
+  "outcomes": [
+    {
+      "cluster": 0,
+      "n_products": 3583,
+      "mean_overall": 4.0078,
+      "mean_n_reviews": 97.5,
+      "verified_share": 0.639,
+      "price_observed": 0.1541,
+      "mean_also_buy": 47.3
+    },
+    {
+      "cluster": 1,
+      "n_products": 2350,
+      "mean_overall": 3.661,
+      "mean_n_reviews": 24.3,
+      "verified_share": 0.6935,
+      "price_observed": 0.0,
+      "mean_also_buy": 10.1
+    },
+    {
+      "cluster": 2,
+      "n_products": 5504,
+      "mean_overall": 3.7452,
+      "mean_n_reviews": 5.9,
+      "verified_share": 0.6649,
+      "price_observed": 0.1724,
+      "mean_also_buy": 2.6
+    },
+    {
+      "cluster": 3,
+      "n_products": 641,
+      "mean_overall": 3.6959,
+      "mean_n_reviews": 12.2,
+      "verified_share": 0.725,
+      "price_observed": 0.3822,
+      "mean_also_buy": 4.8
+    }
+  ],
+  "kruskal": {
+    "mean_overall": {
+      "statistic": 76.66,
+      "p_value": 1.5940579055663675e-16,
+      "epsilon_squared": 0.0061
+    },
+    "n_reviews": {
+      "statistic": 5275.48,
+      "p_value": 0.0,
+      "epsilon_squared": 0.4367
+    },
+    "verified_share": {
+      "statistic": 279.84,
+      "p_value": 2.288837171184841e-60,
+      "epsilon_squared": 0.0229
+    },
+    "price_observed": {
+      "statistic": 726.99,
+      "p_value": 2.9518489781138777e-157,
+      "epsilon_squared": 0.06
+    },
+    "also_buy_len": {
+      "statistic": 5784.62,
+      "p_value": 0.0,
+      "epsilon_squared": 0.4788
+    }
+  },
+  "method": "训练集拟合缩尾/标准化/KMeans，留出集按最近质心分配；结果只在留出集统计",
+  "outputs": {
+    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_validation_outcomes.csv",
+    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig45_cluster_validation.png"
+  }
+}

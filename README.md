@@ -58,11 +58,16 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 - P3 关联规则：19,032 个购物篮；Apriori 与 FP-Growth 均得到 1,855 条规则、去重后 932 条，默认参数下 Apriori 77.9 秒、FP-Growth 1.2 秒；三组阈值分别得到 0、21、932 条规则，`support=0.02, confidence=0.15` 过高导致无规则；平凡规则去除 0 条、lift≤1 过滤 0 条；932 条中 34 条前件与后件同系列，conviction 中位数 3.21。
 - P4 分类最佳模型为线性 SVM（SGD）：5 折宏 F1 0.8635、PR-AUC 0.9837、ROC-AUC 0.9569；与 Dummy 的 Wilcoxon 检验 `p=0.0625`，在 5 折下不显著。10 折复核宏 F1 0.8642±0.0088，配对差 0.4365（95% CI 0.4314–0.4417），`p=0.001953`，说明 5 折的 p 值主要是样本量下限。
 - 概率校准：逻辑回归原始 ECE 0.088，分组 isotonic 校准后 0.00036，Brier 0.0849→0.0695；F1 最优阈值 0.4545，正类 F1 0.9374；代价敏感（FN=5×FP）阈值 0.17。
-- 文本表示对照（20,000 条抽样、600 字符、5 折）：哈希 TF-IDF 宏 F1 0.7562，BGE-small 0.8548，配对差 0.0986（95% CI 0.0690–0.1282），`p=0.0625`；方向与效应量支持句向量，但小样本、短文本，不能外推全量。
+- 文本表示对照（30,000 条抽样、300 字符、10 折）：哈希 TF-IDF 宏 F1 0.7618，BGE-small 0.8298，配对差 0.0680（95% CI 0.0507–0.0856），`p=0.001953`；方向与效应量支持句向量，但仍只是短文本抽样，不能外推全量。
 - P5 聚类：40,259 件游戏本体商品、13 个聚类特征，轮廓系数选 `k=4`，bootstrap ARI 均值 0.9849（95% 区间 0.9296–0.9976）；`cluster_profiles.csv` 含每簇价格中位数、观测价格数、价格缺失率，其中一簇仅 1 件商品有观测价格，价格中位数不可单独解读。
 - 聚类方法对比：GMM 轮廓 0.1441、HDBSCAN 2 簇轮廓 0.3119（但只有 Software 与其余两类）、有价子集 KMeans 轮廓 0.2102；KMeans k=4 仍适合运营分层。
 - 边界复核：226 件强硬件词候选、7,105 条评论；前 30 条中 21 件纯硬件/主机、8 件游戏+配件同捆、1 件纯游戏，不能按标题一刀切；Retro 另有 1,154 件因缺 Games 节点被排除。
-- 已有中文标注图 36 张：fig01–fig10 为 EDA，fig11–fig16 为规则，fig20–fig26 为聚类，fig30–fig35 为分类，fig36–fig39 为改进实验，fig40–fig42 为补充分析。
+- 已有中文标注图 40 张：fig01–fig10 为 EDA，fig11–fig16 为规则，fig20–fig26 为聚类，fig30–fig35 为分类，fig36–fig39 为改进实验，fig40–fig42 为补充分析，fig43–fig46 为时间/否定/网络/留出验证。
+- 时间外推（300,000 条抽样）：≤2014→2015+ 宏 F1 0.9048、PR-AUC 0.9934；2015+→≤2014 宏 F1 0.8249、PR-AUC 0.9738。2015 后逐年 0.9028–0.9133，没有衰减；用后期文本回测早期明显更难。
+- 否定范围特征（150,000 条抽样）：宏 F1 0.8689→0.8785，否定子集错误率 15.95%→14.39%，转折 17.64%→16.35%；有效但未根治转折。
+- 三张网络：also_buy 1,207,676 边、also_view 1,091,164 边、共同评论人 45,951 边；跨主品类占比 1.15%/1.77%/2.59%；also_buy 与 also_view 的 Jaccard 0.2539，与共同评论人仅 0.0102，说明推荐位网络比浏览/评论网络更窄。
+- 聚类留出验证：按 asin 70/30 切分，12,078 件留出商品；评论量 ε²=0.437、also_buy ε²=0.479、评分仅 0.006，四簇仍按热度/共购分层而非评分高低。
+- 交互式业务看板：`src/dashboard_app.py`（Streamlit + Plotly），4 个视图——总览、分群、时间、网络；侧边栏“运营簇”和“评论年份”两个筛选器会同时联动总览 KPI、分群图和时间曲线。另有静态 fallback `results/dashboard.html`，便于无服务打开。
 - P6 七步全量已跑通，总耗时 847.3 秒，状态 `ok`；各步为 parse 93.4、scope 4.7、build_features 109.9、governance 15.3、rules 101.5、classify 492.5、cluster 29.6 秒。该数字是 P6 合入时的基线；后续改进只单独重跑了 rules 与 cluster，未重跑整链。
 
 ## 改进实验
@@ -71,10 +76,15 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 
 - 10 折分组复验：线性 SVM 宏 F1 0.8642±0.0088，与 Dummy 的配对差 0.4365（95% CI 0.4314–0.4417），`p=0.001953`；5 折的 0.0625 主要是样本量下限，不是“无差异”。
 - 概率校准：逻辑回归原始 ECE 0.0881，分组 isotonic 校准后 0.00036；Brier 0.0849→0.0695。校准后 F1 最优阈值 0.4545，代价敏感（FN=5×FP）阈值 0.17。
-- 文本表示对照：20,000 条抽样、600 字符、5 折，BGE-small 宏 F1 0.8548，哈希 TF-IDF 0.7562；配对差 0.0986（95% CI 0.0690–0.1282），`p=0.0625`。方向支持句向量，但小样本、短文本，不能外推到全量。
+- 文本表示对照：30,000 条抽样、300 字符、10 折，BGE-small 宏 F1 0.8298，哈希 TF-IDF 0.7618；配对差 0.0680（95% CI 0.0507–0.0856），`p=0.001953`。方向支持句向量，但仍只是短文本抽样，不能外推到全量。
 - 规则增强：给 932 条规则增加 conviction 与同系列标记；conviction 中位数 3.21，34 条同系列，top 规则仍集中在 hidden-object 下载版互推。`also_buy` 仍只是推荐位，不是真实订单。
 - 聚类对比：GMM 轮廓 0.1441；HDBSCAN 只分 2 簇（轮廓 0.3119）；有价子集 KMeans k=4 轮廓 0.2102；均未优于 KMeans k=4 的四段运营分层。
 - 边界复核：226 件强硬件词候选（7,105 条评论），前 30 条中 21 件纯硬件/主机、8 件同捆、1 件纯游戏；主口径不按标题一刀切，Retro 另有 1,154 件缺 Games 节点。详见 [docs/scope_audit.md](docs/scope_audit.md)。
+- 时间外推：按评论年份做正反两向切分，正向 2015–2018 宏 F1 0.9028–0.9133，稳定；反向早期 2003–2006 降到 0.756–0.776，说明后期文本不能直接回测早期评论。
+- 否定专项：否定范围特征把宏 F1 从 0.8689 提到 0.8785，否定/转折子集错误率分别下降 1.56/1.29 个百分点；仍是“小增益”，不是根治。
+- 三张网络：also_buy 与 also_view 的边重叠 Jaccard 0.2539，与共同评论人仅 0.0102；跨主品类边占比 1.15%/1.77%/2.59%，都不能支持“跨品类购买”结论。
+- 聚类外部验证：训练集拟合、留出集按最近质心分配后，评论量/also_buy 的 ε² 为 0.437/0.479，评分仅 0.006，簇的运营含义仍是热度与共购，而非评分。
+- 静态看板 fallback：`results/dashboard.html` 把四个分层、留出验证、时间/否定/网络结论放到一页；无服务依赖，适合直接打开。交互版见下方“交互看板”。
 
 这些脚本默认不写入 `run_all.py` 的七步主链，避免把可选的解释性实验变成每次全量重跑的成本；单独命令见“运行顺序”。
 
@@ -84,6 +94,9 @@ data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JS
 - 词级系数把“为什么”落到具体词：great/best/awesome/love 推高评分，not/worst/boring/not worth 拉低评分；含否定词的样本错误率 12.48%，含转折词 13.95%，否定与转折仍是主要错误来源。
 - 四个簇分开的是热度和共购结构，不是评分高低：簇 1 高热度、共购密集（平均评分 4.011），适合系列捆绑；簇 0 评分 3.641、verified 0.700，适合质量排查；簇 2 是 45.8% 的长尾，平均 5.9 条评论，适合搜索/自动化。
 - 关联规则的头部是同系列/同平台组合；跨系列 support 中位数 0.0059，没有稳定跨品类组合。`also_buy` 只能当推荐位网络，不是真实购买网络。
+- 时间维度上，2015 年后的文本驱动是稳定的；但用后期文本回测早期会明显变难，早期评论不能当同分布样本。
+- 否定范围特征有小幅稳定增益；真正的错误来源仍是转折、反讽和短文本，继续加词表不如换句法/句向量。
+- 四簇在留出集仍按热度与共购结构分开，评分差异很弱；因此簇名应写成“高热度/长尾/Software”，不能写成“高评分/低评分”。
 
 ## 目录结构
 
@@ -109,6 +122,12 @@ amazon-games-mining/
 │   ├── cluster.py          商品聚类、簇画像与稳定性
 │   ├── cluster_compare.py  KMeans / GMM / HDBSCAN / 有价子集对比
 │   ├── cluster_insights.py  簇与评分/评论量/verified/价格观测联动
+│   ├── cluster_validate.py  按 asin 留出集验证簇的预测性
+│   ├── classify_time.py     按评论年份做时间外推回测
+│   ├── classify_negation.py 否定范围特征与否定/转折错误率
+│   ├── network_compare.py   also_buy / also_view / 共同评论人三网对比
+│   ├── dashboard_app.py     Streamlit 交互看板（4 视图、2 个联动筛选）
+│   ├── build_dashboard.py   生成 results/dashboard.html 静态 fallback
 │   ├── scope_audit.py      强硬件词与 Retro 边界复核清单
 │   ├── run_all.py          一键串联各步骤并写运行日志
 │   └── io_utils.py         流式读取 JSON Lines 的工具函数
@@ -123,6 +142,7 @@ amazon-games-mining/
 ├── docs/                   数据说明、字段字典、治理与分类报告、环境配置
 ├── requirements.txt
 ├── requirements-optional.txt  句向量对照的可选依赖
+├── requirements-dashboard.txt  Streamlit + Plotly 看板依赖
 └── README.md
 ```
 
@@ -245,7 +265,7 @@ python src/classify_robustness.py
 ```
 pip install -r requirements-optional.txt
 set HF_ENDPOINT=https://hf-mirror.com
-python src/classify_embedding.py --limit 20000 --text-chars 600
+python src/classify_embedding.py --limit 30000 --text-chars 300 --folds 10
 ```
 
 聚类方法对比、簇业务联动与边界复核：
@@ -263,6 +283,25 @@ python src/classify_ablation.py
 python src/classify_terms.py
 python src/rules_linkage.py
 ```
+
+时间外推、否定专项、三张网络、留出验证与业务看板：
+
+```
+python src/classify_time.py --limit 300000
+python src/classify_negation.py --limit 150000
+python src/network_compare.py
+python src/cluster_validate.py
+python src/build_dashboard.py
+```
+
+交互看板（4 个视图：总览、分群、时间、网络；运营簇与评论年份两个筛选器联动）：
+
+```
+pip install -r requirements-dashboard.txt
+streamlit run src/dashboard_app.py --server.port 8501
+```
+
+浏览器访问 `http://127.0.0.1:8501`。健康检查 `http://127.0.0.1:8501/_stcore/health` 返回 `ok`。不启动服务时，直接打开 `results/dashboard.html` 看静态 fallback。
 
 一键复现入口已可用。首次可先校验现有产物，不重跑：
 

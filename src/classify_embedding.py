@@ -197,7 +197,7 @@ def plot_compare(table: pd.DataFrame, path: Path) -> None:
         axis.set_ylim(0.5, 1.0)
         axis.grid(axis="y", alpha=0.25)
         axis.tick_params(axis="x", rotation=15)
-    fig.suptitle("文本表示对比（同一抽样、同一 5 折、线性 SVM）")
+    fig.suptitle(f"文本表示对比（同一抽样、同一 {N_FOLDS} 折、线性 SVM）")
     fig.tight_layout()
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -210,7 +210,10 @@ def main() -> None:
         "--text-chars", type=int, default=600,
         help="截断字符数；CPU 句向量推理的 token 数近似随之线性变化",
     )
+    parser.add_argument("--folds", type=int, default=5, choices=[5, 10])
     args = parser.parse_args()
+    global N_FOLDS
+    N_FOLDS = args.folds
     setup_fonts()
     started = time.perf_counter()
     frame = load_frame(args.limit)

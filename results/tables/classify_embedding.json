@@ -1,62 +1,62 @@
 {
-  "generated_at": "2026-11-13T21:21:18+08:00",
+  "generated_at": "2026-11-14T13:09:49+08:00",
   "seed": 42,
   "embedding_model": "BAAI/bge-small-en-v1.5",
   "embedding_dim": 384,
-  "sample_size": 20000,
-  "positive_rate": 0.7459,
-  "n_folds": 5,
+  "sample_size": 30000,
+  "positive_rate": 0.7484,
+  "n_folds": 10,
   "models": {
     "hash_tfidf": {
       "accuracy": {
-        "mean": 0.7928,
-        "std": 0.0292
+        "mean": 0.8045,
+        "std": 0.0248
       },
       "macro_f1": {
-        "mean": 0.7562,
-        "std": 0.034
+        "mean": 0.7618,
+        "std": 0.0223
       },
       "pr_auc": {
-        "mean": 0.9479,
-        "std": 0.0121
+        "mean": 0.943,
+        "std": 0.0088
       },
       "roc_auc": {
-        "mean": 0.8676,
-        "std": 0.0355
+        "mean": 0.8643,
+        "std": 0.0198
       }
     },
     "bge_small": {
       "accuracy": {
-        "mean": 0.8833,
-        "std": 0.0102
+        "mean": 0.8637,
+        "std": 0.0127
       },
       "macro_f1": {
-        "mean": 0.8548,
-        "std": 0.0102
+        "mean": 0.8298,
+        "std": 0.0125
       },
       "pr_auc": {
-        "mean": 0.9707,
-        "std": 0.0061
+        "mean": 0.9616,
+        "std": 0.0085
       },
       "roc_auc": {
-        "mean": 0.9341,
-        "std": 0.011
+        "mean": 0.9173,
+        "std": 0.0116
       }
     }
   },
   "paired_test": {
-    "n_pairs": 5,
-    "mean_difference": 0.09860997010453527,
-    "cohen_dz": 2.592313451117006,
-    "p_value": 0.0625,
+    "n_pairs": 10,
+    "mean_difference": 0.06796994017024548,
+    "cohen_dz": 2.300753180916064,
+    "p_value": 0.001953125,
     "bootstrap_ci95": [
-      0.0690211985709314,
-      0.12819874163813913
+      0.050709074253958805,
+      0.08558493737194227
     ],
     "comparison": "bge_small - hash_tfidf"
   },
-  "embedding_seconds": 617.0,
-  "runtime_seconds": 627.8,
+  "embedding_seconds": 516.3,
+  "runtime_seconds": 560.9,
   "hardware": {
     "platform": "Windows-10-10.0.26200-SP0",
     "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
@@ -67,9 +67,9 @@
     "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_embedding_metrics.csv",
     "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig38_embedding_compare.png"
   },
-  "text_chars": 600,
+  "text_chars": 300,
   "notes": [
-    "抽样 20,000、文本截断 600 字符，结论不外推到全量；",
+    "抽样 30,000、文本截断 300 字符，结论不外推到全量；",
     "两种表示使用同一批折、同一数值/类别预处理与同一线性 SVM；",
     "BGE 向量已 L2 归一化，未做微调。"
   ]
