@@ -90,7 +90,7 @@
 ## 表间覆盖与一致性
 
 - 评论表涉及 71,982 个不同 `asin`；商品表 71,911 件中 71,909 件至少有一条评论。
-- 3,676 条评论（占 0.14%）的 `asin` 不在商品表中，融合时这些行会失去商品侧特征，需在报告中说明并决定保留或剔除。
+- 3,676 条评论（占 0.14%）的 `asin` 不在商品表中，融合时这些行会失去商品侧特征，需在分析说明中交代保留或剔除的处理。
 - `main_cat` 存在 `&amp;` 未解码、`None` 字符串与 HTML `<img>` 片段；`category` 首层几乎全为 `Video Games`，清洗要下钻到第二、三层。
 - `Retro Gaming & Microconsoles` 与 `Retro Gaming &amp; Microconsoles` 两种编码并存，合并时统一解码后再计数。
 - `brand` 常见 `"by\n    \n    EA Games"` 形式，需去前缀与空白。
@@ -109,3 +109,48 @@
 - 评论表没有单一主键：`(reviewerID, asin, unixReviewTime)` 有 75,256 行重复，分布在 75,048 组，最大一组 70 行；P4 可做一次去重敏感性对照，但不跨折泄漏。
 - 价格回填以“品类中位数”MAE 最低（29.97 美元），但 R² 仍为负（-0.055），说明现有商品字段无法可靠还原缺失价格；P4 应保留 `price_missing` 指示，不把回填价格当作强特征。
 - 异常值：价格 IQR 检出 1,129 件（9.48%），评论长度 z-score 检出 48,758 条（1.90%），IsolationForest 在 20 万条样本上按 1% 污染率检出 2,000 条；建议长度做 log1p 加 p99 截断，不直接删行。
+
+## 字段级单位、来源与时点
+
+统一来源：UCSD Amazon Review Data (2018) 的 Video Games 子集，2026-11-09 下载；评论字段来自 `Video_Games.json.gz`，商品字段来自 `meta_Video_Games.json.gz`。评论类字段的时点是评论发生时点（`unixReviewTime`，UTC），商品类字段的时点是 2018 年快照；价格没有历史版本，只代表快照抓取时的展示价。
+
+评论表：
+
+| 字段 | 单位 | 来源 | 时点 |
+|---|---|---|---|
+| `reviewerID` | 无（匿名编号） | 评论 JSON | 评论记录 |
+| `asin` | 无（商品编号） | 评论 JSON | 评论记录 |
+| `reviewerName` | 字符 | 评论 JSON | 评论记录 |
+| `overall` | 星（1–5） | 评论 JSON | 评论记录 |
+| `verified` | 布尔 | 评论 JSON | 评论记录 |
+| `reviewTime` | 原始日期文本 | 评论 JSON | 评论记录，格式不统一 |
+| `unixReviewTime` | Unix 秒（UTC） | 评论 JSON | 评论发生时点 |
+| `reviewText` | 字符 | 评论 JSON | 评论记录 |
+| `summary` | 字符 | 评论 JSON | 评论记录 |
+| `style` | 文本（键=值） | 评论 JSON 的 `style` dict | 评论记录 |
+| `vote` | 票（人） | 评论 JSON 的 `vote` 字符串 | 评论记录；0/1 票记为缺失 |
+| `image_count` | 张 | 评论 JSON 的 `image` 列表 | 评论记录 |
+
+商品表：
+
+| 字段 | 单位 | 来源 | 时点 |
+|---|---|---|---|
+| `asin` | 无（商品编号） | 商品 JSON | 2018 快照 |
+| `title` | 字符 | 商品 JSON | 2018 快照 |
+| `brand` | 字符 | 商品 JSON | 2018 快照 |
+| `price_raw` | 原始美元字符串 | 商品 JSON | 2018 快照 |
+| `price` | 美元 | 商品 JSON 的 `price` 解析 | 2018 快照，非历史价 |
+| `main_cat` | 类目名 | 商品 JSON | 2018 快照 |
+| `category` | 类目层级（段） | 商品 JSON | 2018 快照 |
+| `also_buy` | 商品数 | 商品 JSON | 2018 快照推荐位 |
+| `also_view` | 商品数 | 商品 JSON | 2018 快照推荐位 |
+| `feature` | 条 | 商品 JSON | 2018 快照 |
+| `description` | 字符 | 商品 JSON | 2018 快照 |
+| `rank` | 排名（字符串，无单位） | 商品 JSON | 2018 快照 |
+| `imageURL` | URL 条数 | 商品 JSON | 2018 快照 |
+| `imageURLHighRes` | URL 条数 | 商品 JSON | 2018 快照 |
+| `tech1` | 文本 | 商品 JSON | 2018 快照 |
+| `tech2` | 文本 | 商品 JSON | 2018 快照 |
+| `fit` | 文本 | 商品 JSON | 2018 快照，全空 |
+| `similar_item` | 文本/HTML | 商品 JSON | 2018 快照 |
+| `date` | 日期文本 | 商品 JSON | 商品上架日期，非快照时点 |
