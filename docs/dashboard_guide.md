@@ -136,9 +136,24 @@ Stop-Process -Id <PID>
 results/dashboard.html
 ```
 
-它是静态 HTML，不提供联动筛选，只作为截图和离线查看的 fallback；正式验收请用交互看板。
+静态版同样提供 4 个视图与 2 个联动筛选（簇多选、年份滑块），并支持 `?tab=overview|clusters|time|network` 直达；它不依赖 Streamlit 服务，适合直接发给老师。正式验收仍建议用 Streamlit 版，以确认运行时无报错。
 
-## 8. 常见问题
+## 8. 公网访问与部署
+
+当前可用的临时演示地址：
+
+```text
+https://quantitative-horses-fastest-close.trycloudflare.com
+```
+
+该地址由 Cloudflare Quick Tunnel 转发到本机 8501，进程重启后会换地址，不适合长期写进报告。长期部署任选其一：
+
+1. **静态版（最省事）**：把 `results/dashboard.html` 推到 GitHub 的 `dev` 分支，访问
+   `https://raw.githack.com/blossom-rt/amazon-games-mining/dev/results/dashboard.html`。
+2. **Streamlit Community Cloud**：仓库公开后，在 share.streamlit.io 新建 app，分支选 `dev`，主文件填 `src/dashboard_app.py`；Cloud 读取根目录 `requirements.txt`，其中已含 streamlit/plotly。完整步骤见 [streamlit_deploy](streamlit_deploy.md)。
+3. **局域网演示**：`streamlit run src/dashboard_app.py --server.address 0.0.0.0 --server.port 8501`，同一网络访问 `http://<本机IP>:8501`。
+
+## 9. 常见问题
 
 **`ModuleNotFoundError: No module named 'streamlit'`**
 
@@ -161,12 +176,13 @@ pip install -r requirements-dashboard.txt
 
 先访问 `/_stcore/health` 确认服务；若返回 `ok`，刷新浏览器。浏览器控制台若显示 WebSocket 连接失败，检查本机代理是否拦截了 `127.0.0.1:8501`。
 
-## 9. 相关文件
+## 10. 相关文件
 
 | 文件 | 作用 |
 | --- | --- |
 | `src/dashboard_app.py` | 看板入口，4 视图与 2 个联动筛选 |
 | `requirements-dashboard.txt` | Streamlit、Plotly 固定版本 |
-| `src/build_dashboard.py` | 生成静态 `results/dashboard.html` |
+| `src/build_static_dashboard.py` | 生成静态 `results/dashboard.html` |
 | `results/tables/cluster_outcomes.json` 等 | 看板数据源 |
 | `docs/assets/dashboard_overview.png` | 本说明中的看板截图 |
+| `docs/streamlit_deploy.md` | Streamlit Community Cloud 部署步骤 |

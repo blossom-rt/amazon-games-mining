@@ -8,10 +8,12 @@
 加 `--require-all` 可以把它们变成硬性要求。
 
 用法：
-    python src/run_all.py --check          # 只校验现有产物，不重跑
+    python src/run_all.py --check          # 只校验主流水线产物
+    python src/run_all.py --check --extras # 连补充实验产物一起校验
     python src/run_all.py --dry-run        # 只打印将执行的命令
-    python src/run_all.py                  # 全量重跑（默认带 --force）
-    python src/run_all.py --only scope,classify
+    python src/run_all.py                  # 主流水线全量重跑
+    python src/run_all.py --extras         # 主流水线 + 补充实验
+    python src/run_all.py --only link_prediction
     python src/run_all.py --skip classify --keep-going
 """
 
@@ -137,6 +139,86 @@ STEPS: list[dict] = [
         ],
         "figures": ["fig2[0-9]_*.png"],
         "min_figures": 5,
+    },
+]
+
+# 补充实验：默认不执行，`--extras` 时追加到主流水线之后。
+EXTRAS: list[dict] = [
+    {
+        "name": "classify_decision",
+        "script": "classify_decision.py",
+        "required": True,
+        "force_arg": False,
+        "args": ["--limit", "200000"],
+        "outputs": [
+            TABLES / "classify_decision.json",
+            TABLES / "classify_decision_curve.csv",
+            TABLES / "classify_decision_oof.parquet",
+            FIGURES / "fig48_decision_curve.png",
+        ],
+        "figures": [],
+    },
+    {
+        "name": "classify_subgroups",
+        "script": "classify_subgroups.py",
+        "required": True,
+        "force_arg": False,
+        "outputs": [
+            TABLES / "classify_subgroups.csv",
+            TABLES / "classify_subgroups.json",
+            FIGURES / "fig49_subgroup_errors.png",
+        ],
+        "figures": [],
+    },
+    {
+        "name": "classify_tuning",
+        "script": "classify_tuning.py",
+        "required": True,
+        "force_arg": False,
+        "args": ["--limit", "80000"],
+        "outputs": [
+            TABLES / "classify_tuning.json",
+            TABLES / "classify_tuning_metrics.csv",
+        ],
+        "figures": [],
+    },
+    {
+        "name": "classify_imbalance",
+        "script": "classify_imbalance.py",
+        "required": True,
+        "force_arg": False,
+        "args": ["--limit", "200000"],
+        "outputs": [
+            TABLES / "classify_imbalance.csv",
+            TABLES / "classify_imbalance.json",
+        ],
+        "figures": [],
+    },
+    {
+        "name": "feature_selection",
+        "script": "feature_selection.py",
+        "required": True,
+        "force_arg": False,
+        "args": ["--limit", "50000"],
+        "outputs": [
+            TABLES / "feature_selection.csv",
+            TABLES / "feature_selection.json",
+            FIGURES / "fig50_feature_selection.png",
+        ],
+        "figures": [],
+    },
+    {
+        "name": "link_prediction",
+        "script": "link_prediction.py",
+        "required": True,
+        "force_arg": False,
+        "args": ["--sources", "2000"],
+        "outputs": [
+            TABLES / "link_prediction.json",
+            TABLES / "link_prediction_metrics.csv",
+            FIGURES / "fig47_link_prediction.png",
+        ],
+        "figures": [],
     },
 ]
 
@@ -279,6 +361,7 @@ def _missing(step: dict) -> tuple[list[Path], list[str]]:
 
 def _command(step: dict, force: bool) -> list[str]:
     command = [sys.executable, str(ROOT / "src" / step["script"])]
+    command.extend(step.get("args", []))
     if force and step.get("force_arg", True):
         command.append("--force")
     return command
@@ -332,10 +415,10 @@ def _run_step(step: dict, force: bool) -> dict:
     return record
 
 
-def _check(require_all: bool) -> int:
+def _check(steps: list[dict], require_all: bool) -> int:
     failures = 0
-    print(f"{'步骤':<16}{'状态':<10}缺失产物")
-    for step in STEPS:
+    print(f"{'步骤':<24}{'状态':<10}缺失产物")
+    for step in steps:
         script = ROOT / "src" / step["script"]
         missing, missing_figures = _missing(step)
         if not script.exists():
@@ -352,7 +435,7 @@ def _check(require_all: bool) -> int:
             pass
         elif step["required"] or require_all:
             failures += 1
-        print(f"{step['name']:<16}{status:<10}{detail}")
+        print(f"{step['name']:<24}{status:<10}{detail}")
 
     return 1 if failures else 0
 
@@ -366,9 +449,14 @@ def _dry_run(steps: list[dict], force: bool) -> None:
         print(f"[dry-run] {step['name']}: {subprocess.list2cmdline(_command(step, force))}")
 
 
-def _selected(only: set[str], skip: set[str]) -> list[dict]:
-    selected = [step for step in STEPS if (not only or step["name"] in only) and step["name"] not in skip]
-    unknown = (only | skip) - {step["name"] for step in STEPS}
+def _selected(only: set[str], skip: set[str], extras: bool) -> list[dict]:
+    all_steps = STEPS + EXTRAS
+    if only:
+        pool = all_steps
+    else:
+        pool = STEPS + (EXTRAS if extras else [])
+    selected = [step for step in pool if (not only or step["name"] in only) and step["name"] not in skip]
+    unknown = (only | skip) - {step["name"] for step in all_steps}
     if unknown:
         raise SystemExit(f"未知步骤：{', '.join(sorted(unknown))}")
     return selected
@@ -388,21 +476,26 @@ def main() -> None:
     parser.add_argument("--no-force", action="store_true", help="不向脚本传 --force")
     parser.add_argument("--keep-going", action="store_true", help="某一步失败后继续")
     parser.add_argument("--require-all", action="store_true", help="rules/cluster 缺失也视为失败")
+    parser.add_argument("--extras", action="store_true", help="在主流水线后追加补充实验")
     parser.add_argument("--list", action="store_true", help="列出步骤")
     args = parser.parse_args()
 
     if args.list:
-        for step in STEPS:
-            flag = "必需" if step["required"] else "可选"
-            print(f"{step['name']:<16}{flag:<6}{step['script']}")
+        for group, steps in (("主流水线", STEPS), ("补充实验", EXTRAS)):
+            print(f"\n{group}")
+            for step in steps:
+                flag = "必需" if step["required"] else "可选"
+                print(f"  {step['name']:<20}{flag:<6}{step['script']}")
         return
-
-    if args.check:
-        raise SystemExit(_check(args.require_all))
 
     only = {item.strip() for item in args.only.split(",") if item.strip()}
     skip = {item.strip() for item in args.skip.split(",") if item.strip()}
-    selected = _selected(only, skip)
+
+    if args.check:
+        check_steps = _selected(only, skip, args.extras)
+        raise SystemExit(_check(check_steps, args.require_all))
+
+    selected = _selected(only, skip, args.extras)
     force = not args.no_force
 
     if args.dry_run:
@@ -446,6 +539,7 @@ def main() -> None:
             "force": force,
             "keep_going": args.keep_going,
             "require_all": args.require_all,
+            "extras": args.extras,
         },
         "steps": records,
         "total_seconds": total_seconds,
