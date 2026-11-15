@@ -19,7 +19,7 @@
 | 环境与看板 | [setup](docs/setup.md)、[dashboard_guide](docs/dashboard_guide.md)、[streamlit_deploy](docs/streamlit_deploy.md) |
 | 项目结构 | [目录结构](#目录结构) |
 
-## 当前进度
+## 项目进度
 
 | 阶段 | 内容 | 状态 |
 |---|---|---|
@@ -34,7 +34,7 @@
 | 补充分析 | 校准、句向量、消融、词级、时间、网络、链接预测、决策曲线 | 完成 |
 | 交互看板 | Streamlit 4 视图、2 个联动筛选 | 完成 |
 
-P3、P5 由[协作成员](https://github.com/coldcodefish)完成；P6 与看板由[仓库维护者](https://github.com/blossom-rt)负责。`main` 只保留稳定版本，稳定后由 `dev` 合并。
+P3 关联规则、P5 聚类及对应的规则/聚类文档由[协作成员](https://github.com/coldcodefish)负责；P0–P2.5 数据链路、P4 分类、P6 一键复现、Streamlit/静态看板，以及 README、环境、字段字典、治理与分类文档由[仓库维护者](https://github.com/blossom-rt)负责。`main` 为稳定发布分支，`dev` 为集成分支。
 
 ## 数据概览
 
@@ -89,7 +89,7 @@ meta_Video_Games.json.gz    50.8 MB   商品元数据
 - 5 折 Wilcoxon `p=0.0625`；10 折复验 `p=0.001953`，说明 5 折的 p 值主要是样本量下限。
 - 仅文本宏 F1 **0.8727**，合并元数据反而降到 **0.8635**；仅元数据只有 0.5788。
 - BGE-small 全量 1,456,092 条、10 折、300 字符、RTX 4060 GPU：宏 F1 **0.8658**，哈希 TF-IDF 0.8197；配对差 0.0461，95% CI [0.0419, 0.0506]，`p=0.001953`；嵌入 1,052 秒、全流程 2,580 秒。60k 抽样为 0.8243 对 0.7540，方向一致。
-- 口径注意：主分类用 3,000 字符哈希 TF-IDF，宏 F1 0.8635；全量 BGE 只高 0.0023，且嵌入成本高，因此 BGE 是短文本/句义场景的补充，不替换主模型。
+- 口径说明：主分类使用 3,000 字符哈希 TF-IDF，宏 F1 为 0.8635；全量 BGE 仅高 0.0023，且嵌入成本较高，因此 BGE 更适合作为短文本/句义场景的补充，不替换主模型。
 - 否定范围特征把宏 F1 从 0.8689 提到 0.8785；否定子集错误率 15.95%→14.39%，转折 17.64%→16.35%。
 
 ### 商品聚类
@@ -165,7 +165,7 @@ meta_Video_Games.json.gz    50.8 MB   商品元数据
 ## 核心发现
 
 1. **评分的驱动力几乎全在文本。** 仅文本宏 F1 0.8727，高于合并元数据的 0.8635；元数据更适合解释分群，不是评分主特征。
-2. **否定和转折是主要错误来源。** 含否定词样本错误率 12.48%，转折 13.95%；否定范围特征只有小增益，转折问题尚未根治。
+2. **否定和转折是主要错误来源。** 含否定词样本错误率 12.48%，转折 13.95%；否定范围特征只有小增益，转折问题仍需改进。
 3. **四个商品簇是运营分层，不是评分分层。** 簇 1 高热度、共购密集；簇 2 是 45.8% 的长尾；评分差异 ε² 仅 0.006。
 4. **`also_buy` 是推荐位网络，不是购买网络。** 头部规则是同系列 / 同平台；跨系列 support 中位数 0.0059，没有稳定跨品类组合。
 5. **推荐位补全可预测，但不等同于购买预测。** 共同邻居 Recall@10 0.436，热度只有 0.010，`also_view` 余弦 0.266。
@@ -210,8 +210,8 @@ streamlit run src/dashboard_app.py --server.port 8501
 
 公网访问地址：
 
-- **静态交互版（推荐，无需服务，本次提交合入 `dev` 后生效）**：`https://raw.githack.com/blossom-rt/amazon-games-mining/dev/results/dashboard.html`。支持 `?tab=overview|clusters|time|network`，含簇多选与年份滑块两个联动筛选。
-- **Streamlit 临时演示**：`https://quantitative-horses-fastest-close.trycloudflare.com`。由 Cloudflare Quick Tunnel 转发到本机 8501，进程重启后会换地址；长期部署见 [streamlit_deploy](docs/streamlit_deploy.md)。
+- **静态交互版（无需服务）**：`https://raw.githack.com/blossom-rt/amazon-games-mining/main/results/dashboard.html`。页面底部提供总览、分群、时间、网络四个标签页；也可用查询参数直接打开，例如 `?tab=overview`、`?tab=clusters`、`?tab=time`、`?tab=network`。侧边栏的“运营簇”多选和“评论年份”滑块是两个联动筛选器。
+- **Streamlit 公网演示**：`https://amazon-games-mining-dashboard.streamlit.app/`。部署在 Streamlit Community Cloud，分支 `dev`，入口 `src/dashboard_app.py`。
 
 不启动服务时也可直接打开 `results/dashboard.html`。部署细节见 [dashboard_guide](docs/dashboard_guide.md)。
 
@@ -219,31 +219,59 @@ streamlit run src/dashboard_app.py --server.port 8501
 
 ```text
 amazon-games-mining/
-├── data/                 原始与处理后的数据，不入库
-├── src/                  可执行脚本
-│   ├── config.py
-│   ├── parse.py / scope.py / build_features.py
-│   ├── governance.py
-│   ├── rules.py / rules_linkage.py
-│   ├── classify.py / classify_robustness.py
-│   ├── classify_embedding.py / classify_ablation.py
-│   ├── classify_terms.py / classify_time.py
-│   ├── classify_negation.py / classify_decision.py
-│   ├── classify_tuning.py / classify_subgroups.py
-│   ├── classify_imbalance.py / feature_selection.py
-│   ├── cluster.py / cluster_compare.py
-│   ├── cluster_insights.py / cluster_validate.py
-│   ├── network_compare.py / link_prediction.py
-│   ├── dashboard_app.py / build_static_dashboard.py
-│   ├── scope_audit.py
-│   ├── run_all.py
-│   └── io_utils.py
-├── notebooks/            01 EDA、02 规则、03 聚类、04 复现
-├── results/              figures 与 tables
-├── docs/                 数据、字段、治理、分类、看板文档
-├── requirements.txt
-├── requirements-optional.txt
-├── requirements-dashboard.txt
+├── data/
+│   ├── raw/                     两个 .json.gz 原始文件，不入库
+│   └── processed/               parquet、scope、folds 等中间产物，不入库
+├── src/
+│   ├── config.py                路径、随机种子、阈值、图表字体
+│   ├── io_utils.py              流式 JSONL 读取
+│   ├── download.py              下载与 SHA256 校验
+│   ├── parse.py                 gzip JSON → parquet
+│   ├── scope.py                 游戏本体边界与 in_scope
+│   ├── build_features.py        宽表、时间窗、交互特征、分层分组折
+│   ├── governance.py            缺失/异常/一致性检查
+│   ├── scope_audit.py           边界候选与 Retro 复核清单
+│   ├── rules.py                 关联规则、阈值敏感性、冗余检查
+│   ├── rules_linkage.py         规则与品类/同系列联动
+│   ├── classify.py              主分类模型与评估
+│   ├── classify_robustness.py   10 折复验、校准、效应量
+│   ├── classify_embedding.py    BGE 句向量对照
+│   ├── classify_ablation.py     文本/元数据/合并消融
+│   ├── classify_terms.py        词级系数与否定/转折错误率
+│   ├── classify_time.py         按年份的时间外推
+│   ├── classify_negation.py     否定范围特征
+│   ├── classify_decision.py     概率校准与决策曲线
+│   ├── classify_tuning.py       嵌套超参数搜索
+│   ├── classify_subgroups.py    分群误差
+│   ├── classify_imbalance.py    不平衡处理对照
+│   ├── feature_selection.py     特征选择、PCA、t-SNE
+│   ├── cluster.py               主聚类与 bootstrap ARI
+│   ├── cluster_compare.py       GMM / HDBSCAN / 有价子集
+│   ├── cluster_insights.py      簇与评分/互动指标联动
+│   ├── cluster_validate.py      留出集外部验证
+│   ├── network_compare.py       also_buy / also_view / 共同评论人
+│   ├── link_prediction.py       推荐位链接预测
+│   ├── dashboard_app.py         Streamlit 交互看板
+│   ├── build_static_dashboard.py 静态 HTML 看板
+│   └── run_all.py               一键复现入口
+├── notebooks/
+│   ├── 01_eda.ipynb
+│   ├── 02_rules.ipynb
+│   ├── 03_cluster.ipynb
+│   └── 04_repro.ipynb
+├── results/
+│   ├── figures/                 fig01–fig50，共 44 张
+│   └── tables/                  summary、metrics、errors、run_log 等
+├── docs/
+│   ├── data_source.md / data_dictionary.md / feature_dictionary.md
+│   ├── governance_report.md / classification_report.md
+│   ├── scope_definition.md / scope_audit.md / rules_review.md
+│   ├── dashboard_guide.md / streamlit_deploy.md / setup.md
+├── .github/workflows/ci.yml
+├── requirements-core.txt        核心分析依赖
+├── requirements.txt             核心 + Streamlit/Plotly
+├── requirements-dashboard.txt   仅看板依赖
+├── requirements-optional.txt    句向量可选依赖
 └── README.md
 ```
 
@@ -268,16 +296,7 @@ python -m ipykernel install --user --name amazon-games --display-name "Python (a
 | `dev` | 集成分支 | 日常开发基线 |
 | `feat/*` | 短期功能分支 | 从 `dev` 开，PR 回 `dev` |
 
-已合并的功能分支：
-
-| 分支 | 内容 |
-|---|---|
-| `feat/rules` | P3 关联规则 |
-| `feat/cluster` | P5 商品聚类 |
-| `feat/repro` | P6 一键复现 |
-| `feat/insights` | 消融、词级、时间、网络、看板 |
-
-链接预测、决策曲线与合规补充实验已合入 `dev`（PR #14）。GPU/BGE、`run_all --extras`、CI、Streamlit 部署与静态看板增强目前在 `dev` 工作区，提交后 PR 回 `dev`。
+开发工作在 `dev` 完成，功能分支按阶段命名，不直接向 `main` 提交。发布时从 `dev` 向 `main` 发起 PR，合并后在 `main` 打版本标签。
 
 开始新工作：
 
@@ -297,25 +316,46 @@ git push -u origin feat/<阶段名>
 
 功能分支通过 PR 合入 `dev`；`data/`、`__pycache__`、`.ipynb_checkpoints` 不纳入版本控制。
 
+发布前在 `dev` 完成 `python src/run_all.py --check --extras` 与 CI，再通过 PR 合入 `main`，合并后打 `vX.Y.Z` 标签。
+
 ## 运行命令
 
 ### 数据准备
 
 ```bash
-python src/download.py --verify
+# 1. 下载两个 gzip 文件，并校验 SHA256
 python src/download.py
+python src/download.py --verify
+
+# 2. 解析、边界判定、构建宽表与折
 python src/parse.py
 python src/scope.py
 python src/build_features.py
 ```
 
+已有输出文件时，脚本默认拒绝覆盖；重新生成时加 `--force`，例如 `python src/parse.py --force`。产物依次写入 `data/processed/`：
+
+```text
+reviews.parquet  meta.parquet  scope.parquet
+features.parquet  folds.parquet
+```
+
 ### 主流水线
+
+按“治理 → 规则 → 分类 → 聚类”的顺序运行：
 
 ```bash
 python src/governance.py
 python src/rules.py
 python src/classify.py
 python src/cluster.py
+```
+
+每个脚本都会在 `results/tables/` 写 summary/CSV，在 `results/figures/` 写图。只想跑其中几步时，用 `run_all.py` 的 `--only` / `--skip`：
+
+```bash
+python src/run_all.py --only parse,scope,build_features
+python src/run_all.py --skip classify
 ```
 
 ### 补充实验
@@ -343,31 +383,51 @@ python src/scope_audit.py
 
 ```bash
 pip install -r requirements-optional.txt
-set HF_ENDPOINT=https://hf-mirror.com
+export HF_ENDPOINT=https://hf-mirror.com
 python src/classify_embedding.py --full --text-chars 300 --folds 10 --backend sentence-transformers --device cuda
 ```
 
-CPU 环境把 `--backend` 改回 `fastembed`、`--device cpu`；没有 GPU 时不要用 `sentence-transformers` 跑 6 万条。
+PowerShell 使用 `$env:HF_ENDPOINT = "https://hf-mirror.com"`。CPU 环境改用 `--backend fastembed --device cpu`；`sentence-transformers` 的 6 万条对照在 CPU 上耗时过长，不建议在无 GPU 环境运行。
+
+### 看板与复现 Notebook
+
+```bash
+# Streamlit 交互看板
+pip install -r requirements-dashboard.txt
+streamlit run src/dashboard_app.py --server.port 8501
+
+# 重新生成静态 HTML 看板
+python src/build_static_dashboard.py
+
+# 复现 Notebook
+jupyter lab notebooks/04_repro.ipynb
+```
+
+Streamlit 打开 `http://127.0.0.1:8501`；静态版打开 `results/dashboard.html`。`04_repro.ipynb` 默认只读取已有产物，设置环境变量 `RUN_FULL_PIPELINE=1` 才会触发全量重跑。
 
 ### 一键复现
 
-```bash
-python src/run_all.py --check
-python src/run_all.py --check --extras
-python src/run_all.py --check --require-all
-python src/run_all.py --extras
-```
+| 命令 | 行为 |
+|---|---|
+| `python src/run_all.py --check` | 只检查必需产物，不重新训练 |
+| `python src/run_all.py --check --extras` | 连同补充实验产物一起检查 |
+| `python src/run_all.py --check --require-all` | 把可选步骤缺失视为失败，用于最终验收 |
+| `python src/run_all.py --extras` | 全量重跑主流水线并执行补充实验 |
+| `python src/run_all.py --only parse,scope,build_features` | 只跑指定步骤 |
+| `python src/run_all.py --skip classify` | 跳过指定步骤 |
 
-全量重跑约 14 分钟；`run_log.json` 会记录 git 提交、耗时、硬件与每步产物。`--extras` 额外执行链接预测、决策曲线、调参、分群误差、不平衡与特征选择，全部结果可在 `results/` 查看。
+主流水线全量约 14 分钟；`--extras` 会额外执行链接预测、决策曲线、调参、分群误差、不平衡与特征选择，总时长取决于机器。`results/tables/run_log.json` 记录每步命令、耗时、硬件、输出文件与 git 状态。
 
 ### CI
 
-`.github/workflows/ci.yml` 在 push/PR 到 `dev`、`main` 时：
-1. 缓存 `data/raw`，下载并校验两个 gzip 文件；
-2. 运行 `parse → scope → build_features`；
-3. 执行 `python src/run_all.py --check --require-all --only parse,scope,build_features`，只校验 CI 实际生成的三个步骤；分类/规则/聚类产物不在 CI 中训练。
+`.github/workflows/ci.yml` 在 push/PR 到 `dev`、`main` 或手动触发时：
 
-因为 `data/processed/` 不入库，CI 用缓存与重新生成保证检查针对真实产物，而不是空文件。
+1. 安装 `requirements-core.txt`（不安装看板的 Streamlit/Plotly，缩短 CI 时间）；
+2. 缓存并校验 `data/raw`；
+3. 运行 `parse → scope → build_features`；
+4. 执行 `python src/run_all.py --check --require-all --only parse,scope,build_features`，只校验 CI 实际生成的三步。
+
+CI 不训练规则、分类、聚类与补充实验模型；这些步骤的完整验收在本地执行 `python src/run_all.py --check --extras`。`data/processed/` 不入库，CI 通过缓存和现场重建保证检查针对真实产物。
 
 ## 复现约定
 
