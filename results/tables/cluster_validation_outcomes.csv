@@ -1,0 +1,5 @@
+﻿cluster,n_products,mean_overall,mean_n_reviews,verified_share,price_observed,mean_also_buy
+0,3583,4.0078,97.5,0.639,0.1541,47.3
+1,2350,3.661,24.3,0.6935,0.0,10.1
+2,5504,3.7452,5.9,0.6649,0.1724,2.6
+3,641,3.6959,12.2,0.725,0.3822,4.8

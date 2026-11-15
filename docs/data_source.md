@@ -49,7 +49,7 @@ gzip 压缩的 JSON Lines，一行一个对象，UTF-8 编码。
 
 ## 引用格式
 
-若报告或任何衍生成果使用本数据，按官方要求引用：
+若公开成果使用本数据，按官方要求引用：
 
 > Ni J., Li J., McAuley J. Justifying recommendations using distantly-labeled reviews and fine-grained aspects. In Proceedings of EMNLP-IJCNLP, 2019.
 

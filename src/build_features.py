@@ -102,7 +102,7 @@ MODEL_FEATURES = [
     "days_since_verified",
 ]
 
-# 在原始字段之外新造的列，报告里单独说明
+# 在原始字段之外新造的列，单独说明
 DERIVED_FEATURES = [
     "review_year",
     "review_month",

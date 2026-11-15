@@ -1,0 +1,244 @@
+{
+  "generated_at": "2026-11-14T12:52:02+08:00",
+  "seed": 42,
+  "limit": 300000,
+  "n_rows": 300000,
+  "forward": {
+    "direction": "2014及以前→2015+",
+    "seconds": 32.1,
+    "train_n": 177393,
+    "test_n": 122607
+  },
+  "backward": {
+    "direction": "2015+→2014及以前",
+    "seconds": 28.2,
+    "train_n": 122607,
+    "test_n": 177393
+  },
+  "annual": [
+    {
+      "direction": "2014及以前→2015+",
+      "year": "all",
+      "n": 122607,
+      "positive_rate": 0.7746,
+      "accuracy": 0.9301,
+      "macro_f1": 0.9048,
+      "pr_auc": 0.9934,
+      "roc_auc": 0.9782
+    },
+    {
+      "direction": "2014及以前→2015+",
+      "year": 2015,
+      "n": 48426,
+      "positive_rate": 0.7843,
+      "accuracy": 0.9307,
+      "macro_f1": 0.9028,
+      "pr_auc": 0.9937,
+      "roc_auc": 0.9776
+    },
+    {
+      "direction": "2014及以前→2015+",
+      "year": 2016,
+      "n": 41321,
+      "positive_rate": 0.773,
+      "accuracy": 0.9276,
+      "macro_f1": 0.9023,
+      "pr_auc": 0.9933,
+      "roc_auc": 0.9779
+    },
+    {
+      "direction": "2014及以前→2015+",
+      "year": 2017,
+      "n": 24796,
+      "positive_rate": 0.7675,
+      "accuracy": 0.9323,
+      "macro_f1": 0.9094,
+      "pr_auc": 0.9934,
+      "roc_auc": 0.9798
+    },
+    {
+      "direction": "2014及以前→2015+",
+      "year": 2018,
+      "n": 8064,
+      "positive_rate": 0.7457,
+      "accuracy": 0.9317,
+      "macro_f1": 0.9133,
+      "pr_auc": 0.9922,
+      "roc_auc": 0.9776
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": "all",
+      "n": 177393,
+      "positive_rate": 0.7285,
+      "accuracy": 0.8485,
+      "macro_f1": 0.8249,
+      "pr_auc": 0.9738,
+      "roc_auc": 0.9366
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 1999,
+      "n": 202,
+      "positive_rate": 0.7871,
+      "accuracy": 0.8366,
+      "macro_f1": 0.7973,
+      "pr_auc": 0.9849,
+      "roc_auc": 0.9472
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2000,
+      "n": 1865,
+      "positive_rate": 0.7598,
+      "accuracy": 0.8139,
+      "macro_f1": 0.7764,
+      "pr_auc": 0.9699,
+      "roc_auc": 0.914
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2001,
+      "n": 4291,
+      "positive_rate": 0.753,
+      "accuracy": 0.8161,
+      "macro_f1": 0.7842,
+      "pr_auc": 0.967,
+      "roc_auc": 0.9149
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2002,
+      "n": 5275,
+      "positive_rate": 0.7575,
+      "accuracy": 0.8142,
+      "macro_f1": 0.7797,
+      "pr_auc": 0.9661,
+      "roc_auc": 0.9125
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2003,
+      "n": 4863,
+      "positive_rate": 0.7615,
+      "accuracy": 0.7917,
+      "macro_f1": 0.756,
+      "pr_auc": 0.966,
+      "roc_auc": 0.9044
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2004,
+      "n": 4695,
+      "positive_rate": 0.7188,
+      "accuracy": 0.7876,
+      "macro_f1": 0.7674,
+      "pr_auc": 0.9536,
+      "roc_auc": 0.8961
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2005,
+      "n": 4655,
+      "positive_rate": 0.6838,
+      "accuracy": 0.7886,
+      "macro_f1": 0.7761,
+      "pr_auc": 0.9465,
+      "roc_auc": 0.904
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2006,
+      "n": 4273,
+      "positive_rate": 0.6604,
+      "accuracy": 0.8076,
+      "macro_f1": 0.799,
+      "pr_auc": 0.9478,
+      "roc_auc": 0.9096
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2007,
+      "n": 6683,
+      "positive_rate": 0.7319,
+      "accuracy": 0.8188,
+      "macro_f1": 0.7917,
+      "pr_auc": 0.9646,
+      "roc_auc": 0.9156
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2008,
+      "n": 10501,
+      "positive_rate": 0.703,
+      "accuracy": 0.8276,
+      "macro_f1": 0.8085,
+      "pr_auc": 0.9592,
+      "roc_auc": 0.9167
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2009,
+      "n": 12782,
+      "positive_rate": 0.7176,
+      "accuracy": 0.8366,
+      "macro_f1": 0.8142,
+      "pr_auc": 0.9626,
+      "roc_auc": 0.9202
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2010,
+      "n": 11825,
+      "positive_rate": 0.6938,
+      "accuracy": 0.8238,
+      "macro_f1": 0.808,
+      "pr_auc": 0.9597,
+      "roc_auc": 0.9213
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2011,
+      "n": 12996,
+      "positive_rate": 0.699,
+      "accuracy": 0.8193,
+      "macro_f1": 0.8021,
+      "pr_auc": 0.9603,
+      "roc_auc": 0.9184
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2012,
+      "n": 17869,
+      "positive_rate": 0.6927,
+      "accuracy": 0.849,
+      "macro_f1": 0.8343,
+      "pr_auc": 0.9679,
+      "roc_auc": 0.9355
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2013,
+      "n": 32427,
+      "positive_rate": 0.738,
+      "accuracy": 0.862,
+      "macro_f1": 0.8368,
+      "pr_auc": 0.9774,
+      "roc_auc": 0.9442
+    },
+    {
+      "direction": "2015+→2014及以前",
+      "year": 2014,
+      "n": 42188,
+      "positive_rate": 0.7655,
+      "accuracy": 0.9004,
+      "macro_f1": 0.8722,
+      "pr_auc": 0.9895,
+      "roc_auc": 0.9673
+    }
+  ],
+  "outputs": {
+    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_time_metrics.csv",
+    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig43_time_drift.png"
+  }
+}

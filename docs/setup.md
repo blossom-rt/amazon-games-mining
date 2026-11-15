@@ -1,6 +1,6 @@
 # 环境配置指南
 
-本文件面向第一次拿到仓库的组员，按顺序执行即可。不含下载数据的时间，大约 10 到 20 分钟。
+本文件面向第一次使用本仓库的读者，按顺序执行即可。不含下载数据的时间，大约需要 10 到 20 分钟。
 
 ## 前置条件
 
@@ -35,7 +35,7 @@ conda activate amazon-games
 python -V
 ```
 
-最后一行应输出 `Python 3.11.x`。环境建在 conda 默认的 envs 目录即可，不必和作者使用相同的绝对路径。
+最后一行应输出 `Python 3.11.x`。环境建在 conda 默认的 envs 目录即可，不需要与开发环境使用相同的绝对路径。
 
 如果用的是 Git Bash，激活命令是 `source activate amazon-games`；cmd 里仍然是 `conda activate amazon-games`。终端提示符前出现 `(amazon-games)` 才算激活成功。
 
@@ -84,7 +84,7 @@ pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
 
 ## 注册 Jupyter 内核
 
-这一步最容易漏。环境装好不等于 Jupyter 会用它，必须把当前环境注册成内核：
+Jupyter 不会自动使用当前 conda 环境，需要把环境注册为内核：
 
 ```
 python -m ipykernel install --user --name amazon-games --display-name "Python (amazon-games)"
@@ -134,7 +134,7 @@ python src/download.py --verify
 
 在项目根目录执行，看到两行 `[校验通过]` 才算成功。脚本不支持断点续传，下载中断后重新执行会从头开始。
 
-方式二，从队友处拷贝。把两个文件放进 `data/raw/`，文件名必须完全一致：
+方式二，使用已有数据副本。把两个文件放进 `data/raw/`，文件名必须完全一致：
 
 ```
 data/raw/Video_Games.json.gz        493.7 MB
@@ -168,7 +168,7 @@ python -c "from src.io_utils import peek_jsonl_gz; from src.config import META_F
 | `pip install` 报 403 或 `from versions: none` | 镜像不可用，加 `-i https://pypi.org/simple` |
 | notebook 里 `ModuleNotFoundError: pandas` | 内核没注册或选错，回到“注册 Jupyter 内核”一节 |
 | 图表中文显示成方块 | 系统缺中文字体。Windows 安装 `SimHei` 或 `Microsoft YaHei`；Linux 与 macOS 安装 `Noto Sans CJK`，必要时改 `src/config.py` 里的 `FONT_CANDIDATES` |
-| 下载很慢或连接超时 | 从队友那里拷贝两个 gz；学校网络访问境外站点通常较慢 |
+| 下载很慢或连接超时 | 使用已有数据副本；访问境外站点通常较慢 |
 | SHA256 不一致 | 删除对应文件重新下载，不要用浏览器另存后改名的副本 |
 | `pandas` 版本不是 3.1.1 | 多半在 base 环境里装了，重新激活 `amazon-games` 并重装依赖 |
 | shap 导入时报 numba 或 llvmlite 错误 | 确认 numpy 是 2.4.6；必要时 `pip install --force-reinstall -r requirements.txt` |

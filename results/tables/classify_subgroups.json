@@ -1,0 +1,236 @@
+{
+  "generated_at": "2026-11-15T14:44:35+08:00",
+  "source": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_decision_oof.parquet",
+  "n_rows": 200000,
+  "threshold": 0.5,
+  "overall": {
+    "dimension": "all",
+    "group": "全部",
+    "n": 200000,
+    "positive_rate": 0.746275,
+    "accuracy": 0.91127,
+    "error_rate": 0.08873,
+    "macro_f1": 0.8810210533606784,
+    "false_positive": 10040,
+    "false_negative": 7706
+  },
+  "groups": [
+    {
+      "dimension": "rating_group",
+      "group": "1–3 星",
+      "n": 50745,
+      "positive_rate": 0.0,
+      "accuracy": 0.8021479948763425,
+      "error_rate": 0.1978520051236575,
+      "macro_f1": 0.4451066156369601,
+      "false_positive": 10040,
+      "false_negative": 0
+    },
+    {
+      "dimension": "rating_group",
+      "group": "4–5 星",
+      "n": 149255,
+      "positive_rate": 1.0,
+      "accuracy": 0.9483702388529698,
+      "error_rate": 0.05162976114703025,
+      "macro_f1": 0.4867505261275636,
+      "false_positive": 0,
+      "false_negative": 7706
+    },
+    {
+      "dimension": "overall",
+      "group": "1.0",
+      "n": 22733,
+      "positive_rate": 0.0,
+      "accuracy": 0.9197202305019135,
+      "error_rate": 0.08027976949808648,
+      "macro_f1": 0.4790907632730689,
+      "false_positive": 1825,
+      "false_negative": 0
+    },
+    {
+      "dimension": "overall",
+      "group": "2.0",
+      "n": 10598,
+      "positive_rate": 0.0,
+      "accuracy": 0.8367616531421023,
+      "error_rate": 0.1632383468578977,
+      "macro_f1": 0.4555635466968047,
+      "false_positive": 1730,
+      "false_negative": 0
+    },
+    {
+      "dimension": "overall",
+      "group": "3.0",
+      "n": 17414,
+      "positive_rate": 0.0,
+      "accuracy": 0.6275984839784082,
+      "error_rate": 0.3724015160215918,
+      "macro_f1": 0.3855978548495219,
+      "false_positive": 6485,
+      "false_negative": 0
+    },
+    {
+      "dimension": "overall",
+      "group": "4.0",
+      "n": 33888,
+      "positive_rate": 1.0,
+      "accuracy": 0.8634029745042493,
+      "error_rate": 0.1365970254957507,
+      "macro_f1": 0.46334742743123186,
+      "false_positive": 0,
+      "false_negative": 4629
+    },
+    {
+      "dimension": "overall",
+      "group": "5.0",
+      "n": 115367,
+      "positive_rate": 1.0,
+      "accuracy": 0.9733285948321444,
+      "error_rate": 0.026671405167855627,
+      "macro_f1": 0.49324202638179365,
+      "false_positive": 0,
+      "false_negative": 3077
+    },
+    {
+      "dimension": "main_cat_group",
+      "group": "All Electronics",
+      "n": 271,
+      "positive_rate": 0.6605166051660517,
+      "accuracy": 0.9188191881918819,
+      "error_rate": 0.08118081180811808,
+      "macro_f1": 0.9068903048475763,
+      "false_positive": 16,
+      "false_negative": 6
+    },
+    {
+      "dimension": "main_cat_group",
+      "group": "Computers",
+      "n": 217,
+      "positive_rate": 0.6820276497695853,
+      "accuracy": 0.8986175115207373,
+      "error_rate": 0.10138248847926268,
+      "macro_f1": 0.8812437810945273,
+      "false_positive": 13,
+      "false_negative": 9
+    },
+    {
+      "dimension": "main_cat_group",
+      "group": "Software",
+      "n": 2166,
+      "positive_rate": 0.615881809787627,
+      "accuracy": 0.8961218836565097,
+      "error_rate": 0.1038781163434903,
+      "macro_f1": 0.8903977055371929,
+      "false_positive": 109,
+      "false_negative": 116
+    },
+    {
+      "dimension": "main_cat_group",
+      "group": "Sports & Outdoors",
+      "n": 299,
+      "positive_rate": 0.8394648829431438,
+      "accuracy": 0.9498327759197325,
+      "error_rate": 0.05016722408026756,
+      "macro_f1": 0.900995563011854,
+      "false_positive": 11,
+      "false_negative": 4
+    },
+    {
+      "dimension": "main_cat_group",
+      "group": "Toys & Games",
+      "n": 518,
+      "positive_rate": 0.8436293436293436,
+      "accuracy": 0.9459459459459459,
+      "error_rate": 0.05405405405405406,
+      "macro_f1": 0.8975619402774246,
+      "false_positive": 14,
+      "false_negative": 14
+    },
+    {
+      "dimension": "main_cat_group",
+      "group": "Video Games",
+      "n": 196267,
+      "positive_rate": 0.7476549802055363,
+      "accuracy": 0.9112535474634045,
+      "error_rate": 0.08874645253659555,
+      "macro_f1": 0.8805290790007192,
+      "false_positive": 9868,
+      "false_negative": 7550
+    },
+    {
+      "dimension": "main_cat_group",
+      "group": "其他",
+      "n": 262,
+      "positive_rate": 0.6335877862595419,
+      "accuracy": 0.9389312977099237,
+      "error_rate": 0.061068702290076333,
+      "macro_f1": 0.9339426410337219,
+      "false_positive": 9,
+      "false_negative": 7
+    },
+    {
+      "dimension": "verified",
+      "group": "False",
+      "n": 64091,
+      "positive_rate": 0.6735735126616842,
+      "accuracy": 0.8770654226022374,
+      "error_rate": 0.12293457739776256,
+      "macro_f1": 0.8575656122047368,
+      "false_positive": 4672,
+      "false_negative": 3207
+    },
+    {
+      "dimension": "verified",
+      "group": "True",
+      "n": 135909,
+      "positive_rate": 0.7805590505411709,
+      "accuracy": 0.9273999514380946,
+      "error_rate": 0.0726000485619054,
+      "macro_f1": 0.8929092310078256,
+      "false_positive": 5368,
+      "false_negative": 4499
+    },
+    {
+      "dimension": "year_group",
+      "group": "1997–2010",
+      "n": 47878,
+      "positive_rate": 0.7149839174568695,
+      "accuracy": 0.8714440870545971,
+      "error_rate": 0.1285559129454029,
+      "macro_f1": 0.8383124743353729,
+      "false_positive": 3621,
+      "false_negative": 2534
+    },
+    {
+      "dimension": "year_group",
+      "group": "2011–2014",
+      "n": 70174,
+      "positive_rate": 0.7381793826773448,
+      "accuracy": 0.9053353093738422,
+      "error_rate": 0.09466469062615783,
+      "macro_f1": 0.8760110774278345,
+      "false_positive": 3671,
+      "false_negative": 2972
+    },
+    {
+      "dimension": "year_group",
+      "group": "2015–2018",
+      "n": 81948,
+      "positive_rate": 0.7714892370771709,
+      "accuracy": 0.9396202469858935,
+      "error_rate": 0.06037975301410651,
+      "macro_f1": 0.9134796544738657,
+      "false_positive": 2748,
+      "false_negative": 2200
+    }
+  ],
+  "notes": [
+    "20 万条 OOF 概率，线性逻辑回归、按 asin 5 折；",
+    "误差率为 1-准确率；组内宏 F1 在只有单一类别的组会退化，需结合样本量看。"
+  ],
+  "outputs": {
+    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_subgroups.csv",
+    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig49_subgroup_errors.png"
+  }
+}

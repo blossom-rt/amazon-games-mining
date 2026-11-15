@@ -1,0 +1,288 @@
+{
+  "generated_at": "2026-11-13T23:24:52+08:00",
+  "seed": 42,
+  "sample": 300000,
+  "train": 240000,
+  "valid": 60000,
+  "vocabulary": 80000,
+  "evaluation": {
+    "accuracy": 0.911,
+    "macro_f1": 0.8767,
+    "pr_auc": 0.9817,
+    "roc_auc": 0.9546
+  },
+  "error_rates": {
+    "negation_with": {
+      "n": 23901,
+      "error_rate": 0.1248
+    },
+    "negation_without": {
+      "n": 36099,
+      "error_rate": 0.0654
+    },
+    "concession_with": {
+      "n": 24582,
+      "error_rate": 0.1395
+    },
+    "concession_without": {
+      "n": 35418,
+      "error_rate": 0.054
+    }
+  },
+  "top_positive": [
+    {
+      "term": "great",
+      "coefficient": 11.7161,
+      "direction": "positive",
+      "train_documents": 69033
+    },
+    {
+      "term": "best",
+      "coefficient": 11.0043,
+      "direction": "positive",
+      "train_documents": 28072
+    },
+    {
+      "term": "awesome",
+      "coefficient": 10.8558,
+      "direction": "positive",
+      "train_documents": 17000
+    },
+    {
+      "term": "love",
+      "coefficient": 9.5312,
+      "direction": "positive",
+      "train_documents": 33214
+    },
+    {
+      "term": "amazing",
+      "coefficient": 9.022,
+      "direction": "positive",
+      "train_documents": 12353
+    },
+    {
+      "term": "excellent",
+      "coefficient": 8.5273,
+      "direction": "positive",
+      "train_documents": 9684
+    },
+    {
+      "term": "perfect",
+      "coefficient": 8.3712,
+      "direction": "positive",
+      "train_documents": 8432
+    },
+    {
+      "term": "loves",
+      "coefficient": 7.3629,
+      "direction": "positive",
+      "train_documents": 9476
+    },
+    {
+      "term": "not disappointed",
+      "coefficient": 7.0526,
+      "direction": "positive",
+      "train_documents": 625
+    },
+    {
+      "term": "fun",
+      "coefficient": 6.2366,
+      "direction": "positive",
+      "train_documents": 56064
+    },
+    {
+      "term": "fantastic",
+      "coefficient": 6.1657,
+      "direction": "positive",
+      "train_documents": 4750
+    },
+    {
+      "term": "can't wait",
+      "coefficient": 5.9468,
+      "direction": "positive",
+      "train_documents": 1417
+    },
+    {
+      "term": "addictive",
+      "coefficient": 5.8654,
+      "direction": "positive",
+      "train_documents": 2716
+    },
+    {
+      "term": "favorite",
+      "coefficient": 5.7481,
+      "direction": "positive",
+      "train_documents": 8025
+    },
+    {
+      "term": "happy",
+      "coefficient": 5.7094,
+      "direction": "positive",
+      "train_documents": 6165
+    },
+    {
+      "term": "awsome",
+      "coefficient": 5.4529,
+      "direction": "positive",
+      "train_documents": 1106
+    },
+    {
+      "term": "no problems",
+      "coefficient": 5.3889,
+      "direction": "positive",
+      "train_documents": 1317
+    },
+    {
+      "term": "addicting",
+      "coefficient": 5.2468,
+      "direction": "positive",
+      "train_documents": 1857
+    },
+    {
+      "term": "wonderful",
+      "coefficient": 5.0713,
+      "direction": "positive",
+      "train_documents": 2926
+    },
+    {
+      "term": "great game",
+      "coefficient": 4.8577,
+      "direction": "positive",
+      "train_documents": 23118
+    }
+  ],
+  "top_negative": [
+    {
+      "term": "not",
+      "coefficient": -10.471,
+      "direction": "negative",
+      "train_documents": 72046
+    },
+    {
+      "term": "worst",
+      "coefficient": -10.0104,
+      "direction": "negative",
+      "train_documents": 3510
+    },
+    {
+      "term": "boring",
+      "coefficient": -9.3638,
+      "direction": "negative",
+      "train_documents": 6347
+    },
+    {
+      "term": "star",
+      "coefficient": -8.84,
+      "direction": "negative",
+      "train_documents": 10524
+    },
+    {
+      "term": "disappointing",
+      "coefficient": -8.8202,
+      "direction": "negative",
+      "train_documents": 2148
+    },
+    {
+      "term": "not worth",
+      "coefficient": -8.5892,
+      "direction": "negative",
+      "train_documents": 2168
+    },
+    {
+      "term": "disappointment",
+      "coefficient": -8.0078,
+      "direction": "negative",
+      "train_documents": 1903
+    },
+    {
+      "term": "terrible",
+      "coefficient": -7.9151,
+      "direction": "negative",
+      "train_documents": 3676
+    },
+    {
+      "term": "horrible",
+      "coefficient": -7.4704,
+      "direction": "negative",
+      "train_documents": 2966
+    },
+    {
+      "term": "disappointed",
+      "coefficient": -7.2224,
+      "direction": "negative",
+      "train_documents": 6190
+    },
+    {
+      "term": "poor",
+      "coefficient": -6.9817,
+      "direction": "negative",
+      "train_documents": 2773
+    },
+    {
+      "term": "awful",
+      "coefficient": -6.6002,
+      "direction": "negative",
+      "train_documents": 1644
+    },
+    {
+      "term": "waste",
+      "coefficient": -6.5135,
+      "direction": "negative",
+      "train_documents": 4403
+    },
+    {
+      "term": "garbage",
+      "coefficient": -6.3311,
+      "direction": "negative",
+      "train_documents": 1206
+    },
+    {
+      "term": "meh",
+      "coefficient": -6.3113,
+      "direction": "negative",
+      "train_documents": 675
+    },
+    {
+      "term": "not fun",
+      "coefficient": -6.2151,
+      "direction": "negative",
+      "train_documents": 1690
+    },
+    {
+      "term": "mediocre",
+      "coefficient": -5.846,
+      "direction": "negative",
+      "train_documents": 842
+    },
+    {
+      "term": "ruined",
+      "coefficient": -5.7171,
+      "direction": "negative",
+      "train_documents": 773
+    },
+    {
+      "term": "worse",
+      "coefficient": -5.6874,
+      "direction": "negative",
+      "train_documents": 2140
+    },
+    {
+      "term": "frustrating",
+      "coefficient": -5.6743,
+      "direction": "negative",
+      "train_documents": 4139
+    }
+  ],
+  "runtime_seconds": 104.4,
+  "hardware": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "memory_gb": 15.7,
+    "python": "3.11.18"
+  },
+  "outputs": {
+    "terms": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_terms.csv",
+    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig41_top_terms.png"
+  }
+}
