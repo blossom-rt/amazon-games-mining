@@ -144,7 +144,7 @@ python src/build_features.py --force
 
 ## 已知限制
 
-- 品类边界规则会漏掉部分 Retro Gaming 类目下的老游戏，也会把少量标题未命中硬件词的平台配件当作游戏；规则与示例见 `docs/scope_definition.md`，报告里作为口径限制说明。
+- 品类边界规则会漏掉部分 Retro Gaming 类目下的老游戏，也会把少量标题未命中硬件词的平台配件当作游戏；规则与示例见 `docs/scope_definition.md`，口径限制见 `docs/scope_audit.md`。
 - 范围外 1,109,257 条评论保留在宽表中，只用于对照与审计，不进入 P4/P5 的建模样本。
 - 15,259 条评论的时间早于商品 `date`，已把 `days_since_product` 截为 0；商品 `date` 的含义更接近上架/收录时间，不宜当精确上市日。
 - `price` 按评论加权仍缺失 80.71%，P4 需要缺失指示与训练折内分层填补。

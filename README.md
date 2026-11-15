@@ -1,10 +1,23 @@
 # Amazon 游戏商品数据的探索与挖掘
 
-## 项目简介
+基于 Amazon Review Data (2018) 的 Video_Games 品类，融合两类异构数据：
 
-基于 Amazon Review Data (2018) 的 Video_Games 品类，融合用户评论（非结构化文本）与商品元数据（半结构化 JSON）两类异构数据源，完成一条完整的数据挖掘流程：数据治理、商品共购关联规则挖掘、评论情感分类、商品分群与结果可解释性分析。
+- **用户评论**：非结构化文本 + 评分、时间、verified 等字段。
+- **商品元数据**：半结构化 JSON，含类目、品牌、价格、`also_buy`、`also_view` 等。
 
-数据来源与引用见 [docs/data_source.md](docs/data_source.md)。
+项目覆盖数据治理、关联规则、评论分类、商品聚类、可解释性与一键复现。
+
+## 快速导航
+
+| 文档主题 | 入口 |
+|---|---|
+| 数据来源、字段与边界 | [data_source](docs/data_source.md)、[data_dictionary](docs/data_dictionary.md)、[scope_definition](docs/scope_definition.md) |
+| 特征与折划分 | [feature_dictionary](docs/feature_dictionary.md) |
+| 治理与缺失/异常 | [governance_report](docs/governance_report.md)、[scope_audit](docs/scope_audit.md) |
+| 分类模型与错误分析 | [classification_report](docs/classification_report.md) |
+| 规则复核 | [rules_review](docs/rules_review.md) |
+| 环境与看板 | [setup](docs/setup.md)、[dashboard_guide](docs/dashboard_guide.md) |
+| 项目结构 | [目录结构](#目录结构) |
 
 ## 当前进度
 
@@ -12,319 +25,340 @@
 |---|---|---|
 | P0 | gzip JSON Lines 解析为 parquet，字段字典回填 | 完成 |
 | P1 | 缺失机制、填补策略、异常值、一致性检查与 EDA | 完成 |
-| P2 | 评论 × 商品宽表、时间窗与交互特征、分层分组折 | 完成 |
-| P2.5 | 游戏本体边界判定，固定 P3/P4/P5 的样本口径 | 完成 |
-| P3 | `also_buy` 共购关联规则、Apriori 与 FP-Growth 对比 | 完成 |
-| P4 | 评论情感分类、五折评估、错误分析与 SHAP | 完成 |
-| P5 | 商品聚类、肘部法与轮廓系数、bootstrap ARI | 完成 |
-| P6 | `run_all.py` 一键复现、`04_repro.ipynb`、运行日志与报告统稿 | 完成 |
-| 改进实验 | 10 折稳健性、概率校准、句向量对照、规则增强、聚类对比、边界复核 | 完成 |
+| P2 | 评论 × 商品宽表，时间窗与交互特征，分层分组折 | 完成 |
+| P2.5 | 游戏本体边界判定，固定 P3/P4/P5 样本口径 | 完成 |
+| P3 | `also_buy` 关联规则，Apriori / FP-Growth 对比 | 完成 |
+| P4 | 评论情感分类，5 折与 10 折评估，错误分析与 SHAP | 完成 |
+| P5 | 商品聚类，肘部法、轮廓系数、bootstrap ARI | 完成 |
+| P6 | `run_all.py`、`04_repro.ipynb`、运行日志与结果归档 | 完成 |
+| 补充分析 | 校准、句向量、消融、词级、时间、网络、链接预测、决策曲线 | 完成 |
+| 交互看板 | Streamlit 4 视图、2 个联动筛选 | 完成 |
 
-P0–P6 的代码与流水线已合入 `dev` 并推送；P3、P5 由[协作成员](https://github.com/coldcodefish)完成，P6 与报告统稿由[仓库维护者](https://github.com/blossom-rt)负责。`main` 只保留稳定版本，待报告定稿后由 `dev` 合并。
+P3、P5 由[协作成员](https://github.com/coldcodefish)完成；P6 与看板由[仓库维护者](https://github.com/blossom-rt)负责。`main` 只保留稳定版本，稳定后由 `dev` 合并。
 
-## 数据
+## 数据概览
 
-| 项目 | 内容 |
+| 项目 | 数值 |
 |---|---|
-| 数据集 | Amazon Review Data (2018) |
-| 发布方 | University of California, San Diego, McAuley Lab |
-| 品类 | Video_Games |
-| 商品数 | 84,819（官方标称 84,893，去重后 71,911） |
-| 评论数 | 2,565,349 |
-| 时间范围 | 1997 年 11 月 — 2018 年 10 月 |
-| 许可 | 仅限学术研究使用 |
+| 评论 | 2,565,349 条 |
+| 商品原始记录 | 84,819 条（官方标称 84,893） |
+| 商品去重后 | 71,911 件 |
+| 游戏本体样本 | 40,259 件商品 / 1,456,092 条评论 |
+| 正向评论（4–5 星） | 74.75% |
+| 宽表 | 2,565,349 × 47；36 个建模特征、31 个衍生特征 |
+| 时间范围 | 1997-11 — 2018-10 |
 
 两个源文件放在 `data/raw/`，不纳入版本控制：
 
+```text
+Video_Games.json.gz        493.7 MB   评论
+meta_Video_Games.json.gz    50.8 MB   商品元数据
 ```
-data/raw/Video_Games.json.gz        493.7 MB   评论，一行一条 JSON
-data/raw/meta_Video_Games.json.gz    50.8 MB   商品元数据，一行一件 JSON
-```
 
-文件校验值、官方字段说明与引用格式见 [docs/data_source.md](docs/data_source.md)。
-各字段的类型、缺失率与取值范围见 [docs/data_dictionary.md](docs/data_dictionary.md)。
-宽表字段、衍生特征与折划分口径见 [docs/feature_dictionary.md](docs/feature_dictionary.md)。
-游戏本体边界规则与覆盖范围见 [docs/scope_definition.md](docs/scope_definition.md)。
-一致性检查、缺失填补对比与异常值检测结果见 [docs/governance_report.md](docs/governance_report.md)。
-评论情感分类的模型、指标与错误分析见 [docs/classification_report.md](docs/classification_report.md)。
-关联规则的强度、阈值敏感性与运行时见 `results/tables/rules_*.csv/json`；聚类画像与 bootstrap 稳定性见 `results/tables/cluster_*.csv/json`。
-10 折稳健性、校准与阈值见 `results/tables/classify_robustness.json`；句向量对照见 `results/tables/classify_embedding.json`；聚类方法对比见 `results/tables/cluster_compare.json`。
-边界复核见 [docs/scope_audit.md](docs/scope_audit.md)，规则复核见 [docs/rules_review.md](docs/rules_review.md)。
+校验值、官方字段与引用格式见 [data_source](docs/data_source.md)。
 
-## 已产出结果
+## 关键结果
 
-- 解析后评论 2,565,349 行、商品 71,911 行；游戏本体 40,259 件商品、1,456,092 条评论，正向率 74.75%。
-- 宽表 47 列，其中 36 个建模特征、31 个衍生特征；按 `asin` 分组做 5 折，同一商品不跨折。
-- P3 关联规则：19,032 个购物篮；Apriori 与 FP-Growth 均得到 1,855 条规则、去重后 932 条，默认参数下 Apriori 77.9 秒、FP-Growth 1.2 秒；三组阈值分别得到 0、21、932 条规则，`support=0.02, confidence=0.15` 过高导致无规则；平凡规则去除 0 条、lift≤1 过滤 0 条；932 条中 34 条前件与后件同系列，conviction 中位数 3.21。
-- P4 分类最佳模型为线性 SVM（SGD）：5 折宏 F1 0.8635、PR-AUC 0.9837、ROC-AUC 0.9569；与 Dummy 的 Wilcoxon 检验 `p=0.0625`，在 5 折下不显著。10 折复核宏 F1 0.8642±0.0088，配对差 0.4365（95% CI 0.4314–0.4417），`p=0.001953`，说明 5 折的 p 值主要是样本量下限。
-- 概率校准：逻辑回归原始 ECE 0.088，分组 isotonic 校准后 0.00036，Brier 0.0849→0.0695；F1 最优阈值 0.4545，正类 F1 0.9374；代价敏感（FN=5×FP）阈值 0.17。
-- 文本表示对照（30,000 条抽样、300 字符、10 折）：哈希 TF-IDF 宏 F1 0.7618，BGE-small 0.8298，配对差 0.0680（95% CI 0.0507–0.0856），`p=0.001953`；方向与效应量支持句向量，但仍只是短文本抽样，不能外推全量。
-- P5 聚类：40,259 件游戏本体商品、13 个聚类特征，轮廓系数选 `k=4`，bootstrap ARI 均值 0.9849（95% 区间 0.9296–0.9976）；`cluster_profiles.csv` 含每簇价格中位数、观测价格数、价格缺失率，其中一簇仅 1 件商品有观测价格，价格中位数不可单独解读。
-- 聚类方法对比：GMM 轮廓 0.1441、HDBSCAN 2 簇轮廓 0.3119（但只有 Software 与其余两类）、有价子集 KMeans 轮廓 0.2102；KMeans k=4 仍适合运营分层。
-- 边界复核：226 件强硬件词候选、7,105 条评论；前 30 条中 21 件纯硬件/主机、8 件游戏+配件同捆、1 件纯游戏，不能按标题一刀切；Retro 另有 1,154 件因缺 Games 节点被排除。
-- 已有中文标注图 40 张：fig01–fig10 为 EDA，fig11–fig16 为规则，fig20–fig26 为聚类，fig30–fig35 为分类，fig36–fig39 为改进实验，fig40–fig42 为补充分析，fig43–fig46 为时间/否定/网络/留出验证。
-- 时间外推（300,000 条抽样）：≤2014→2015+ 宏 F1 0.9048、PR-AUC 0.9934；2015+→≤2014 宏 F1 0.8249、PR-AUC 0.9738。2015 后逐年 0.9028–0.9133，没有衰减；用后期文本回测早期明显更难。
-- 否定范围特征（150,000 条抽样）：宏 F1 0.8689→0.8785，否定子集错误率 15.95%→14.39%，转折 17.64%→16.35%；有效但未根治转折。
-- 三张网络：also_buy 1,207,676 边、also_view 1,091,164 边、共同评论人 45,951 边；跨主品类占比 1.15%/1.77%/2.59%；also_buy 与 also_view 的 Jaccard 0.2539，与共同评论人仅 0.0102，说明推荐位网络比浏览/评论网络更窄。
-- 聚类留出验证：按 asin 70/30 切分，12,078 件留出商品；评论量 ε²=0.437、also_buy ε²=0.479、评分仅 0.006，四簇仍按热度/共购分层而非评分高低。
-- 交互式业务看板：`src/dashboard_app.py`（Streamlit + Plotly），4 个视图——总览、分群、时间、网络；侧边栏“运营簇”和“评论年份”两个筛选器会同时联动总览 KPI、分群图和时间曲线。另有静态 fallback `results/dashboard.html`，便于无服务打开。
-- P6 七步全量已跑通，总耗时 847.3 秒，状态 `ok`；各步为 parse 93.4、scope 4.7、build_features 109.9、governance 15.3、rules 101.5、classify 492.5、cluster 29.6 秒。该数字是 P6 合入时的基线；后续改进只单独重跑了 rules 与 cluster，未重跑整链。
+### 关联规则
 
-## 改进实验
+19,032 个购物篮，`also_buy` 只保留游戏本体商品对。
 
-这组实验不改变主流水线的样本口径与七步结果，只用于回答“结论是否稳、还能怎么改进”：
+| support / confidence | 原始规则 | 去重后 | Apriori | FP-Growth |
+|---|---:|---:|---:|---:|
+| 0.020 / 0.15 | 0 | 0 | 0.00 s | 0.04 s |
+| 0.010 / 0.20 | 42 | 21 | 0.34 s | 0.09 s |
+| 0.005 / 0.10 | 1,864 | 932 | 58.98 s | 0.79 s |
+| 默认（0.005 / 0.20） | 1,855 | 932 | 77.9 s | 1.2 s |
 
-- 10 折分组复验：线性 SVM 宏 F1 0.8642±0.0088，与 Dummy 的配对差 0.4365（95% CI 0.4314–0.4417），`p=0.001953`；5 折的 0.0625 主要是样本量下限，不是“无差异”。
-- 概率校准：逻辑回归原始 ECE 0.0881，分组 isotonic 校准后 0.00036；Brier 0.0849→0.0695。校准后 F1 最优阈值 0.4545，代价敏感（FN=5×FP）阈值 0.17。
-- 文本表示对照：30,000 条抽样、300 字符、10 折，BGE-small 宏 F1 0.8298，哈希 TF-IDF 0.7618；配对差 0.0680（95% CI 0.0507–0.0856），`p=0.001953`。方向支持句向量，但仍只是短文本抽样，不能外推到全量。
-- 规则增强：给 932 条规则增加 conviction 与同系列标记；conviction 中位数 3.21，34 条同系列，top 规则仍集中在 hidden-object 下载版互推。`also_buy` 仍只是推荐位，不是真实订单。
-- 聚类对比：GMM 轮廓 0.1441；HDBSCAN 只分 2 簇（轮廓 0.3119）；有价子集 KMeans k=4 轮廓 0.2102；均未优于 KMeans k=4 的四段运营分层。
-- 边界复核：226 件强硬件词候选（7,105 条评论），前 30 条中 21 件纯硬件/主机、8 件同捆、1 件纯游戏；主口径不按标题一刀切，Retro 另有 1,154 件缺 Games 节点。详见 [docs/scope_audit.md](docs/scope_audit.md)。
-- 时间外推：按评论年份做正反两向切分，正向 2015–2018 宏 F1 0.9028–0.9133，稳定；反向早期 2003–2006 降到 0.756–0.776，说明后期文本不能直接回测早期评论。
-- 否定专项：否定范围特征把宏 F1 从 0.8689 提到 0.8785，否定/转折子集错误率分别下降 1.56/1.29 个百分点；仍是“小增益”，不是根治。
-- 三张网络：also_buy 与 also_view 的边重叠 Jaccard 0.2539，与共同评论人仅 0.0102；跨主品类边占比 1.15%/1.77%/2.59%，都不能支持“跨品类购买”结论。
-- 聚类外部验证：训练集拟合、留出集按最近质心分配后，评论量/also_buy 的 ε² 为 0.437/0.479，评分仅 0.006，簇的运营含义仍是热度与共购，而非评分。
-- 静态看板 fallback：`results/dashboard.html` 把四个分层、留出验证、时间/否定/网络结论放到一页；无服务依赖，适合直接打开。交互版见下方“交互看板”。
+- FP-Growth 在低支持度组约快 **66–75 倍**，规则集与 Apriori 完全一致。
+- 932 条规则中 34 条为同系列，conviction 中位数 3.21。
+- 头部规则集中在同系列 / hidden-object 下载版互推，跨系列没有稳定组合。
 
-这些脚本默认不写入 `run_all.py` 的七步主链，避免把可选的解释性实验变成每次全量重跑的成本；单独命令见“运行顺序”。
+### 评论分类
+
+5 折 OOF，按 `asin` 分组，同一商品不跨折。
+
+| 模型 | 宏 F1 | PR-AUC | ROC-AUC |
+|---|---:|---:|---:|
+| Dummy | 0.4277 | 0.7475 | 0.5000 |
+| 逻辑回归（SGD） | 0.8583 | 0.9838 | 0.9551 |
+| 线性 SVM（SGD） | **0.8635** | **0.9837** | **0.9569** |
+| HistGradientBoosting | 0.7849 | 0.9701 | 0.9160 |
+| 随机森林 | 0.7747 | 0.9673 | 0.9086 |
+
+- 5 折 Wilcoxon `p=0.0625`；10 折复验 `p=0.001953`，说明 5 折的 p 值主要是样本量下限。
+- 仅文本宏 F1 **0.8727**，合并元数据反而降到 **0.8635**；仅元数据只有 0.5788。
+- BGE-small 在 3 万抽样、10 折上宏 F1 **0.8298**，高于哈希 TF-IDF 的 0.7618（`p=0.001953`）。
+- 否定范围特征把宏 F1 从 0.8689 提到 0.8785；否定子集错误率 15.95%→14.39%，转折 17.64%→16.35%。
+
+### 商品聚类
+
+40,259 件游戏本体商品、13 个聚类特征，`k=4`：
+
+- 轮廓系数 **0.209**
+- bootstrap ARI **0.9849**（95% 区间 0.9296–0.9976）
+
+| 簇 | 商品数 | 平均评分 | 平均评论量 | verified | 价格观测率 |
+|---|---:|---:|---:|---:|---:|
+| 0 中等热度·评分偏低 | 7,797 | 3.641 | 25.4 | 0.700 | 0.0001 |
+| 1 高热度·共购密集 | 11,877 | 4.011 | 94.5 | 0.638 | 0.1511 |
+| 2 长尾·共购稀疏 | 18,430 | 3.747 | 5.9 | 0.662 | 0.1814 |
+| 3 中等热度·Software | 2,155 | 3.671 | 12.5 | 0.709 | 0.3926 |
+
+四簇主要按热度与共购结构分开，评分差异很弱；簇名宜按热度/共购结构解释，不宜表述为评分分层。
+
+### 工程复现
+
+七步全量 847.3 秒，状态 `ok`：
+
+| 步骤 | 耗时 |
+|---|---:|
+| parse | 93.4 s |
+| scope | 4.7 s |
+| build_features | 109.9 s |
+| governance | 15.3 s |
+| rules | 101.5 s |
+| classify | 492.5 s |
+| cluster | 29.6 s |
+
+运行日志写入 `results/tables/run_log.json`，含 git 提交、耗时、硬件与每步产物。
+
+## 补充实验
+
+补充实验不改变七步主链的样本口径，用于检验稳健性与业务解释。
+
+### 评估稳健性
+
+| 实验 | 结果 | 结论 |
+|---|---|---|
+| 10 折复验 | SVM 宏 F1 0.8642±0.0088；配对差 0.4365（95% CI 0.4314–0.4417） | 5 折 p=0.0625 不是“无差异” |
+| 概率校准 | ECE 0.088→0.00036；Brier 0.0849→0.0695 | isotonic 明显改善概率质量 |
+| 句向量 | BGE 0.8298 vs TF-IDF 0.7618；p=0.001953 | 方向支持，但仍是小样本短文本 |
+| 时间外推 | 2015+ 宏 F1 0.9028–0.9133；回测 2003–2006 降到 0.756–0.776 | 2015 后稳定，早期样本不宜视为同分布 |
+| 模态消融 | 文本 0.8727 / 元数据 0.5788 / 合并 0.8635 | 文本是主信号，元数据没有稳定增量 |
+
+### 业务解释与网络结构
+
+| 实验 | 结果 | 结论 |
+|---|---|---|
+| 聚类外部验证 | 留出 12,078 件；评论量 ε²=0.437、also_buy ε²=0.479、评分仅 0.006 | 簇仍按热度/共购分层 |
+| 聚类方法对比 | GMM 0.1441；HDBSCAN 2 簇 0.3119；有价子集 0.2102 | 均未优于 KMeans k=4 |
+| 三张网络 | also_buy / also_view / 共同评论人；跨主品类 1.15% / 1.77% / 2.59% | 推荐网络比浏览/评论网络更窄 |
+| 链接预测 | 共同邻居 Recall@10 0.436、Recall@50 0.725；热度 0.010 | 推荐位可由共现结构补全，但不是购买预测 |
+| 边界复核 | 226 件强硬件词候选；前 30 条中 21 纯硬件、8 同捆、1 纯游戏 | 边界判定不按标题一刀切；Retro 另有 1,154 件被排除 |
+
+### 业务阈值
+
+20 万抽样、按 `asin` 5 折，isotonic 校准：
+
+| 用途 | 阈值 | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|
+| 人工审核起点（FN=5×FP） | 0.17 | 0.871 | 0.987 | 0.925 |
+| 高置信自动通过 | 0.46 | 0.928 | 0.955 | 0.941 |
+| 默认阈值 | 0.50 | 0.934 | 0.948 | 0.941 |
+
+- 0.17 的净收益 0.714，全部判正为 0.694。
+- 0.46 的净收益 0.666，全部判正为 0.530。
+- 0.01 的净收益最高，但已接近“全部判正”，不适合当运营阈值。
 
 ## 核心发现
 
-- 评分的驱动力几乎全在文本：仅文本宏 F1 0.8727，合并元数据反而 0.8635，仅元数据 0.5788。元数据不是评分主特征，更适合解释分群。
-- 词级系数把“为什么”落到具体词：great/best/awesome/love 推高评分，not/worst/boring/not worth 拉低评分；含否定词的样本错误率 12.48%，含转折词 13.95%，否定与转折仍是主要错误来源。
-- 四个簇分开的是热度和共购结构，不是评分高低：簇 1 高热度、共购密集（平均评分 4.011），适合系列捆绑；簇 0 评分 3.641、verified 0.700，适合质量排查；簇 2 是 45.8% 的长尾，平均 5.9 条评论，适合搜索/自动化。
-- 关联规则的头部是同系列/同平台组合；跨系列 support 中位数 0.0059，没有稳定跨品类组合。`also_buy` 只能当推荐位网络，不是真实购买网络。
-- 时间维度上，2015 年后的文本驱动是稳定的；但用后期文本回测早期会明显变难，早期评论不能当同分布样本。
-- 否定范围特征有小幅稳定增益；真正的错误来源仍是转折、反讽和短文本，继续加词表不如换句法/句向量。
-- 四簇在留出集仍按热度与共购结构分开，评分差异很弱；因此簇名应写成“高热度/长尾/Software”，不能写成“高评分/低评分”。
+1. **评分的驱动力几乎全在文本。** 仅文本宏 F1 0.8727，高于合并元数据的 0.8635；元数据更适合解释分群，不是评分主特征。
+2. **否定和转折是主要错误来源。** 含否定词样本错误率 12.48%，转折 13.95%；否定范围特征只有小增益，转折问题尚未根治。
+3. **四个商品簇是运营分层，不是评分分层。** 簇 1 高热度、共购密集；簇 2 是 45.8% 的长尾；评分差异 ε² 仅 0.006。
+4. **`also_buy` 是推荐位网络，不是购买网络。** 头部规则是同系列 / 同平台；跨系列 support 中位数 0.0059，没有稳定跨品类组合。
+5. **推荐位补全可预测，但不等同于购买预测。** 共同邻居 Recall@10 0.436，热度只有 0.010，`also_view` 余弦 0.266。
+6. **分类概率适合“阈值 + 人工审核”。** 0.46 可作高置信自动通过，0.17 可作审核起点；低阈值净收益被 74.6% 的正类率主导。
+
+## 合规补充实验
+
+对应课程表 1 的硬指标与可选项，补充了以下对照：
+
+| 项 | 结果 | 结论 |
+|---|---|---|
+| 嵌套调参 | 外层 5 折 × 内层 3 折 RandomizedSearch；默认/调参宏 F1 0.8631/0.8631 | 固定参数已接近平台，调参流程有效但无提升 |
+| 分群误差 | 总体 8.87%；3 星 37.24%、4 星 13.66%、5 星 2.67% | 3 星中性和早期语料最难，需优先人工复核 |
+| 不平衡处理 | 原始 / class_weight / 欠采样：LR 0.8778/0.8683/0.8600，SVM 0.8821/0.8702/0.8644 | 重加权与欠采样都降低宏 F1，保留原始分布 + 阈值 |
+| 特征选择 | 34 → 32 → top15；数值特征 F1 0.6205 vs 0.6203 | 无提升；PCA 前 10 主成分 58.15%，t-SNE 正负类重叠 |
+| 规则冗余与内存 | Apriori 72.76 s / 15.5 GB；FP-Growth 9.09 s / 27.5 MB；平凡/冗余规则 0 | FP-Growth 更适合复现，Apriori 接近内存上限 |
+
+数据字典已补字段级单位、来源与时点；表 1 的“或”项（Notebook 与看板、PCA/t-SNE 与特征选择）都保留了两套实现。
+
+## 交互看板
+
+`src/dashboard_app.py` 使用 Streamlit + Plotly，包含 4 个视图：
+
+- **总览**：样本量、评分、评论量、时间外推 F1。
+- **分群**：四个运营簇的规模与业务指标。
+- **时间**：逐年宏 F1 与 PR-AUC。
+- **网络**：三张网络的跨品类比例与边重叠。
+
+侧边栏的两个筛选器：
+
+- **运营簇**：联动总览 KPI 和分群视图。
+- **评论年份**：联动总览时间 F1 和时间曲线。
+
+启动：
+
+```bash
+pip install -r requirements-dashboard.txt
+streamlit run src/dashboard_app.py --server.port 8501
+```
+
+访问 `http://127.0.0.1:8501`；健康检查 `/_stcore/health`。不启动服务时打开 `results/dashboard.html` 作为静态 fallback。
 
 ## 目录结构
 
-```
+```text
 amazon-games-mining/
-├── data/
-│   ├── raw/                原始压缩文件，不入库
-│   └── processed/          清洗后的 parquet，不入库
-├── src/                    可执行脚本
-│   ├── config.py           路径、常量、随机种子
-│   ├── download.py         数据下载与完整性校验
-│   ├── parse.py            gzip JSON Lines 转 parquet
-│   ├── scope.py            判定商品是否为游戏本体
-│   ├── build_features.py   评论 × 商品宽表与固定折
-│   ├── governance.py       一致性检查、填补与异常值验证
-│   ├── classify.py         评论情感分类、评估与解释
-│   ├── classify_robustness.py  10 折复核、校准与业务阈值
-│   ├── classify_embedding.py   哈希 TF-IDF 与 BGE 句向量对照
-│   ├── classify_ablation.py    文本 / 元数据 / 合并的模态消融
-│   ├── classify_terms.py       词级系数与否定/转折错误率
-│   ├── rules.py            also_buy 共购关联规则与阈值对比
-│   ├── rules_linkage.py    规则同系列 / 跨系列与品类联动
-│   ├── cluster.py          商品聚类、簇画像与稳定性
-│   ├── cluster_compare.py  KMeans / GMM / HDBSCAN / 有价子集对比
-│   ├── cluster_insights.py  簇与评分/评论量/verified/价格观测联动
-│   ├── cluster_validate.py  按 asin 留出集验证簇的预测性
-│   ├── classify_time.py     按评论年份做时间外推回测
-│   ├── classify_negation.py 否定范围特征与否定/转折错误率
-│   ├── network_compare.py   also_buy / also_view / 共同评论人三网对比
-│   ├── dashboard_app.py     Streamlit 交互看板（4 视图、2 个联动筛选）
-│   ├── build_dashboard.py   生成 results/dashboard.html 静态 fallback
-│   ├── scope_audit.py      强硬件词与 Retro 边界复核清单
-│   ├── run_all.py          一键串联各步骤并写运行日志
-│   └── io_utils.py         流式读取 JSON Lines 的工具函数
-├── notebooks/              探索性分析与出图
-│   ├── 01_eda.ipynb
-│   ├── 02_rules.ipynb
-│   ├── 03_cluster.ipynb
-│   └── 04_repro.ipynb      复现入口与结果校验
-├── results/
-│   ├── figures/            图表输出
-│   └── tables/             表格与运行日志
-├── docs/                   数据说明、字段字典、治理与分类报告、环境配置
+├── data/                 原始与处理后的数据，不入库
+├── src/                  可执行脚本
+│   ├── config.py
+│   ├── parse.py / scope.py / build_features.py
+│   ├── governance.py
+│   ├── rules.py / rules_linkage.py
+│   ├── classify.py / classify_robustness.py
+│   ├── classify_embedding.py / classify_ablation.py
+│   ├── classify_terms.py / classify_time.py
+│   ├── classify_negation.py / classify_decision.py
+│   ├── classify_tuning.py / classify_subgroups.py
+│   ├── classify_imbalance.py / feature_selection.py
+│   ├── cluster.py / cluster_compare.py
+│   ├── cluster_insights.py / cluster_validate.py
+│   ├── network_compare.py / link_prediction.py
+│   ├── dashboard_app.py / build_dashboard.py
+│   ├── scope_audit.py
+│   ├── run_all.py
+│   └── io_utils.py
+├── notebooks/            01 EDA、02 规则、03 聚类、04 复现
+├── results/              figures 与 tables
+├── docs/                 数据、字段、治理、分类、看板文档
 ├── requirements.txt
-├── requirements-optional.txt  句向量对照的可选依赖
-├── requirements-dashboard.txt  Streamlit + Plotly 看板依赖
+├── requirements-optional.txt
+├── requirements-dashboard.txt
 └── README.md
 ```
 
-`src/rules.py`、`src/cluster.py` 与对应 notebook 已在 P3、P5 合入；`src/run_all.py` 串起 parse → scope → build_features → governance → rules → classify → cluster 七步，`notebooks/04_repro.ipynb` 展示运行日志与关键指标。
-
 ## 环境
 
-使用独立 conda 环境，Python 3.11，依赖版本已在 `requirements.txt` 中固定。
-
-首次配置按 [docs/setup.md](docs/setup.md) 操作，其中覆盖环境创建、依赖安装、Jupyter 内核注册、数据下载与自检。最短路径：
-
-```
+```bash
 conda create -n amazon-games python=3.11 -y
 conda activate amazon-games
 pip install -r requirements.txt
 python -m ipykernel install --user --name amazon-games --display-name "Python (amazon-games)"
 ```
 
-若默认的 pip 镜像不可用，安装时加 `-i https://pypi.org/simple`。图表中文标注需要系统中文字体，Windows 一般已带 `SimHei`，Linux 与 macOS 的处理见 setup 文档。
+若默认 pip 镜像不可用，加 `-i https://pypi.org/simple`。
+
+图表中文需要系统中文字体；Windows 一般已有 `SimHei`，其他系统见 [setup](docs/setup.md)。
 
 ## 分支与协作
 
-仓库只保留两条长期分支：
-
-- `main`：稳定版本，只通过 Pull Request 合入，不直接提交。
-- `dev`：集成分支，日常开发基线，P0–P6 已在此分支。
-
-并行开发使用短期功能分支，完成后开 PR 合入 `dev`，合并后删除：
-
-| 分支 | 内容 | 状态 |
+| 分支 | 用途 | 规则 |
 |---|---|---|
-| `feat/rules` | P3 关联规则、阈值敏感性、业务解读 | 已合并到 `dev` |
-| `feat/cluster` | P5 商品聚类、簇画像、bootstrap ARI | 已合并到 `dev` |
-| `feat/repro` | P6 一键复现、运行日志、复现 Notebook | 已合并到 `dev` |
+| `main` | 稳定版本 | 只通过 PR 合入 |
+| `dev` | 集成分支 | 日常开发基线 |
+| `feat/*` | 短期功能分支 | 从 `dev` 开，PR 回 `dev` |
 
-开始新工作前先同步 `dev`：
+已合并的功能分支：
 
-```
+| 分支 | 内容 |
+|---|---|
+| `feat/rules` | P3 关联规则 |
+| `feat/cluster` | P5 商品聚类 |
+| `feat/repro` | P6 一键复现 |
+| `feat/insights` | 消融、词级、时间、网络、看板 |
+
+当前在 `feat/validation` 上做链接预测、决策曲线与合规补充实验（调参、分群误差、不平衡、特征选择、规则内存），完成后 PR 回 `dev`。
+
+开始新工作：
+
+```bash
 git switch dev
 git pull --ff-only
 git switch -c feat/<阶段名>
 ```
 
-提交并推送功能分支：
+提交：
 
-```
+```bash
 git add <本阶段文件>
 git commit -m "feat(<阶段>): ..."
 git push -u origin feat/<阶段名>
 ```
 
-然后在 GitHub 开 PR，目标分支选 `dev`，不要直接推 `dev`，也不要自己合并。合并由仓库维护者完成。每天开始前执行 `git fetch origin` 与 `git rebase origin/dev`；只解决自己文件里的冲突。
+功能分支通过 PR 合入 `dev`；`data/`、`__pycache__`、`.ipynb_checkpoints` 不纳入版本控制。
 
-不要提交 `data/` 下的 parquet、`__pycache__`、`.ipynb_checkpoints` 或任何原始数据。
+## 运行命令
 
-## 运行顺序
+### 数据准备
 
-检查本地数据是否完整（不下载、不解压）：
-
-```
+```bash
 python src/download.py --verify
-```
-
-若文件缺失，重新下载：
-
-```
 python src/download.py
-```
-
-解析两个 gzip 文件，生成 parquet：
-
-```
 python src/parse.py
-```
-
-判定游戏本体边界：
-
-```
 python src/scope.py
-```
-
-构建评论 × 商品宽表，并给游戏本体固定分层分组折：
-
-```
 python src/build_features.py
 ```
 
-复算一致性、比较缺失填补策略与异常值检测：
+### 主流水线
 
-```
+```bash
 python src/governance.py
-```
-
-挖掘 `also_buy` 共购规则，比较 Apriori 与 FP-Growth，并输出阈值敏感性：
-
-```
 python src/rules.py
-```
-
-训练评论情感分类模型，输出指标、曲线、错误样本与 SHAP：
-
-```
 python src/classify.py
-```
-
-商品聚类、轮廓系数、bootstrap ARI 与簇画像：
-
-```
 python src/cluster.py
 ```
 
-10 折稳健性、效应量、校准与业务阈值：
+### 补充实验
 
-```
+```bash
 python src/classify_robustness.py
+python src/classify_ablation.py
+python src/classify_terms.py
+python src/classify_time.py --limit 300000
+python src/classify_negation.py --limit 150000
+python src/classify_decision.py
+python src/classify_tuning.py
+python src/classify_subgroups.py
+python src/classify_imbalance.py
+python src/feature_selection.py
+python src/network_compare.py
+python src/link_prediction.py --sources 2000
+python src/cluster_compare.py
+python src/cluster_insights.py
+python src/cluster_validate.py
+python src/scope_audit.py
 ```
 
-句向量对照（可选，需先安装 `fastembed`，首次会下载 BGE 模型）：
+句向量对照可选，需安装额外依赖并首次下载模型：
 
-```
+```bash
 pip install -r requirements-optional.txt
 set HF_ENDPOINT=https://hf-mirror.com
 python src/classify_embedding.py --limit 30000 --text-chars 300 --folds 10
 ```
 
-聚类方法对比、簇业务联动与边界复核：
+### 一键复现
 
-```
-python src/cluster_compare.py
-python src/cluster_insights.py
-python src/scope_audit.py
-```
-
-模态消融、词级解释与规则联动：
-
-```
-python src/classify_ablation.py
-python src/classify_terms.py
-python src/rules_linkage.py
-```
-
-时间外推、否定专项、三张网络、留出验证与业务看板：
-
-```
-python src/classify_time.py --limit 300000
-python src/classify_negation.py --limit 150000
-python src/network_compare.py
-python src/cluster_validate.py
-python src/build_dashboard.py
-```
-
-交互看板（4 个视图：总览、分群、时间、网络；运营簇与评论年份两个筛选器联动）：
-
-```
-pip install -r requirements-dashboard.txt
-streamlit run src/dashboard_app.py --server.port 8501
-```
-
-浏览器访问 `http://127.0.0.1:8501`。健康检查 `http://127.0.0.1:8501/_stcore/health` 返回 `ok`。不启动服务时，直接打开 `results/dashboard.html` 看静态 fallback。完整运行说明、联动验收与常见问题见 [docs/dashboard_guide.md](docs/dashboard_guide.md)。
-
-一键复现入口已可用。首次可先校验现有产物，不重跑：
-
-```
+```bash
 python src/run_all.py --check
-```
-
-七步都必须存在时使用：
-
-```
 python src/run_all.py --check --require-all
-```
-
-全量重跑约 14 分钟：
-
-```
 python src/run_all.py
 ```
 
-`run_all.py` 按 parse → scope → build_features → governance → rules → classify → cluster 的顺序串起整条流水线，并写入 `results/tables/run_log.json`。本机本次全量为 847.3 秒、状态 `ok`，其中分类 492.5 秒、规则 101.5 秒、聚类 29.6 秒。
+全量重跑约 14 分钟；`run_log.json` 会记录 git 提交、耗时、硬件与每步产物。
 
 ## 复现约定
 
-所有涉及随机性的步骤统一使用 `src/config.py` 中的 `SEED = 42`，并在文档中注明。
-运行脚本前确保工作目录为项目根目录，或直接使用 `python -m src.脚本名`。
-中间产物统一写入 `data/processed/`，图表与表格写入 `results/`，均不纳入版本控制。
+- 随机步骤统一使用 `SEED = 42`（`src/config.py`）。
+- 在项目根目录运行；或使用 `python -m src.脚本名`。
+- 中间产物写入 `data/processed/`，图表与表格写入 `results/`，均不入库。
+
+## 已知限制
+
+- 价格缺失 83.44%，四种填补的 R² 都为负；价格只做事后画像，不作为强特征。
+- `also_buy` 是推荐位，不是真实购买篮；规则与链接预测只能解释推荐结构。
+- 226 件强硬件词候选中，前 30 条里 8 件是同捆；主口径不按标题一刀切。
+- BGE 对照只覆盖 3 万条、300 字符，不外推到全量。
+- 聚类轮廓系数 0.209，簇间分离偏弱，更适合运营分层而非“自然类别”。

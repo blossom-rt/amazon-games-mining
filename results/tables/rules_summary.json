@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-13T23:26:14+08:00",
-  "git_commit": "864d786",
+  "generated_at": "2026-11-15T14:41:46+08:00",
+  "git_commit": "1995bd9",
   "seed": 42,
   "input": {
     "transactions": 19032,
@@ -31,8 +31,12 @@
     ]
   },
   "runtime_seconds": {
-    "apriori": 77.9,
-    "fpgrowth": 1.18
+    "apriori": 66.47,
+    "fpgrowth": 8.37
+  },
+  "peak_memory_mb": {
+    "apriori": 15503.23,
+    "fpgrowth": 27.48
   },
   "rule_counts": {
     "apriori": 1855,
@@ -40,6 +44,7 @@
     "after_dedup": 932,
     "trivial_removed": 0,
     "lift_filtered": 0,
+    "redundant_removed": 0,
     "same_series": 34,
     "conviction_median": 3.21
   },
@@ -51,7 +56,9 @@
     "confidence_in_range": true,
     "runtime_recorded": true,
     "no_trivial_rules": true,
-    "conviction_nonnegative": true
+    "no_redundant_rules": true,
+    "conviction_nonnegative": true,
+    "memory_recorded": true
   },
   "figure_errors": [],
   "hardware": {

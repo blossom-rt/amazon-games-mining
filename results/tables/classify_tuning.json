@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-11-15T14:43:55+08:00",
+  "seed": 42,
+  "sample_size": 80000,
+  "positive_rate": 0.7458,
+  "outer_splits": 5,
+  "inner_splits": 3,
+  "n_iter": 6,
+  "default": {
+    "macro_f1_mean": 0.8630618683883153,
+    "macro_f1_std": 0.0031867356096446074
+  },
+  "tuned": {
+    "macro_f1_mean": 0.8630570947620848,
+    "macro_f1_std": 0.004329140739477183,
+    "precision_mean": 0.8460701833073667,
+    "recall_mean": 0.88863246906524
+  },
+  "delta_mean": -4.773626230525352e-06,
+  "runtime_seconds": 68.8,
+  "hardware": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 28,
+    "ram_gb": 15.7,
+    "python": "3.11.18",
+    "pyarrow": "26.0.1"
+  },
+  "notes": [
+    "外层 5 折按 asin 分组，内层 3 折只在训练折调参；",
+    "TF-IDF 在外层训练折拟合，内层验证折不参与外层测试；",
+    "调参只针对线性 SVM（SGD hinge），默认参数作为对照。"
+  ],
+  "outputs": {
+    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_tuning_metrics.csv"
+  }
+}
