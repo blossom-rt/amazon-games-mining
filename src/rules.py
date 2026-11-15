@@ -16,6 +16,7 @@ import json
 import re
 import subprocess
 import time
+import tracemalloc
 from collections import Counter
 from datetime import datetime
 
@@ -147,24 +148,28 @@ def encode(transactions, min_support):
 def mine(frame, algorithm, min_support, min_confidence, max_len, n_transactions):
     started = time.perf_counter()
     if frame.shape[1] == 0:
-        return pd.DataFrame(), 0, time.perf_counter() - started
+        return pd.DataFrame(), 0, time.perf_counter() - started, 0.0
+    tracemalloc.start()
     itemsets = (
         apriori(frame, min_support=min_support, use_colnames=True, max_len=max_len)
         if algorithm == "apriori"
         else fpgrowth(frame, min_support=min_support, use_colnames=True, max_len=max_len)
     )
+    _, peak_bytes = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    peak_mb = peak_bytes / (1024 * 1024)
     if itemsets.empty:
-        return pd.DataFrame(), 0, time.perf_counter() - started
+        return pd.DataFrame(), 0, time.perf_counter() - started, peak_mb
     n_itemsets = int((itemsets["itemsets"].map(len) >= 2).sum())
     if n_itemsets == 0:
-        return pd.DataFrame(), 0, time.perf_counter() - started
+        return pd.DataFrame(), 0, time.perf_counter() - started, peak_mb
     rules = association_rules(
         itemsets,
         num_itemsets=n_transactions,
         metric="confidence",
         min_threshold=min_confidence,
     )
-    return rules, n_itemsets, time.perf_counter() - started
+    return rules, n_itemsets, time.perf_counter() - started, peak_mb
 
 
 def series_key(title: str) -> str:
@@ -196,6 +201,7 @@ def clean_rules(rules, n_transactions, titles):
         )
         empty.attrs["trivial_removed"] = 0
         empty.attrs["lift_removed"] = 0
+        empty.attrs["redundant_removed"] = 0
         return empty
     trivial_mask = (
         rules["antecedents"].map(len).eq(0)
@@ -223,8 +229,27 @@ def clean_rules(rules, n_transactions, titles):
     rules = (
         rules.sort_values(["confidence", "lift"], ascending=False)
         .drop_duplicates("pair_key")
-        .sort_values(["lift", "confidence"], ascending=False)
+        .reset_index(drop=True)
     )
+    # 冗余规则：同一后件下，若存在前件真子集且置信度不低于当前规则，则当前规则冗余。
+    # max_len=2 时只可能由 1 项前件的规则覆盖 2 项前件的规则。
+    records = rules[["antecedents", "consequents", "confidence"]].to_dict("records")
+    redundant = set()
+    for i, left in enumerate(records):
+        for j, right in enumerate(records):
+            if i == j:
+                continue
+            if (
+                right["consequents"] == left["consequents"]
+                and right["antecedents"] < left["antecedents"]
+                and right["confidence"] >= left["confidence"] - 1e-12
+            ):
+                redundant.add(i)
+                break
+    redundant_removed = len(redundant)
+    if redundant:
+        rules = rules.drop(index=sorted(redundant)).reset_index(drop=True)
+    rules = rules.sort_values(["lift", "confidence"], ascending=False)
     rules["antecedent_titles"] = rules["antecedent"].map(
         lambda s: " | ".join(titles.get(item, "") for item in s.split("|"))
     )
@@ -233,6 +258,7 @@ def clean_rules(rules, n_transactions, titles):
     )
     rules.attrs["trivial_removed"] = trivial_removed
     rules.attrs["lift_removed"] = lift_removed
+    rules.attrs["redundant_removed"] = redundant_removed
     return rules
 
 
@@ -380,12 +406,17 @@ def main() -> None:
 
     results = {}
     for algorithm in ALGORITHMS:
-        rules, n_itemsets, seconds = mine(
+        rules, n_itemsets, seconds, peak_mb = mine(
             frame, algorithm, args.min_support, args.min_confidence,
             args.max_len, n,
         )
-        results[algorithm] = {"rules": rules, "itemsets": n_itemsets, "seconds": seconds}
-        print(f"{algorithm}: {len(rules):,} 条规则，{n_itemsets:,} 个项集，{seconds:.1f} 秒")
+        results[algorithm] = {
+            "rules": rules, "itemsets": n_itemsets, "seconds": seconds, "peak_mb": peak_mb,
+        }
+        print(
+            f"{algorithm}: {len(rules):,} 条规则，{n_itemsets:,} 个项集，"
+            f"{seconds:.1f} 秒，峰值 {peak_mb:.1f} MB"
+        )
 
     base = results["apriori"]["rules"]
     other = results["fpgrowth"]["rules"]
@@ -407,6 +438,18 @@ def main() -> None:
          | cleaned["consequents"].map(len).eq(0)).sum()
     )
     assert trivial_remaining == 0, "清洗后仍有平凡规则"
+    cleaned_records = cleaned[["antecedents", "consequents", "confidence"]].to_dict("records")
+    redundant_remaining = 0
+    for i, left in enumerate(cleaned_records):
+        for j, right in enumerate(cleaned_records):
+            if i != j and (
+                right["consequents"] == left["consequents"]
+                and right["antecedents"] < left["antecedents"]
+                and right["confidence"] >= left["confidence"] - 1e-12
+            ):
+                redundant_remaining += 1
+                break
+    assert redundant_remaining == 0, "清洗后仍有冗余规则"
     rule_items = set().union(
         *[set(a) | set(c) for a, c in zip(base["antecedents"], base["consequents"])]
     )
@@ -439,7 +482,7 @@ def main() -> None:
         grid_frame, _ = encode(transactions, min_support)
         row = {"min_support": min_support, "min_confidence": min_confidence}
         for algorithm in ALGORITHMS:
-            rules, n_itemsets, seconds = mine(
+            rules, n_itemsets, seconds, peak_mb = mine(
                 grid_frame, algorithm, min_support, min_confidence,
                 args.max_len, n,
             )
@@ -454,6 +497,7 @@ def main() -> None:
                     "n_itemsets": n_itemsets,
                     "n_rules": len(rules),
                     "seconds": round(seconds, 2),
+                    "peak_mb": round(peak_mb, 2),
                 }
             )
             if algorithm == "apriori":
@@ -501,7 +545,9 @@ def main() -> None:
         "confidence_in_range": bool(base["confidence"].between(0, 1).all()),
         "runtime_recorded": all(row["seconds"] >= 0 for row in runtime_rows),
         "no_trivial_rules": bool(trivial_remaining == 0),
+        "no_redundant_rules": bool(redundant_remaining == 0),
         "conviction_nonnegative": bool((cleaned["conviction"] >= 0).all()),
+        "memory_recorded": all(row["peak_mb"] >= 0 for row in runtime_rows),
     }
     summary = {
         "generated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -526,12 +572,17 @@ def main() -> None:
             "apriori": round(results["apriori"]["seconds"], 2),
             "fpgrowth": round(results["fpgrowth"]["seconds"], 2),
         },
+        "peak_memory_mb": {
+            "apriori": round(results["apriori"]["peak_mb"], 2),
+            "fpgrowth": round(results["fpgrowth"]["peak_mb"], 2),
+        },
         "rule_counts": {
             "apriori": len(base),
             "fpgrowth": len(other),
             "after_dedup": len(cleaned),
             "trivial_removed": int(cleaned.attrs.get("trivial_removed", 0)),
             "lift_filtered": int(cleaned.attrs.get("lift_removed", 0)),
+            "redundant_removed": int(cleaned.attrs.get("redundant_removed", 0)),
             "same_series": int(cleaned["same_series"].sum()),
             "conviction_median": round(float(cleaned["conviction"].median()), 2),
         },
