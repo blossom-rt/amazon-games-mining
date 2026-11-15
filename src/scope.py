@@ -27,13 +27,14 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 try:
-    from .config import DATA_PROCESSED, FEATURES_PARQUET, SCOPE_PARQUET, SEED, TABLES
+    from .config import DATA_PROCESSED, SCOPE_PARQUET, SEED, TABLES
     from .parse import _hardware
 except ImportError:
-    from config import DATA_PROCESSED, FEATURES_PARQUET, SCOPE_PARQUET, SEED, TABLES
+    from config import DATA_PROCESSED, SCOPE_PARQUET, SEED, TABLES
     from parse import _hardware
 
 META_PARQUET = DATA_PROCESSED / "meta.parquet"
+REVIEWS_PARQUET = DATA_PROCESSED / "reviews.parquet"
 
 
 SOFTWARE_NODES = {"games", "digital games"}
@@ -193,7 +194,7 @@ def build_scope(force: bool) -> dict:
 
     meta = pq.read_table(META_PARQUET).to_pandas()
     scope = classify_products(meta)
-    reviews = pq.read_table(FEATURES_PARQUET, columns=["asin", "overall"]).to_pandas()
+    reviews = pq.read_table(REVIEWS_PARQUET, columns=["asin", "overall"]).to_pandas()
     checked = reviews.merge(scope[["asin", "in_scope"]], on="asin", how="left")
     checked["in_scope"] = checked["in_scope"].fillna(False).astype(bool)
 
