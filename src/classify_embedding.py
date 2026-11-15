@@ -7,6 +7,8 @@
 用法：
     HF_ENDPOINT=https://hf-mirror.com python src/classify_embedding.py
     python src/classify_embedding.py --limit 60000 --force
+    python src/classify_embedding.py --limit 60000 --folds 10 \
+        --backend sentence-transformers --device cuda
 """
 
 from __future__ import annotations
@@ -52,16 +54,27 @@ OUT_JSON = TABLES / "classify_embedding.json"
 OUT_FIG = FIGURES / "fig38_embedding_compare.png"
 
 
+def _gpu_name() -> str | None:
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            return torch.cuda.get_device_name(0)
+    except Exception:
+        return None
+    return None
+
+
 def setup_fonts() -> None:
     plt.rcParams["font.sans-serif"] = FONT_CANDIDATES
     plt.rcParams["axes.unicode_minus"] = False
 
 
-def load_frame(limit: int) -> pd.DataFrame:
+def load_frame(limit: int | None) -> pd.DataFrame:
     columns = ["asin", "label", "in_scope", "reviewText", "summary"] + MODEL_FEATURES
     frame = pq.read_table(FEATURES_PARQUET, columns=columns).to_pandas()
     frame = frame.loc[frame["in_scope"]].reset_index(drop=True)
-    if limit < len(frame):
+    if limit is not None and limit < len(frame):
         rng = np.random.default_rng(SEED)
         index = rng.choice(len(frame), size=limit, replace=False)
         frame = frame.iloc[np.sort(index)].reset_index(drop=True)
@@ -80,7 +93,26 @@ def make_folds(frame: pd.DataFrame) -> np.ndarray:
     return folds
 
 
-def embed_texts(texts: list[str], batch_size: int = 256) -> np.ndarray:
+def embed_texts(
+    texts: list[str],
+    batch_size: int = 256,
+    backend: str = "fastembed",
+    device: str = "cpu",
+) -> np.ndarray:
+    if backend == "sentence-transformers":
+        from sentence_transformers import SentenceTransformer
+
+        model = SentenceTransformer(EMBED_MODEL, device=device)
+        matrix = model.encode(
+            texts,
+            batch_size=batch_size,
+            normalize_embeddings=True,
+            show_progress_bar=True,
+            convert_to_numpy=True,
+        ).astype(np.float32)
+        assert matrix.shape == (len(texts), EMBED_DIM)
+        return matrix
+
     from fastembed import TextEmbedding
 
     model = TextEmbedding(model_name=EMBED_MODEL)
@@ -197,7 +229,7 @@ def plot_compare(table: pd.DataFrame, path: Path) -> None:
         axis.set_ylim(0.5, 1.0)
         axis.grid(axis="y", alpha=0.25)
         axis.tick_params(axis="x", rotation=15)
-    fig.suptitle(f"文本表示对比（同一抽样、同一 {N_FOLDS} 折、线性 SVM）")
+    fig.suptitle(f"文本表示对比（同一样本、同一 {N_FOLDS} 折、线性 SVM）")
     fig.tight_layout()
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -207,22 +239,49 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="TF-IDF 与预训练句向量对比")
     parser.add_argument("--limit", type=int, default=20_000)
     parser.add_argument(
+        "--full",
+        action="store_true",
+        help="使用全部 in_scope 评论，忽略 --limit",
+    )
+    parser.add_argument(
         "--text-chars", type=int, default=600,
         help="截断字符数；CPU 句向量推理的 token 数近似随之线性变化",
     )
     parser.add_argument("--folds", type=int, default=5, choices=[5, 10])
+    parser.add_argument(
+        "--backend",
+        default="fastembed",
+        choices=["fastembed", "sentence-transformers"],
+        help="fastembed=ONNX CPU；sentence-transformers=PyTorch，可用 --device cuda",
+    )
+    parser.add_argument(
+        "--device",
+        default="cpu",
+        choices=["cpu", "cuda"],
+        help="仅 sentence-transformers 后端生效",
+    )
+    parser.add_argument("--batch-size", type=int, default=128)
     args = parser.parse_args()
     global N_FOLDS
     N_FOLDS = args.folds
+    if args.backend == "sentence-transformers" and args.device == "cuda":
+        import torch
+
+        if not torch.cuda.is_available():
+            raise SystemExit("--device cuda 不可用：torch.cuda.is_available() 为 False")
     setup_fonts()
     started = time.perf_counter()
-    frame = load_frame(args.limit)
+    limit = None if args.full else args.limit
+    frame = load_frame(limit)
     folds = make_folds(frame)
-    print(f"抽样 {len(frame):,}，正类 {frame['label'].mean():.4f}，{N_FOLDS} 折")
+    scope = "全量" if args.full else "抽样"
+    print(f"{scope} {len(frame):,}，正类 {frame['label'].mean():.4f}，{N_FOLDS} 折")
 
     texts = (
         frame["reviewText"].fillna("") + " " + frame["summary"].fillna("")
     ).str.slice(0, args.text_chars).tolist()
+    # 文本已经抽成 list，释放宽表里的两列大字符串，降低全量运行的内存峰值。
+    frame = frame.drop(columns=["reviewText", "summary"])
 
     print("构建哈希 TF-IDF 计数")
     vectorizer = HashingVectorizer(
@@ -239,8 +298,15 @@ def main() -> None:
 
     print(f"生成 BGE 句向量（{EMBED_MODEL}）")
     embed_started = time.perf_counter()
-    embeddings = embed_texts(texts)
+    embeddings = embed_texts(
+        texts,
+        batch_size=args.batch_size,
+        backend=args.backend,
+        device=args.device,
+    )
     embed_seconds = time.perf_counter() - embed_started
+    del texts
+    gc.collect()
     table_bge, _, _ = evaluate(frame, folds, embeddings, "bge_small", use_sparse=False)
 
     table = pd.concat([table_tfidf, table_bge], ignore_index=True)
@@ -268,7 +334,10 @@ def main() -> None:
         "seed": SEED,
         "embedding_model": EMBED_MODEL,
         "embedding_dim": EMBED_DIM,
+        "embedding_backend": args.backend,
+        "embedding_device": args.device,
         "sample_size": int(len(frame)),
+        "full_data": bool(args.full),
         "positive_rate": round(float(frame["label"].mean()), 4),
         "n_folds": N_FOLDS,
         "models": summary,
@@ -280,13 +349,18 @@ def main() -> None:
             "processor": platform.processor(),
             "cpu_count": os.cpu_count(),
             "python": platform.python_version(),
+            "gpu": _gpu_name(),
         },
         "outputs": {"metrics": str(OUT_METRICS), "figure": str(OUT_FIG)},
         "text_chars": args.text_chars,
         "notes": [
-            f"抽样 {len(frame):,}、文本截断 {args.text_chars} 字符，结论不外推到全量；",
+            (
+                f"全量 {len(frame):,}、文本截断 {args.text_chars} 字符；"
+                if args.full
+                else f"抽样 {len(frame):,}、文本截断 {args.text_chars} 字符，结论不外推到全量；"
+            ),
             "两种表示使用同一批折、同一数值/类别预处理与同一线性 SVM；",
-            "BGE 向量已 L2 归一化，未做微调。",
+            f"BGE 后端 {args.backend}/{args.device}，向量已 L2 归一化，未做微调。",
         ],
     }
     OUT_JSON.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")

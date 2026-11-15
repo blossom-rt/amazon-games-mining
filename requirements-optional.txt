@@ -1,2 +1,4 @@
 fastembed==0.9.1
 onnxruntime==1.32.0
+# GPU 句向量对照；CUDA 版 torch 需按本机 CUDA 版本单独安装
+sentence-transformers==6.3.0

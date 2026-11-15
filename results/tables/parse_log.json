@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T19:23:43+08:00",
+  "generated_at": "2026-11-15T17:14:12+08:00",
   "hardware": {
     "platform": "Windows-10-10.0.26200-SP0",
     "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
@@ -26,7 +26,7 @@
     "style_rows": 1319972,
     "vote_rows": 442716,
     "image_rows": 28305,
-    "seconds": 64.4,
+    "seconds": 60.9,
     "output": "D:\\CodeField\\amazon-games-mining\\data\\processed\\reviews.parquet",
     "size_mb": 493.6
   },
@@ -37,9 +37,9 @@
     "null_asin": 0,
     "price_parsed": 11908,
     "also_buy_nonempty": 28668,
-    "seconds": 6.1,
+    "seconds": 5.0,
     "output": "D:\\CodeField\\amazon-games-mining\\data\\processed\\meta.parquet",
     "size_mb": 37.9
   },
-  "total_seconds": 92.7
+  "total_seconds": 77.2
 }

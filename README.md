@@ -16,7 +16,7 @@
 | 治理与缺失/异常 | [governance_report](docs/governance_report.md)、[scope_audit](docs/scope_audit.md) |
 | 分类模型与错误分析 | [classification_report](docs/classification_report.md) |
 | 规则复核 | [rules_review](docs/rules_review.md) |
-| 环境与看板 | [setup](docs/setup.md)、[dashboard_guide](docs/dashboard_guide.md) |
+| 环境与看板 | [setup](docs/setup.md)、[dashboard_guide](docs/dashboard_guide.md)、[streamlit_deploy](docs/streamlit_deploy.md) |
 | 项目结构 | [目录结构](#目录结构) |
 
 ## 当前进度
@@ -67,10 +67,10 @@ meta_Video_Games.json.gz    50.8 MB   商品元数据
 |---|---:|---:|---:|---:|
 | 0.020 / 0.15 | 0 | 0 | 0.00 s | 0.04 s |
 | 0.010 / 0.20 | 42 | 21 | 0.34 s | 0.09 s |
-| 0.005 / 0.10 | 1,864 | 932 | 58.98 s | 0.79 s |
-| 默认（0.005 / 0.20） | 1,855 | 932 | 77.9 s | 1.2 s |
+| 0.005 / 0.10 | 1,864 | 932 | 72.76 s | 9.09 s |
+| 默认（0.005 / 0.20） | 1,855 | 932 | 66.5 s | 8.4 s |
 
-- FP-Growth 在低支持度组约快 **66–75 倍**，规则集与 Apriori 完全一致。
+- FP-Growth 在低支持度组约快 **8 倍**，规则集与 Apriori 完全一致。
 - 932 条规则中 34 条为同系列，conviction 中位数 3.21。
 - 头部规则集中在同系列 / hidden-object 下载版互推，跨系列没有稳定组合。
 
@@ -88,7 +88,8 @@ meta_Video_Games.json.gz    50.8 MB   商品元数据
 
 - 5 折 Wilcoxon `p=0.0625`；10 折复验 `p=0.001953`，说明 5 折的 p 值主要是样本量下限。
 - 仅文本宏 F1 **0.8727**，合并元数据反而降到 **0.8635**；仅元数据只有 0.5788。
-- BGE-small 在 3 万抽样、10 折上宏 F1 **0.8298**，高于哈希 TF-IDF 的 0.7618（`p=0.001953`）。
+- BGE-small 全量 1,456,092 条、10 折、300 字符、RTX 4060 GPU：宏 F1 **0.8658**，哈希 TF-IDF 0.8197；配对差 0.0461，95% CI [0.0419, 0.0506]，`p=0.001953`；嵌入 1,052 秒、全流程 2,580 秒。60k 抽样为 0.8243 对 0.7540，方向一致。
+- 口径注意：主分类用 3,000 字符哈希 TF-IDF，宏 F1 0.8635；全量 BGE 只高 0.0023，且嵌入成本高，因此 BGE 是短文本/句义场景的补充，不替换主模型。
 - 否定范围特征把宏 F1 从 0.8689 提到 0.8785；否定子集错误率 15.95%→14.39%，转折 17.64%→16.35%。
 
 ### 商品聚类
@@ -133,7 +134,7 @@ meta_Video_Games.json.gz    50.8 MB   商品元数据
 |---|---|---|
 | 10 折复验 | SVM 宏 F1 0.8642±0.0088；配对差 0.4365（95% CI 0.4314–0.4417） | 5 折 p=0.0625 不是“无差异” |
 | 概率校准 | ECE 0.088→0.00036；Brier 0.0849→0.0695 | isotonic 明显改善概率质量 |
-| 句向量 | BGE 0.8298 vs TF-IDF 0.7618；p=0.001953 | 方向支持，但仍是小样本短文本 |
+| 句向量 | 全量 300 字符：BGE 0.8658 vs TF-IDF 0.8197；p=0.001953 | 短文本有增益，但主模型 0.8635 仅差 0.0023，成本高 |
 | 时间外推 | 2015+ 宏 F1 0.9028–0.9133；回测 2003–2006 降到 0.756–0.776 | 2015 后稳定，早期样本不宜视为同分布 |
 | 模态消融 | 文本 0.8727 / 元数据 0.5788 / 合并 0.8635 | 文本是主信号，元数据没有稳定增量 |
 
@@ -205,7 +206,14 @@ pip install -r requirements-dashboard.txt
 streamlit run src/dashboard_app.py --server.port 8501
 ```
 
-访问 `http://127.0.0.1:8501`；健康检查 `/_stcore/health`。不启动服务时打开 `results/dashboard.html` 作为静态 fallback。
+访问 `http://127.0.0.1:8501`；健康检查 `/_stcore/health`。
+
+公网访问地址：
+
+- **静态交互版（推荐，无需服务，本次提交合入 `dev` 后生效）**：`https://raw.githack.com/blossom-rt/amazon-games-mining/dev/results/dashboard.html`。支持 `?tab=overview|clusters|time|network`，含簇多选与年份滑块两个联动筛选。
+- **Streamlit 临时演示**：`https://quantitative-horses-fastest-close.trycloudflare.com`。由 Cloudflare Quick Tunnel 转发到本机 8501，进程重启后会换地址；长期部署见 [streamlit_deploy](docs/streamlit_deploy.md)。
+
+不启动服务时也可直接打开 `results/dashboard.html`。部署细节见 [dashboard_guide](docs/dashboard_guide.md)。
 
 ## 目录结构
 
@@ -226,7 +234,7 @@ amazon-games-mining/
 │   ├── cluster.py / cluster_compare.py
 │   ├── cluster_insights.py / cluster_validate.py
 │   ├── network_compare.py / link_prediction.py
-│   ├── dashboard_app.py / build_dashboard.py
+│   ├── dashboard_app.py / build_static_dashboard.py
 │   ├── scope_audit.py
 │   ├── run_all.py
 │   └── io_utils.py
@@ -269,7 +277,7 @@ python -m ipykernel install --user --name amazon-games --display-name "Python (a
 | `feat/repro` | P6 一键复现 |
 | `feat/insights` | 消融、词级、时间、网络、看板 |
 
-当前在 `feat/validation` 上做链接预测、决策曲线与合规补充实验（调参、分群误差、不平衡、特征选择、规则内存），完成后 PR 回 `dev`。
+链接预测、决策曲线与合规补充实验已合入 `dev`（PR #14）。GPU/BGE、`run_all --extras`、CI、Streamlit 部署与静态看板增强目前在 `dev` 工作区，提交后 PR 回 `dev`。
 
 开始新工作：
 
@@ -336,18 +344,30 @@ python src/scope_audit.py
 ```bash
 pip install -r requirements-optional.txt
 set HF_ENDPOINT=https://hf-mirror.com
-python src/classify_embedding.py --limit 30000 --text-chars 300 --folds 10
+python src/classify_embedding.py --full --text-chars 300 --folds 10 --backend sentence-transformers --device cuda
 ```
+
+CPU 环境把 `--backend` 改回 `fastembed`、`--device cpu`；没有 GPU 时不要用 `sentence-transformers` 跑 6 万条。
 
 ### 一键复现
 
 ```bash
 python src/run_all.py --check
+python src/run_all.py --check --extras
 python src/run_all.py --check --require-all
-python src/run_all.py
+python src/run_all.py --extras
 ```
 
-全量重跑约 14 分钟；`run_log.json` 会记录 git 提交、耗时、硬件与每步产物。
+全量重跑约 14 分钟；`run_log.json` 会记录 git 提交、耗时、硬件与每步产物。`--extras` 额外执行链接预测、决策曲线、调参、分群误差、不平衡与特征选择，全部结果可在 `results/` 查看。
+
+### CI
+
+`.github/workflows/ci.yml` 在 push/PR 到 `dev`、`main` 时：
+1. 缓存 `data/raw`，下载并校验两个 gzip 文件；
+2. 运行 `parse → scope → build_features`；
+3. 执行 `python src/run_all.py --check --require-all --only parse,scope,build_features`，只校验 CI 实际生成的三个步骤；分类/规则/聚类产物不在 CI 中训练。
+
+因为 `data/processed/` 不入库，CI 用缓存与重新生成保证检查针对真实产物，而不是空文件。
 
 ## 复现约定
 
@@ -360,5 +380,5 @@ python src/run_all.py
 - 价格缺失 83.44%，四种填补的 R² 都为负；价格只做事后画像，不作为强特征。
 - `also_buy` 是推荐位，不是真实购买篮；规则与链接预测只能解释推荐结构。
 - 226 件强硬件词候选中，前 30 条里 8 件是同捆；主口径不按标题一刀切。
-- BGE 对照只覆盖 3 万条、300 字符，不外推到全量。
+- BGE 对照已跑到全量，但文本截断 300 字符；主模型用 3,000 字符 TF-IDF，BGE 只高 0.0023，不能据此宣称句向量全面替代 TF-IDF。
 - 聚类轮廓系数 0.209，簇间分离偏弱，更适合运营分层而非“自然类别”。
