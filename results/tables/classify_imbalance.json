@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-11-15T14:46:22+08:00",
+  "seed": 42,
+  "sample_size": 200000,
+  "positive_rate": 0.746275,
+  "n_folds": 5,
+  "aggregate": [
+    {
+      "model": "logistic",
+      "strategy": "class_weight",
+      "macro_f1_mean": 0.868291891684018,
+      "macro_f1_std": 0.0055842268276943266,
+      "pr_auc_mean": 0.9856489180784364,
+      "roc_auc_mean": 0.9606102391769552,
+      "predicted_positive_rate": 0.6920848081591826,
+      "train_positive": 119404.0,
+      "train_negative": 40596.0
+    },
+    {
+      "model": "logistic",
+      "strategy": "原始分布",
+      "macro_f1_mean": 0.877775259990267,
+      "macro_f1_std": 0.0025093046335546124,
+      "pr_auc_mean": 0.9853971569358378,
+      "roc_auc_mean": 0.9604066549319625,
+      "predicted_positive_rate": 0.776269942156459,
+      "train_positive": 119404.0,
+      "train_negative": 40596.0
+    },
+    {
+      "model": "logistic",
+      "strategy": "随机欠采样",
+      "macro_f1_mean": 0.860004062083888,
+      "macro_f1_std": 0.006000740121430894,
+      "pr_auc_mean": 0.985248035284471,
+      "roc_auc_mean": 0.959485211498257,
+      "predicted_positive_rate": 0.6799847480997881,
+      "train_positive": 40596.0,
+      "train_negative": 40596.0
+    },
+    {
+      "model": "svm",
+      "strategy": "class_weight",
+      "macro_f1_mean": 0.8701713516883052,
+      "macro_f1_std": 0.002769075808139485,
+      "pr_auc_mean": 0.9855541414997493,
+      "roc_auc_mean": 0.9603562066886436,
+      "predicted_positive_rate": 0.6956049951727327,
+      "train_positive": 119404.0,
+      "train_negative": 40596.0
+    },
+    {
+      "model": "svm",
+      "strategy": "原始分布",
+      "macro_f1_mean": 0.882133701359938,
+      "macro_f1_std": 0.003101341992957867,
+      "pr_auc_mean": 0.9851079007802745,
+      "roc_auc_mean": 0.9601462342412963,
+      "predicted_positive_rate": 0.7681800471092144,
+      "train_positive": 119404.0,
+      "train_negative": 40596.0
+    },
+    {
+      "model": "svm",
+      "strategy": "随机欠采样",
+      "macro_f1_mean": 0.8644161600601705,
+      "macro_f1_std": 0.003341111808651309,
+      "pr_auc_mean": 0.9848008596808961,
+      "roc_auc_mean": 0.958330315276821,
+      "predicted_positive_rate": 0.690320010395748,
+      "train_positive": 40596.0,
+      "train_negative": 40596.0
+    }
+  ],
+  "notes": [
+    "原始分布、class_weight 与随机欠采样在同一外层 5 折上比较；",
+    "欠采样只作用于训练折，验证折保持原始分布；",
+    "线性 SVM 的分数是 decision_function，阈值用于预测正类。"
+  ],
+  "outputs": {
+    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_imbalance.csv"
+  }
+}
