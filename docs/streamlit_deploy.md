@@ -42,7 +42,7 @@ git commit -m "docs: add Streamlit Cloud deployment guide"
 git push origin dev
 ```
 
-注意：这一步会提交，是否执行由仓库维护者决定。不要提交 `data/raw`、`data/processed` 或 `.parquet`。
+提交前确认暂存区不含 `data/raw`、`data/processed` 或 `.parquet`。
 
 ## 创建应用
 
@@ -62,10 +62,10 @@ git push origin dev
 构建成功后地址形如：
 
 ```text
-https://amazon-games-mining.streamlit.app
+https://amazon-games-mining-dashboard.streamlit.app/
 ```
 
-实际子域名以 Cloud 页面显示为准。
+当前实际地址以 Cloud 页面显示的 App URL 为准。
 
 ## 更新数据后的重新部署
 
@@ -129,5 +129,4 @@ plotly==7.1.0
 
 ## 备选方案
 
-- **静态版**：`results/dashboard.html` 由 `src/build_static_dashboard.py` 生成，四个视图与两个联动筛选都在前端完成。推到 GitHub 后可用 raw.githack 或 GitHub Pages 访问。
-- **临时隧道**：Cloudflare Quick Tunnel 适合现场演示，进程停止即失效，不能作为长期地址。
+- **静态版**：`results/dashboard.html` 由 `src/build_static_dashboard.py` 生成，四个视图与两个联动筛选都在前端完成。合入 GitHub 后可用 raw.githack 或 GitHub Pages 访问。

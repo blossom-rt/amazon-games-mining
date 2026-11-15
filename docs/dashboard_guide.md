@@ -18,7 +18,7 @@
 在仓库根目录执行，使用项目环境：
 
 ```powershell
-cd "D:/CodeField/amazon-games-mining"
+cd amazon-games-mining
 conda activate amazon-games
 ```
 
@@ -50,12 +50,6 @@ pip install -r requirements-dashboard.txt
 
 ```powershell
 streamlit run src/dashboard_app.py --server.port 8501
-```
-
-也可以直接调用环境里的可执行文件：
-
-```powershell
-D:\Anoconda3\envs\amazon-games\Scripts\streamlit.exe run src/dashboard_app.py --server.port 8501
 ```
 
 启动后终端会显示：
@@ -136,21 +130,21 @@ Stop-Process -Id <PID>
 results/dashboard.html
 ```
 
-静态版同样提供 4 个视图与 2 个联动筛选（簇多选、年份滑块），并支持 `?tab=overview|clusters|time|network` 直达；它不依赖 Streamlit 服务，适合直接发给老师。正式验收仍建议用 Streamlit 版，以确认运行时无报错。
+静态版同样提供 4 个视图与 2 个联动筛选（簇多选、年份滑块），并支持 `?tab=overview|clusters|time|network` 直达；它不依赖 Streamlit 服务，适合直接分享。运行时验收以 Streamlit 版为准，用于确认服务与联动均正常。
 
 ## 8. 公网访问与部署
 
-当前可用的临时演示地址：
+当前公网地址（Streamlit Community Cloud，长期可用）：
 
 ```text
-https://quantitative-horses-fastest-close.trycloudflare.com
+https://amazon-games-mining-dashboard.streamlit.app/
 ```
 
-该地址由 Cloudflare Quick Tunnel 转发到本机 8501，进程重启后会换地址，不适合长期写进报告。长期部署任选其一：
+该 app 连接仓库 `dev` 分支的 `src/dashboard_app.py`，不依赖本机进程。需要自建时可选：
 
-1. **静态版（最省事）**：把 `results/dashboard.html` 推到 GitHub 的 `dev` 分支，访问
-   `https://raw.githack.com/blossom-rt/amazon-games-mining/dev/results/dashboard.html`。
-2. **Streamlit Community Cloud**：仓库公开后，在 share.streamlit.io 新建 app，分支选 `dev`，主文件填 `src/dashboard_app.py`；Cloud 读取根目录 `requirements.txt`，其中已含 streamlit/plotly。完整步骤见 [streamlit_deploy](streamlit_deploy.md)。
+1. **静态版（最省事）**：把 `results/dashboard.html` 合入 `main`，访问
+   `https://raw.githack.com/blossom-rt/amazon-games-mining/main/results/dashboard.html`。
+2. **Streamlit Community Cloud**：仓库公开后，在 share.streamlit.io 新建 app，分支选 `main` 或 `dev`，主文件填 `src/dashboard_app.py`；Cloud 读取根目录 `requirements.txt`，其中已含 streamlit/plotly。完整步骤见 [streamlit_deploy](streamlit_deploy.md)。
 3. **局域网演示**：`streamlit run src/dashboard_app.py --server.address 0.0.0.0 --server.port 8501`，同一网络访问 `http://<本机IP>:8501`。
 
 ## 9. 常见问题

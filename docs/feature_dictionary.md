@@ -14,7 +14,7 @@
 python src/build_features.py --force
 ```
 
-本次耗时 106.4 秒，环境为 Windows 10、28 核、15.7 GB 内存、Python 3.11.18、pyarrow 26.0.1。
+全量构建耗时 106.4 秒，环境为 Windows 10、28 核、15.7 GB 内存、Python 3.11.18、pyarrow 26.0.1。
 
 ## 连接口径
 
