@@ -60,13 +60,7 @@ git push origin main
 4. 打开 **Advanced settings**，Python 选择 **3.11**。
 5. 点击 **Deploy**，等待构建日志结束。
 
-构建成功后地址形如：
-
-```text
-https://amazon-games-mining-dashboard.streamlit.app/
-```
-
-当前实际地址以 Cloud 页面显示的 App URL 为准。
+构建成功后地址形如 `https://<app-name>.streamlit.app`。当前应用：[打开 Streamlit 应用](https://amazon-games-mining-dashboard.streamlit.app/)，实际地址以 Cloud 页面显示的 App URL 为准。
 
 ## 更新数据后的重新部署
 
