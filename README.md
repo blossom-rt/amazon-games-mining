@@ -210,10 +210,12 @@ streamlit run src/dashboard_app.py --server.port 8501
 
 公网访问地址：
 
-- **静态交互版（无需服务）**：`https://raw.githack.com/blossom-rt/amazon-games-mining/main/results/dashboard.html`。页面底部提供总览、分群、时间、网络四个标签页；也可用查询参数直接打开，例如 `?tab=overview`、`?tab=clusters`、`?tab=time`、`?tab=network`。侧边栏的“运营簇”多选和“评论年份”滑块是两个联动筛选器。
-- **Streamlit 公网演示**：`https://amazon-games-mining-dashboard.streamlit.app/`。部署在 Streamlit Community Cloud，分支 `dev`，入口 `src/dashboard_app.py`。
+- **静态交互版（无需服务，推荐作为稳定入口）**：`https://raw.githack.com/blossom-rt/amazon-games-mining/main/results/dashboard.html`。页面底部提供总览、分群、时间、网络四个标签页；也可用查询参数直接打开，例如 `?tab=overview`、`?tab=clusters`、`?tab=time`、`?tab=network`。侧边栏的“运营簇”多选和“评论年份”滑块是两个联动筛选器。
+- **Streamlit 公网演示（免费公开 app）**：`https://amazon-games-mining-dashboard.streamlit.app/`。部署在 Streamlit Community Cloud，分支 `main`，入口 `src/dashboard_app.py`。
 
-不启动服务时也可直接打开 `results/dashboard.html`。部署细节见 [dashboard_guide](docs/dashboard_guide.md)。
+Streamlit Community Cloud 的免费公开 app 在约 12 小时无访问后会休眠。页面出现 “This app has gone to sleep due to inactivity” 时，点击 “Yes, get this app back up!” 即可唤醒，数据和代码不会丢失。截图与部署说明见 [dashboard_guide](docs/dashboard_guide.md)；如需无需唤醒的入口，优先使用上面的静态版。
+
+不启动服务时也可直接打开 `results/dashboard.html`。
 
 ## 目录结构
 
@@ -387,7 +389,7 @@ export HF_ENDPOINT=https://hf-mirror.com
 python src/classify_embedding.py --full --text-chars 300 --folds 10 --backend sentence-transformers --device cuda
 ```
 
-PowerShell 使用 `$env:HF_ENDPOINT = "https://hf-mirror.com"`。CPU 环境改用 `--backend fastembed --device cpu`；`sentence-transformers` 的 6 万条对照在 CPU 上耗时过长，不建议在无 GPU 环境运行。
+PowerShell 使用 `$env:HF_ENDPOINT = "https://hf-mirror.com"`。CPU 环境改用 `--backend fastembed --device cpu`；全量 `sentence-transformers` 对照在 CPU 上耗时过长，不建议在无 GPU 环境运行。
 
 ### 看板与复现 Notebook
 

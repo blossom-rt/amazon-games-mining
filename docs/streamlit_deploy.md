@@ -39,7 +39,8 @@ pip install -r requirements-dashboard.txt
 git status --short
 git add requirements.txt src/dashboard_app.py results/tables docs/streamlit_deploy.md
 git commit -m "docs: add Streamlit Cloud deployment guide"
-git push origin dev
+# main 受保护时，先合入 PR 再触发部署
+git push origin main
 ```
 
 提交前确认暂存区不含 `data/raw`、`data/processed` 或 `.parquet`。
@@ -53,7 +54,7 @@ git push origin dev
 | 字段 | 值 |
 | --- | --- |
 | Repository | `blossom-rt/amazon-games-mining` |
-| Branch | `dev` |
+| Branch | `main` |
 | Main file path | `src/dashboard_app.py` |
 
 4. 打开 **Advanced settings**，Python 选择 **3.11**。
@@ -75,10 +76,10 @@ https://amazon-games-mining-dashboard.streamlit.app/
 python src/run_all.py --extras
 git add results/tables/*.json
 git commit -m "chore: refresh dashboard data"
-git push origin dev
+git push origin main
 ```
 
-Cloud 检测到 `dev` 分支更新后会自动重新部署。若页面仍是旧数据，在应用右上角菜单选择 **Reboot app**。
+Cloud 检测到 `main` 分支更新后会自动重新部署。若页面仍是旧数据，在应用右上角菜单选择 **Reboot app**。
 
 ## 运行限制
 
@@ -104,7 +105,7 @@ plotly==7.1.0
 
 **页面报 `FileNotFoundError`**
 
-四个 JSON 没有提交到 GitHub，或分支不是预期的 `dev`。检查：
+四个 JSON 没有提交到 GitHub，或分支不是预期的 `main`。检查：
 
 ```powershell
 git ls-files results/tables/cluster_outcomes.json results/tables/classify_time.json results/tables/network_compare.json results/tables/classify_summary.json
