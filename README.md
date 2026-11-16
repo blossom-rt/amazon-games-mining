@@ -206,12 +206,12 @@ pip install -r requirements-dashboard.txt
 streamlit run src/dashboard_app.py --server.port 8501
 ```
 
-访问 `http://127.0.0.1:8501`；健康检查 `/_stcore/health`。
+访问 [http://127.0.0.1:8501](http://127.0.0.1:8501)；健康检查 `/_stcore/health`。
 
 公网访问地址：
 
-- **静态交互版（无需服务，推荐作为稳定入口）**：`https://raw.githack.com/blossom-rt/amazon-games-mining/main/results/dashboard.html`。页面底部提供总览、分群、时间、网络四个标签页；也可用查询参数直接打开，例如 `?tab=overview`、`?tab=clusters`、`?tab=time`、`?tab=network`。侧边栏的“运营簇”多选和“评论年份”滑块是两个联动筛选器。
-- **Streamlit 公网演示（免费公开 app）**：`https://amazon-games-mining-dashboard.streamlit.app/`。部署在 Streamlit Community Cloud，分支 `main`，入口 `src/dashboard_app.py`。
+- **静态交互版（无需服务，推荐作为稳定入口）**：[打开静态看板](https://raw.githack.com/blossom-rt/amazon-games-mining/main/results/dashboard.html)。页面底部提供总览、分群、时间、网络四个标签页；也可用查询参数直接打开，例如 `?tab=overview`、`?tab=clusters`、`?tab=time`、`?tab=network`。侧边栏的“运营簇”多选和“评论年份”滑块是两个联动筛选器。
+- **Streamlit 公网演示（免费公开 app）**：[打开 Streamlit 应用](https://amazon-games-mining-dashboard.streamlit.app/)。部署在 Streamlit Community Cloud，分支 `main`，入口 `src/dashboard_app.py`。
 
 Streamlit Community Cloud 的免费公开 app 在约 12 小时无访问后会休眠。页面出现 “This app has gone to sleep due to inactivity” 时，点击 “Yes, get this app back up!” 即可唤醒，数据和代码不会丢失。截图与部署说明见 [dashboard_guide](docs/dashboard_guide.md)；如需无需唤醒的入口，优先使用上面的静态版。
 
@@ -405,7 +405,7 @@ python src/build_static_dashboard.py
 jupyter lab notebooks/04_repro.ipynb
 ```
 
-Streamlit 打开 `http://127.0.0.1:8501`；静态版打开 `results/dashboard.html`。`04_repro.ipynb` 默认只读取已有产物，设置环境变量 `RUN_FULL_PIPELINE=1` 才会触发全量重跑。
+Streamlit 打开 [http://127.0.0.1:8501](http://127.0.0.1:8501)；静态版打开 `results/dashboard.html`。`04_repro.ipynb` 默认只读取已有产物，设置环境变量 `RUN_FULL_PIPELINE=1` 才会触发全量重跑。
 
 ### 一键复现
 
