@@ -58,7 +58,7 @@ streamlit run src/dashboard_app.py --server.port 8501
 Local URL: http://127.0.0.1:8501
 ```
 
-浏览器打开 http://127.0.0.1:8501 即可。服务只监听本机回环地址，默认不对局域网开放。
+浏览器打开 [http://127.0.0.1:8501](http://127.0.0.1:8501) 即可。服务只监听本机回环地址，默认不对局域网开放。
 
 健康检查：
 
@@ -134,11 +134,7 @@ results/dashboard.html
 
 ## 8. 公网访问与部署
 
-当前公网地址（Streamlit Community Cloud 免费公开 app）：
-
-```text
-https://amazon-games-mining-dashboard.streamlit.app/
-```
+当前公网地址（Streamlit Community Cloud 免费公开 app）：[打开 Streamlit 应用](https://amazon-games-mining-dashboard.streamlit.app/)。
 
 该 app 连接仓库 `main` 分支的 `src/dashboard_app.py`，不依赖本机进程。免费公开 app 在约 12 小时无访问后会休眠；页面出现 “This app has gone to sleep due to inactivity” 时，点击 “Yes, get this app back up!” 即可唤醒，数据和代码不会丢失。如需无需唤醒的入口，优先使用静态版。
 
@@ -147,7 +143,7 @@ https://amazon-games-mining-dashboard.streamlit.app/
 需要自建时可选：
 
 1. **静态版（无休眠，最稳定）**：把 `results/dashboard.html` 合入 `main`，访问
-   `https://raw.githack.com/blossom-rt/amazon-games-mining/main/results/dashboard.html`。
+   [静态看板](https://raw.githack.com/blossom-rt/amazon-games-mining/main/results/dashboard.html)。
 2. **Streamlit Community Cloud**：仓库公开后，在 share.streamlit.io 新建 app，分支选 `main` 或 `dev`，主文件填 `src/dashboard_app.py`；Cloud 读取根目录 `requirements.txt`，其中已含 streamlit/plotly。完整步骤见 [streamlit_deploy](streamlit_deploy.md)。
 3. **局域网演示**：`streamlit run src/dashboard_app.py --server.address 0.0.0.0 --server.port 8501`，同一网络访问 `http://<本机IP>:8501`。
 
