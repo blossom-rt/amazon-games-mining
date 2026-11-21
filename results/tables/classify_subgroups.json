@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-11-15T14:44:35+08:00",
-  "source": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_decision_oof.parquet",
+  "source": "results/tables/classify_decision_oof.parquet",
   "n_rows": 200000,
   "threshold": 0.5,
   "overall": {
@@ -230,7 +230,7 @@
     "误差率为 1-准确率；组内宏 F1 在只有单一类别的组会退化，需结合样本量看。"
   ],
   "outputs": {
-    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_subgroups.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig49_subgroup_errors.png"
+    "csv": "results/tables/classify_subgroups.csv",
+    "figure": "results/figures/fig49_subgroup_errors.png"
   }
 }
