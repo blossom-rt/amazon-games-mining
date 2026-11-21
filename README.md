@@ -414,11 +414,28 @@ Streamlit 打开 [http://127.0.0.1:8501](http://127.0.0.1:8501)；静态版打�
 | `python src/run_all.py --check` | 只检查必需产物，不重新训练 |
 | `python src/run_all.py --check --extras` | 连同补充实验产物一起检查 |
 | `python src/run_all.py --check --require-all` | 把可选步骤缺失视为失败，用于最终验收 |
-| `python src/run_all.py --extras` | 全量重跑主流水线并执行补充实验 |
+| `python src/run_all.py --extras` | 全量重跑主流水线、补充实验，并重绘/校验 44 张图 |
 | `python src/run_all.py --only parse,scope,build_features` | 只跑指定步骤 |
 | `python src/run_all.py --skip classify` | 跳过指定步骤 |
 
-主流水线全量约 14 分钟；`--extras` 会额外执行链接预测、决策曲线、调参、分群误差、不平衡与特征选择，总时长取决于机器。`results/tables/run_log.json` 记录每步命令、耗时、硬件、输出文件与 git 状态。
+主流水线全量约 14 分钟；`--extras` 会额外执行链接预测、决策曲线、调参、分群误差、不平衡、特征选择与时间外推，最后执行 `figures` 步骤，总时长取决于机器。`results/tables/run_log.json` 记录每步命令、耗时、硬件、输出文件与 git 状态。
+
+### 图表复现
+
+44 张结果图由 `src/figure_pipeline.py` 统一重绘和校验。完整路径：
+
+```bash
+python src/run_all.py --extras
+```
+
+已有 `data/processed/` 与 `results/tables/` 时，只重绘从表生成的 33 张并检查全部 44 张：
+
+```bash
+python src/figure_pipeline.py --all
+python src/figure_pipeline.py --check
+```
+
+另外 11 张（fig20/21/23/25、30–33、43、49、50）由 `cluster.py`、`classify.py`、`classify_time.py`、`classify_subgroups.py`、`feature_selection.py` 直接写成最终样式；`--all` 发现缺失时会提示对应命令。输入依赖、字体安装与缺表处理见 [docs/figure_reproduction.md](docs/figure_reproduction.md)。
 
 ### CI
 
@@ -435,7 +452,7 @@ CI 不训练规则、分类、聚类与补充实验模型；这些步骤的完�
 
 - 随机步骤统一使用 `SEED = 42`（`src/config.py`）。
 - 在项目根目录运行；或使用 `python -m src.脚本名`。
-- 中间产物写入 `data/processed/`，图表与表格写入 `results/`，均不入库。
+- `data/processed/` 与 `*.parquet` 中间产物不入库，需由数据准备步骤生成；`results/tables/` 与 `results/figures/` 中的结果表和图随仓库提交，作为图表复现的轻量输入。
 
 ## 已知限制
 

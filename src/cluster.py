@@ -360,10 +360,9 @@ def plot_k_selection(table, chosen_k, path_inertia, path_silhouette):
     plt.axvline(chosen_k, color="red", linestyle="--", label=f"选定 k={chosen_k}")
     plt.xlabel("簇数 k")
     plt.ylabel("簇内平方和 inertia")
-    plt.title("肘部法：inertia 随 k 的变化")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(path_inertia, dpi=150, bbox_inches="tight")
+    plt.savefig(path_inertia, dpi=200)
     plt.close()
 
     plt.figure(figsize=(7, 4))
@@ -371,10 +370,9 @@ def plot_k_selection(table, chosen_k, path_inertia, path_silhouette):
     plt.axvline(chosen_k, color="red", linestyle="--", label=f"选定 k={chosen_k}")
     plt.xlabel("簇数 k")
     plt.ylabel("轮廓系数 silhouette")
-    plt.title("轮廓系数随 k 的变化")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(path_silhouette, dpi=150, bbox_inches="tight")
+    plt.savefig(path_silhouette, dpi=200)
     plt.close()
 
 
@@ -397,7 +395,7 @@ def plot_clusters(matrix, labels, profiles, path):
     plt.ylabel("主成分 2")
     plt.title("商品聚类的 PCA 二维投影")
     plt.tight_layout()
-    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.savefig(path, dpi=200)
     plt.close()
 
 
@@ -424,9 +422,8 @@ def plot_profiles(profiles, path):
             plt.text(
                 col, row, f"{values[row, col]:.2f}", ha="center", va="center", fontsize=7
             )
-    plt.title("各簇特征画像（文字为均值，颜色为标准化偏差）")
     plt.tight_layout()
-    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.savefig(path, dpi=200)
     plt.close()
 
 
@@ -439,7 +436,7 @@ def plot_sizes(profiles, path):
     plt.ylabel("商品数")
     plt.title("各簇商品数量")
     plt.tight_layout()
-    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.savefig(path, dpi=200)
     plt.close()
 
 
@@ -449,10 +446,9 @@ def plot_bootstrap(stability, path):
     plt.axvline(MIN_ARI, color="black", linestyle="--", label=f"门槛 ARI={MIN_ARI}")
     plt.xlabel("调整兰德指数 ARI")
     plt.ylabel("bootstrap 次数")
-    plt.title("bootstrap 重采样的聚类稳定性")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.savefig(path, dpi=200)
     plt.close()
 
 
@@ -477,7 +473,7 @@ def plot_price_reviews(products, labels, profiles, path):
     ]
     plt.legend(handles, list(profiles["name"]), title="簇", fontsize=8)
     plt.tight_layout()
-    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.savefig(path, dpi=200)
     plt.close()
 
 

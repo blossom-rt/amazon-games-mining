@@ -12,7 +12,7 @@
     python src/run_all.py --check --extras # 连补充实验产物一起校验
     python src/run_all.py --dry-run        # 只打印将执行的命令
     python src/run_all.py                  # 主流水线全量重跑
-    python src/run_all.py --extras         # 主流水线 + 补充实验
+    python src/run_all.py --extras         # 主流水线 + 补充实验 + 44 张图
     python src/run_all.py --only link_prediction
     python src/run_all.py --skip classify --keep-going
 """
@@ -39,9 +39,10 @@ try:
         FIGURES,
         ROOT,
         TABLES,
+        sanitize_result_jsons,
     )
 except ImportError:
-    from config import DATA_PROCESSED, FIGURES, ROOT, TABLES
+    from config import DATA_PROCESSED, FIGURES, ROOT, TABLES, sanitize_result_jsons
 
 LOG_PATH = TABLES / "run_log.json"
 SCHEMA_VERSION = 1
@@ -208,6 +209,19 @@ EXTRAS: list[dict] = [
         "figures": [],
     },
     {
+        "name": "classify_time",
+        "script": "classify_time.py",
+        "required": True,
+        "force_arg": False,
+        "args": ["--limit", "300000"],
+        "outputs": [
+            TABLES / "classify_time.json",
+            TABLES / "classify_time_metrics.csv",
+            FIGURES / "fig43_time_drift.png",
+        ],
+        "figures": [],
+    },
+    {
         "name": "link_prediction",
         "script": "link_prediction.py",
         "required": True,
@@ -219,6 +233,16 @@ EXTRAS: list[dict] = [
             FIGURES / "fig47_link_prediction.png",
         ],
         "figures": [],
+    },
+    {
+        "name": "figures",
+        "script": "figure_pipeline.py",
+        "required": True,
+        "force_arg": False,
+        "args": ["--all"],
+        "outputs": [],
+        "figures": ["fig[0-9][0-9]_*.png"],
+        "min_figures": 44,
     },
 ]
 
