@@ -63,6 +63,7 @@ PowerShell 没有 `findstr` 的话，直接 `pip list` 再对照下面的表。�
 | scikit-learn | 1.9.1 |
 | mlxtend | 0.25.0 |
 | matplotlib | 3.11.2 |
+| Pillow | 13.0.0 |
 | seaborn | 0.13.2 |
 | shap | 0.51.0 |
 | lime | 0.2.0.1 |
@@ -105,7 +106,7 @@ python -m jupyter lab
 先确认依赖都能导入：
 
 ```
-python -c "import pandas, numpy, pyarrow, scipy, sklearn, mlxtend, matplotlib, seaborn, shap, lime; print('依赖导入正常')"
+python -c "import pandas, numpy, pyarrow, scipy, sklearn, mlxtend, matplotlib, PIL, seaborn, shap, lime; print('依赖导入正常')"
 ```
 
 再核对三个关键版本：
