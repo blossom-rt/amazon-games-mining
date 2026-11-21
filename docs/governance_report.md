@@ -1,6 +1,6 @@
 # 数据治理验证报告
 
-本报告对应表 1 中的数据治理要求：一致性检查、缺失填补策略对比与异常值检测。所有数字由 `python src/governance.py` 生成，原始结果见 `results/tables/governance_report.json`。
+本报告对应项目的数据治理验收要求：一致性检查、缺失填补策略对比与异常值检测。所有数字由 `python src/governance.py` 生成，原始结果见 `results/tables/governance_report.json`。
 
 ## 一致性检查
 

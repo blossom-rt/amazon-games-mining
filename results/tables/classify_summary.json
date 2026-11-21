@@ -165,9 +165,9 @@
     "python": "3.11.18"
   },
   "outputs": {
-    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_metrics.csv",
-    "errors": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_errors.csv",
-    "importance": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_importance.csv",
-    "shap": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_shap.json"
+    "metrics": "results/tables/classify_metrics.csv",
+    "errors": "results/tables/classify_errors.csv",
+    "importance": "results/tables/classify_importance.csv",
+    "shap": "results/tables/classify_shap.json"
   }
 }

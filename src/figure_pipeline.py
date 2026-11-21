@@ -20,7 +20,10 @@ from pathlib import Path
 
 from PIL import Image
 
-from config import sanitize_result_jsons
+try:
+    from .config import sanitize_result_jsons
+except ImportError:
+    from config import sanitize_result_jsons
 
 ROOT = Path(__file__).resolve().parents[1]
 FIGURES = ROOT / "results" / "figures"

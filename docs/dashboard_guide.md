@@ -2,7 +2,7 @@
 
 ## 1. 用途与验收点
 
-看板用 Streamlit + Plotly 实现，入口为 `src/dashboard_app.py`。它对应课程表 1 中“可交互仪表盘”一项：
+看板用 Streamlit + Plotly 实现，入口为 `src/dashboard_app.py`。它覆盖项目验收中的“可交互仪表盘”要求：
 
 - 不少于 3 个视图：实际 4 个，总览、分群、时间、网络。
 - 至少 2 个视图联动筛选：实际 2 个筛选器。

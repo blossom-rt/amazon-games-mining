@@ -1,4 +1,9 @@
+[English](README.en.md) | 简体中文
+
 # Amazon 游戏商品数据的探索与挖掘
+
+[![CI](https://github.com/blossom-rt/amazon-games-mining/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/blossom-rt/amazon-games-mining/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 基于 Amazon Review Data (2018) 的 Video_Games 品类，融合两类异构数据：
 
@@ -17,24 +22,27 @@
 | 分类模型与错误分析 | [classification_report](docs/classification_report.md) |
 | 规则复核 | [rules_review](docs/rules_review.md) |
 | 环境与看板 | [setup](docs/setup.md)、[dashboard_guide](docs/dashboard_guide.md)、[streamlit_deploy](docs/streamlit_deploy.md) |
+| 图表复现 | [figure_reproduction](docs/figure_reproduction.md) |
 | 项目结构 | [目录结构](#目录结构) |
 
-## 项目进度
+## 分析阶段
 
-| 阶段 | 内容 | 状态 |
-|---|---|---|
-| P0 | gzip JSON Lines 解析为 parquet，字段字典回填 | 完成 |
-| P1 | 缺失机制、填补策略、异常值、一致性检查与 EDA | 完成 |
-| P2 | 评论 × 商品宽表，时间窗与交互特征，分层分组折 | 完成 |
-| P2.5 | 游戏本体边界判定，固定 P3/P4/P5 样本口径 | 完成 |
-| P3 | `also_buy` 关联规则，Apriori / FP-Growth 对比 | 完成 |
-| P4 | 评论情感分类，5 折与 10 折评估，错误分析与 SHAP | 完成 |
-| P5 | 商品聚类，肘部法、轮廓系数、bootstrap ARI | 完成 |
-| P6 | `run_all.py`、`04_repro.ipynb`、运行日志与结果归档 | 完成 |
-| 补充分析 | 校准、句向量、消融、词级、时间、网络、链接预测、决策曲线 | 完成 |
-| 交互看板 | Streamlit 4 视图、2 个联动筛选 | 完成 |
+下表按数据链路列出各阶段及其产物：
 
-P3 关联规则、P5 聚类及对应的规则/聚类文档由[协作成员](https://github.com/coldcodefish)负责；P0–P2.5 数据链路、P4 分类、P6 一键复现、Streamlit/静态看板，以及 README、环境、字段字典、治理与分类文档由[仓库维护者](https://github.com/blossom-rt)负责。`main` 为稳定发布分支，`dev` 为集成分支。
+| 阶段 | 内容 |
+|---|---|
+| P0 | gzip JSON Lines 解析为 parquet，字段字典回填 |
+| P1 | 缺失机制、填补策略、异常值、一致性检查与 EDA |
+| P2 | 评论 × 商品宽表，时间窗与交互特征，分层分组折 |
+| P2.5 | 游戏本体边界判定，固定 P3/P4/P5 样本口径 |
+| P3 | `also_buy` 关联规则，Apriori / FP-Growth 对比 |
+| P4 | 评论情感分类，5 折与 10 折评估，错误分析与 SHAP |
+| P5 | 商品聚类，肘部法、轮廓系数、bootstrap ARI |
+| P6 | `run_all.py`、`04_repro.ipynb`、运行日志与结果归档 |
+| 补充分析 | 校准、句向量、消融、词级、时间、网络、链接预测、决策曲线 |
+| 交互看板 | Streamlit 4 视图、2 个联动筛选 |
+
+模块分工：P3 关联规则、P5 聚类及对应的规则/聚类文档由 [@coldcodefish](https://github.com/coldcodefish) 负责；P0–P2.5 数据链路、P4 分类、P6 一键复现、Streamlit/静态看板，以及 README、环境、字段字典、治理与分类文档由 [@blossom-rt](https://github.com/blossom-rt) 负责。`main` 为稳定发布分支，`dev` 为集成分支。
 
 ## 数据概览
 
@@ -171,9 +179,9 @@ meta_Video_Games.json.gz    50.8 MB   商品元数据
 5. **推荐位补全可预测，但不等同于购买预测。** 共同邻居 Recall@10 0.436，热度只有 0.010，`also_view` 余弦 0.266。
 6. **分类概率适合“阈值 + 人工审核”。** 0.46 可作高置信自动通过，0.17 可作审核起点；低阈值净收益被 74.6% 的正类率主导。
 
-## 合规补充实验
+## 验收补充实验
 
-对应课程表 1 的硬指标与可选项，补充了以下对照：
+按项目验收指标与可选项，补充了以下对照：
 
 | 项 | 结果 | 结论 |
 |---|---|---|
@@ -246,6 +254,7 @@ amazon-games-mining/
 │   ├── classify_tuning.py       嵌套超参数搜索
 │   ├── classify_subgroups.py    分群误差
 │   ├── classify_imbalance.py    不平衡处理对照
+│   ├── figure_pipeline.py       44 张图的统一重绘与校验入口
 │   ├── feature_selection.py     特征选择、PCA、t-SNE
 │   ├── cluster.py               主聚类与 bootstrap ARI
 │   ├── cluster_compare.py       GMM / HDBSCAN / 有价子集
@@ -269,6 +278,7 @@ amazon-games-mining/
 │   ├── governance_report.md / classification_report.md
 │   ├── scope_definition.md / scope_audit.md / rules_review.md
 │   ├── dashboard_guide.md / streamlit_deploy.md / setup.md
+│   └── figure_reproduction.md
 ├── .github/workflows/ci.yml
 ├── requirements-core.txt        核心分析依赖
 ├── requirements.txt             核心 + Streamlit/Plotly
@@ -442,11 +452,12 @@ python src/figure_pipeline.py --check
 `.github/workflows/ci.yml` 在 push/PR 到 `dev`、`main` 或手动触发时：
 
 1. 安装 `requirements-core.txt`（不安装看板的 Streamlit/Plotly，缩短 CI 时间）；
-2. 缓存并校验 `data/raw`；
-3. 运行 `parse → scope → build_features`；
-4. 执行 `python src/run_all.py --check --require-all --only parse,scope,build_features`，只校验 CI 实际生成的三步。
+2. 执行 `python src/figure_pipeline.py --check`，校验已提交的 44 张图存在、可读且尺寸达标；
+3. 缓存并校验 `data/raw`；
+4. 运行 `parse → scope → build_features`；
+5. 执行 `python src/run_all.py --check --require-all --only parse,scope,build_features`，只校验 CI 实际生成的三步。
 
-CI 不训练规则、分类、聚类与补充实验模型；这些步骤的完整验收在本地执行 `python src/run_all.py --check --extras`。`data/processed/` 不入库，CI 通过缓存和现场重建保证检查针对真实产物。
+CI 不训练规则、分类、聚类与补充实验模型；这些步骤的完整验收在本地执行 `python src/run_all.py --check --extras`。CI 只检查已提交图片的完整性与可读性，不重绘图片；完整重绘仍由 `--extras` 最后一步完成。`data/processed/` 不入库，CI 通过缓存和现场重建保证检查针对真实产物。
 
 ## 复现约定
 
@@ -461,3 +472,16 @@ CI 不训练规则、分类、聚类与补充实验模型；这些步骤的完�
 - 226 件强硬件词候选中，前 30 条里 8 件是同捆；主口径不按标题一刀切。
 - BGE 对照已跑到全量，但文本截断 300 字符；主模型用 3,000 字符 TF-IDF，BGE 只高 0.0023，不能据此宣称句向量全面替代 TF-IDF。
 - 聚类轮廓系数 0.209，簇间分离偏弱，更适合运营分层而非“自然类别”。
+
+## 贡献
+
+欢迎通过 Issue 或 PR 参与：
+
+1. 从 `dev` 开分支，命名 `feat/<主题>` 或 `fix/<主题>`；
+2. 不提交 `data/`、`*.parquet`、报告 docx 与本机路径；
+3. 提交前运行 `python src/run_all.py --check --extras`、`python src/figure_pipeline.py --check` 与 `python -m py_compile src/*.py`；
+4. 在 PR 中说明改动目的、影响范围与验证命令，目标分支选 `dev`。
+
+## 许可证
+
+代码以 MIT License 发布，见 [LICENSE](LICENSE)。Amazon Review Data 的引用与使用条款见 [data_source](docs/data_source.md)。
