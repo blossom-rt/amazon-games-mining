@@ -552,6 +552,6 @@
     }
   ],
   "outputs": {
-    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\rules_linkage.csv"
+    "csv": "results/tables/rules_linkage.csv"
   }
 }

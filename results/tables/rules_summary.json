@@ -70,8 +70,8 @@
     "pyarrow": "26.0.1"
   },
   "outputs": {
-    "top": "D:\\CodeField\\amazon-games-mining\\results\\tables\\rules_top.csv",
-    "thresholds": "D:\\CodeField\\amazon-games-mining\\results\\tables\\rules_thresholds.csv",
-    "runtime": "D:\\CodeField\\amazon-games-mining\\results\\tables\\rules_runtime.csv"
+    "top": "results/tables/rules_top.csv",
+    "thresholds": "results/tables/rules_thresholds.csv",
+    "runtime": "results/tables/rules_runtime.csv"
   }
 }

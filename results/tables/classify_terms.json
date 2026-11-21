@@ -282,7 +282,7 @@
     "python": "3.11.18"
   },
   "outputs": {
-    "terms": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_terms.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig41_top_terms.png"
+    "terms": "results/tables/classify_terms.csv",
+    "figure": "results/figures/fig41_top_terms.png"
   }
 }

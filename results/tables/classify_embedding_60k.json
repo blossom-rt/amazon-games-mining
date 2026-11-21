@@ -67,8 +67,8 @@
     "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU"
   },
   "outputs": {
-    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_embedding_metrics.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig38_embedding_compare.png"
+    "metrics": "results/tables/classify_embedding_metrics.csv",
+    "figure": "results/figures/fig38_embedding_compare.png"
   },
   "text_chars": 300,
   "notes": [

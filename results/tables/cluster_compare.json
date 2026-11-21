@@ -62,8 +62,8 @@
     "python": "3.11.18"
   },
   "outputs": {
-    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_compare_metrics.csv",
-    "profiles": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_compare_profiles.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig39_cluster_methods.png"
+    "metrics": "results/tables/cluster_compare_metrics.csv",
+    "profiles": "results/tables/cluster_compare_profiles.csv",
+    "figure": "results/figures/fig39_cluster_methods.png"
   }
 }
