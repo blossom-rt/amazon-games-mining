@@ -56,8 +56,8 @@
     "净收益按每 1 条样本计；代价敏感阈值最小化 5*FN+FP。"
   ],
   "outputs": {
-    "curve": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_decision_curve.csv",
-    "oof": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_decision_oof.parquet",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig48_decision_curve.png"
+    "curve": "results/tables/classify_decision_curve.csv",
+    "oof": "results/tables/classify_decision_oof.parquet",
+    "figure": "results/figures/fig48_decision_curve.png"
   }
 }

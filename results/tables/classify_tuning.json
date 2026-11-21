@@ -32,6 +32,6 @@
     "调参只针对线性 SVM（SGD hinge），默认参数作为对照。"
   ],
   "outputs": {
-    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_tuning_metrics.csv"
+    "metrics": "results/tables/classify_tuning_metrics.csv"
   }
 }

@@ -18,6 +18,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
@@ -160,20 +161,25 @@ def main() -> None:
         }
     ).sort_values("importance", ascending=False).to_csv(OUT_CSV, index=False, encoding="utf-8-sig")
 
-    figure, axes = plt.subplots(1, 2, figsize=(12, 4.4))
+    figure, axes = plt.subplots(1, 2, figsize=(7.2, 2.64))
     axes[0].bar(range(1, len(explained) + 1), explained * 100, color="#4c72b0")
     axes[0].plot(range(1, len(explained) + 1), np.cumsum(explained) * 100, "o-", color="#c44e52")
     axes[0].set_xlabel("主成分")
     axes[0].set_ylabel("解释方差（%）")
-    axes[0].set_title("PCA 前 10 个主成分")
+    axes[0].text(0.01, 1.02, "(a)", transform=axes[0].transAxes, fontsize=9, fontweight="bold")
     axes[0].grid(alpha=0.25)
     colors = np.where(y[tsne_idx] == 1, "#55a868", "#c44e52")
     axes[1].scatter(embedding[:, 0], embedding[:, 1], c=colors, s=5, alpha=0.6)
     axes[1].set_xlabel("t-SNE 1")
     axes[1].set_ylabel("t-SNE 2")
-    axes[1].set_title("t-SNE 二维投影（5,000 条）")
+    axes[1].text(0.01, 1.02, "(b)", transform=axes[1].transAxes, fontsize=9, fontweight="bold")
+    handles = [
+        Patch(color="#55a868", label="正向（4–5 星）"),
+        Patch(color="#c44e52", label="负向（1–3 星）"),
+    ]
+    axes[1].legend(handles=handles, fontsize=8, frameon=False, loc="upper right")
     axes[1].grid(alpha=0.25)
-    figure.suptitle("特征选择与降维（游戏本体数值特征）")
+
     figure.tight_layout()
     figure.savefig(OUT_FIG, dpi=150, bbox_inches="tight")
     plt.close(figure)

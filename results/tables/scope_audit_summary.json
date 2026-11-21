@@ -16,7 +16,7 @@
     "Retro 缺 Games 节点的商品无法确认是否游戏本体，保守排除。"
   ],
   "outputs": {
-    "candidates": "D:\\CodeField\\amazon-games-mining\\results\\tables\\scope_audit_candidates.csv",
-    "retro": "D:\\CodeField\\amazon-games-mining\\results\\tables\\scope_audit_retro.csv"
+    "candidates": "results/tables/scope_audit_candidates.csv",
+    "retro": "results/tables/scope_audit_retro.csv"
   }
 }

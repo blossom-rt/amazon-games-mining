@@ -35,3 +35,7 @@ desktop.ini
 *.log
 *.tmp
 results/figures/*.tmp
+
+# 报告排版本地工具（硬编码报告目录，仅本机使用）
+src/replace_report_figures.py
+src/reinsert_report_figures.py

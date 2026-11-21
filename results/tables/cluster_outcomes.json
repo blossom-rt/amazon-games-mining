@@ -78,7 +78,7 @@
   },
   "notes": "聚类未使用评分；评分、verified、价格只在事后检验。",
   "outputs": {
-    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_outcomes.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig42_cluster_outcomes.png"
+    "csv": "results/tables/cluster_outcomes.csv",
+    "figure": "results/figures/fig42_cluster_outcomes.png"
   }
 }

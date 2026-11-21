@@ -135,11 +135,11 @@
   },
   "outputs": {
     "features": {
-      "path": "D:\\CodeField\\amazon-games-mining\\data\\processed\\features.parquet",
+      "path": "data/processed/features.parquet",
       "size_mb": 497.3
     },
     "folds": {
-      "path": "D:\\CodeField\\amazon-games-mining\\data\\processed\\folds.parquet",
+      "path": "data/processed/folds.parquet",
       "size_mb": 13.8
     }
   }

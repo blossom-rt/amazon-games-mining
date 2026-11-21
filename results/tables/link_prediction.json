@@ -95,7 +95,7 @@
     "Recall@10 的随机期望约为 10 / 商品数。"
   ],
   "outputs": {
-    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\link_prediction_metrics.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig47_link_prediction.png"
+    "metrics": "results/tables/link_prediction_metrics.csv",
+    "figure": "results/figures/fig47_link_prediction.png"
   }
 }

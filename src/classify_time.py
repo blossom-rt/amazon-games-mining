@@ -21,6 +21,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
@@ -120,20 +121,21 @@ def run_direction(frame: pd.DataFrame, train_mask, label: str) -> tuple[list[dic
 def plot(metrics_frame: pd.DataFrame, path) -> None:
     annual = metrics_frame.loc[metrics_frame["year"] != "all"].copy()
     annual["year"] = annual["year"].astype(int)
-    figure, axes = plt.subplots(1, 2, figsize=(11, 4.4))
+    figure, axes = plt.subplots(1, 2, figsize=(7.2, 2.84))
     for direction, part in annual.groupby("direction"):
         part = part.sort_values("year")
         axes[0].plot(part["year"], part["macro_f1"], marker="o", label=str(direction))
         axes[1].plot(part["year"], part["pr_auc"], marker="o", label=str(direction))
-    axes[0].set_title("逐年宏 F1")
+    axes[0].text(0.01, 1.02, "(a)", transform=axes[0].transAxes, fontsize=9, fontweight="bold")
     axes[0].set_xlabel("评论年份")
     axes[0].set_ylabel("宏 F1")
     axes[0].legend(fontsize=8)
-    axes[1].set_title("逐年 PR-AUC")
+    axes[1].text(0.01, 1.02, "(b)", transform=axes[1].transAxes, fontsize=9, fontweight="bold")
     axes[1].set_xlabel("评论年份")
     axes[1].set_ylabel("PR-AUC")
     axes[1].legend(fontsize=8)
     for axis in axes:
+        axis.xaxis.set_major_locator(MultipleLocator(4))
         axis.grid(alpha=0.25)
     figure.tight_layout()
     figure.savefig(path, dpi=150, bbox_inches="tight")

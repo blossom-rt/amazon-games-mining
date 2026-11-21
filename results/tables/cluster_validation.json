@@ -73,7 +73,7 @@
   },
   "method": "训练集拟合缩尾/标准化/KMeans，留出集按最近质心分配；结果只在留出集统计",
   "outputs": {
-    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_validation_outcomes.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig45_cluster_validation.png"
+    "csv": "results/tables/cluster_validation_outcomes.csv",
+    "figure": "results/figures/fig45_cluster_validation.png"
   }
 }

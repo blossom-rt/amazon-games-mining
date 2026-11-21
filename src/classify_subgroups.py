@@ -90,21 +90,22 @@ def main() -> None:
     }
     OUT_JSON.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    figure, axes = plt.subplots(1, 2, figsize=(11.5, 4.4))
+    figure, axes = plt.subplots(1, 2, figsize=(7.2, 2.76))
     rating = result.loc[result["dimension"] == "overall"].copy()
     axes[0].bar(rating["group"], rating["error_rate"] * 100, color="#c44e52")
+    axes[0].set_xticks(range(len(rating)), [str(int(float(value))) for value in rating["group"]])
     axes[0].set_xlabel("评分档（星）")
     axes[0].set_ylabel("错误率（%）")
-    axes[0].set_title("按评分档的分群错误率")
+    axes[0].text(0.01, 1.02, "(a)", transform=axes[0].transAxes, fontsize=9, fontweight="bold")
     axes[0].grid(axis="y", alpha=0.25)
 
     cats = result.loc[result["dimension"] == "main_cat_group"].sort_values("n", ascending=False)
     axes[1].barh(cats["group"], cats["error_rate"] * 100, color="#4c72b0")
     axes[1].invert_yaxis()
     axes[1].set_xlabel("错误率（%）")
-    axes[1].set_title("按主品类的分群错误率")
+    axes[1].text(0.01, 1.02, "(b)", transform=axes[1].transAxes, fontsize=9, fontweight="bold")
     axes[1].grid(axis="x", alpha=0.25)
-    figure.suptitle("分类误差分群统计（20 万 OOF，阈值 0.5）")
+
     figure.tight_layout()
     figure.savefig(OUT_FIG, dpi=150, bbox_inches="tight")
     plt.close(figure)

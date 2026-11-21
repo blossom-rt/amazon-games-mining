@@ -232,7 +232,7 @@
     }
   ],
   "outputs": {
-    "top_csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\network_compare_top.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig46_network_compare.png"
+    "top_csv": "results/tables/network_compare_top.csv",
+    "figure": "results/figures/fig46_network_compare.png"
   }
 }
