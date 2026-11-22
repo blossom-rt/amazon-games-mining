@@ -19,7 +19,7 @@
       "category_leaf_freq",
       "main_cat_freq"
     ],
-    "source": "D:\\CodeField\\amazon-games-mining\\data\\processed\\features.parquet"
+    "source": "data/processed/features.parquet"
   },
   "k_selection": {
     "k": [
@@ -104,7 +104,7 @@
     "pyarrow": "26.0.1"
   },
   "outputs": {
-    "profiles": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_profiles.csv",
-    "stability": "D:\\CodeField\\amazon-games-mining\\results\\tables\\cluster_stability.csv"
+    "profiles": "results/tables/cluster_profiles.csv",
+    "stability": "results/tables/cluster_stability.csv"
   }
 }

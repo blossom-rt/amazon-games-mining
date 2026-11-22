@@ -1,6 +1,6 @@
 # 图表复现
 
-本仓库的 44 张结果图都可以从仓库内脚本和结果表重新生成，不需要报告 docx。
+本仓库的 44 张结果图都可以从仓库内脚本和结果表重新生成，不依赖外部文档。
 
 ## 一键路径
 
@@ -107,4 +107,6 @@ brew install --cask font-noto-sans-cjk
 - 输出分组计数；任一缺失或损坏时退出码为 1；
 - 不比较像素哈希，避免不同系统字体度量造成误报。
 
-`python src/run_all.py --check --extras` 额外检查 `figures` 步骤的 44 张图数量。报告 docx 不参与校验。
+`python src/run_all.py --check --extras` 额外检查 `figures` 步骤的 44 张图数量。外部文档不参与校验。
+
+CI 在每次 push/PR 时执行一次 `python src/figure_pipeline.py --check`，只验证已提交图片的完整性和可读性，不重绘图片；完整重绘仍在本地通过 `python src/run_all.py --extras` 完成。

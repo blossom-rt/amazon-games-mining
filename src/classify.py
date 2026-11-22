@@ -388,7 +388,7 @@ def plot_shap(contributions: np.ndarray, base_value: float, feature_names: list[
             color=["#C44E52" if values[i] > 0 else "#4C72B0" for i in order][::-1],
         )
         axes[index].set_title(
-            f"{index + 1} {samples[index]['group']}  logit={samples[index]['score']:.3f}  实际={samples[index]['label']}",
+            f"{index + 1} {samples[index]['group']}  f={samples[index]['score']:.2f}  y={samples[index]['label']}",
             fontsize=6.5,
             pad=3,
         )

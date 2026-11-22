@@ -198,7 +198,7 @@
     "t-SNE 仅用于可视化，不进入模型。"
   ],
   "outputs": {
-    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\feature_selection.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig50_feature_selection.png"
+    "csv": "results/tables/feature_selection.csv",
+    "figure": "results/figures/fig50_feature_selection.png"
   }
 }
