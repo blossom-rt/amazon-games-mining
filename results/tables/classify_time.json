@@ -238,7 +238,7 @@
     }
   ],
   "outputs": {
-    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_time_metrics.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig43_time_drift.png"
+    "csv": "results/tables/classify_time_metrics.csv",
+    "figure": "results/figures/fig43_time_drift.png"
   }
 }

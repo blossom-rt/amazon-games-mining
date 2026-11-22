@@ -52,3 +52,47 @@ DEFAULT_MAX_BASKET_LEN = 50
 
 # 图表的中文字体候选，按顺序取第一个系统已安装的
 FONT_CANDIDATES = ["Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "PingFang SC"]
+
+
+def relative_path(path: str | Path) -> str:
+    """把仓库内路径写成 POSIX 相对路径，避免日志暴露本机目录。"""
+    candidate = Path(path)
+    try:
+        return candidate.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return candidate.as_posix()
+
+
+def _relative_json_value(value):
+    if isinstance(value, dict):
+        return {key: _relative_json_value(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_relative_json_value(item) for item in value]
+    if isinstance(value, str):
+        import re
+
+        text = value
+        for prefix in (ROOT.as_posix() + "/", str(ROOT) + "\\"):
+            text = text.replace(prefix, "")
+        text = text.replace(str(ROOT), ".").replace(ROOT.as_posix(), ".")
+        text = re.sub(r"[A-Za-z]:[\\/][^\s\"]*?python(?:\.exe)?", "python", text)
+        return text.replace("\\", "/")
+    return value
+
+
+def sanitize_result_jsons() -> int:
+    """把 results/tables/*.json 里的本机绝对路径改为仓库相对路径。"""
+    import json
+
+    changed = 0
+    for path in sorted(TABLES.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        cleaned = _relative_json_value(payload)
+        if cleaned == payload:
+            continue
+        path.write_text(json.dumps(cleaned, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        changed += 1
+    return changed

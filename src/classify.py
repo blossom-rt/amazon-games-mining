@@ -43,6 +43,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 try:
     from .config import (
@@ -79,6 +80,13 @@ MODEL_LABELS = {
     "linear_svm": "线性 SVM（SGD）",
     "hist_gb": "HistGradientBoosting",
     "random_forest": "随机森林",
+}
+MODEL_COLORS = {
+    "dummy": "#8C8C8C",
+    "logistic_sgd": "#DD8452",
+    "linear_svm": "#4C72B0",
+    "hist_gb": "#55A868",
+    "random_forest": "#8172B3",
 }
 METRIC_NAMES = ["accuracy", "macro_f1", "pr_auc", "roc_auc"]
 
@@ -256,40 +264,40 @@ def metric_row(name: str, fold: int, y_true, score, pred, seconds: float, n_trai
 
 
 def plot_curves(y_true, scores: dict, roc_path: Path, pr_path: Path) -> None:
-    figure, axis = plt.subplots(figsize=(7.5, 5.5))
+    figure, axis = plt.subplots(figsize=(6.2, 4.55))
     for name in MODEL_NAMES:
         score = scores[name]
         fpr, tpr, _ = roc_curve(y_true, score)
         axis.plot(
             fpr,
             tpr,
-            linewidth=1.6,
+            linewidth=1.4,
+            color=MODEL_COLORS[name],
             label=f"{MODEL_LABELS[name]} (AUC {roc_auc_score(y_true, score):.3f})",
         )
     axis.plot([0, 1], [0, 1], color="#999999", linestyle="--", linewidth=1)
     axis.set_xlabel("假正率 FPR")
     axis.set_ylabel("真正率 TPR")
-    axis.set_title("图30 各模型 ROC 曲线（OOF）")
-    axis.legend(fontsize=8, loc="lower right")
+    axis.legend(fontsize=7, loc="lower right")
     axis.grid(alpha=0.25)
     figure.tight_layout()
     figure.savefig(roc_path, dpi=180)
     plt.close(figure)
 
-    figure, axis = plt.subplots(figsize=(7.5, 5.5))
+    figure, axis = plt.subplots(figsize=(6.2, 4.55))
     for name in MODEL_NAMES:
         score = scores[name]
         precision, recall, _ = precision_recall_curve(y_true, score)
         axis.plot(
             recall,
             precision,
-            linewidth=1.6,
+            linewidth=1.4,
+            color=MODEL_COLORS[name],
             label=f"{MODEL_LABELS[name]} (AP {average_precision_score(y_true, score):.3f})",
         )
     axis.set_xlabel("召回率 Recall")
     axis.set_ylabel("精确率 Precision")
-    axis.set_title("图31 各模型 PR 曲线（OOF）")
-    axis.legend(fontsize=8, loc="upper right")
+    axis.legend(fontsize=7, loc="upper right")
     axis.grid(alpha=0.25)
     figure.tight_layout()
     figure.savefig(pr_path, dpi=180)
@@ -297,41 +305,42 @@ def plot_curves(y_true, scores: dict, roc_path: Path, pr_path: Path) -> None:
 
 
 def plot_confusion(y_true, predictions: dict, path: Path) -> None:
-    figure, axes = plt.subplots(2, 3, figsize=(13, 8))
+    figure, axes = plt.subplots(2, 3, figsize=(6.5, 4.0))
     axes = axes.ravel()
     for index, name in enumerate(MODEL_NAMES):
         matrix = confusion_matrix(y_true, predictions[name], labels=[0, 1])
+        row_sums = matrix.sum(axis=1, keepdims=True)
+        rates = matrix / np.maximum(row_sums, 1)
         axis = axes[index]
-        axis.imshow(matrix, cmap="Blues")
+        axis.imshow(rates, cmap="Blues", vmin=0, vmax=1)
         for row in range(2):
             for column in range(2):
                 axis.text(
                     column,
                     row,
-                    f"{matrix[row, column]:,}",
+                    f"{rates[row, column]:.1%}\n({matrix[row, column]:,})",
                     ha="center",
                     va="center",
-                    color="white" if matrix[row, column] > matrix.max() / 2 else "#222222",
-                    fontsize=10,
+                    color="white" if rates[row, column] > 0.55 else "#222222",
+                    fontsize=7,
                 )
-        axis.set_xticks([0, 1], labels=["负向", "正向"])
-        axis.set_yticks([0, 1], labels=["负向", "正向"])
-        axis.set_xlabel("预测")
-        axis.set_ylabel("真实")
-        axis.set_title(MODEL_LABELS[name])
+        axis.set_xticks([0, 1], labels=["负向", "正向"], fontsize=7)
+        axis.set_yticks([0, 1], labels=["负向", "正向"], fontsize=7)
+        axis.set_xlabel("预测", fontsize=7)
+        axis.set_ylabel("真实", fontsize=7)
+        axis.set_title(MODEL_LABELS[name], fontsize=7.5)
     axes[-1].axis("off")
-    figure.suptitle("图32 各模型混淆矩阵（OOF）", fontsize=14)
     figure.tight_layout()
-    figure.savefig(path, dpi=180)
+    figure.savefig(path, dpi=200)
     plt.close(figure)
 
 
 def plot_metrics(summary: dict, path: Path) -> None:
     metrics = ["macro_f1", "pr_auc", "roc_auc"]
     labels = {"macro_f1": "宏 F1", "pr_auc": "PR-AUC", "roc_auc": "ROC-AUC"}
-    width = 0.15
+    width = 0.24
     positions = np.arange(len(MODEL_NAMES))
-    figure, axis = plt.subplots(figsize=(11, 5))
+    figure, axis = plt.subplots(figsize=(6.8, 4.18))
     for offset, metric in enumerate(metrics):
         means = [summary[name][metric]["mean"] for name in MODEL_NAMES]
         stds = [summary[name][metric]["std"] for name in MODEL_NAMES]
@@ -340,26 +349,28 @@ def plot_metrics(summary: dict, path: Path) -> None:
             means,
             width,
             yerr=stds,
-            capsize=3,
-            label=labels[metric],
+            capsize=2,
+            color=[MODEL_COLORS[name] for name in MODEL_NAMES],
+            alpha=[0.45, 0.7, 1.0][offset],
+            edgecolor="white",
+            linewidth=0.5,
         )
-    axis.set_xticks(positions, labels=[MODEL_LABELS[name] for name in MODEL_NAMES], rotation=15)
+    axis.set_xticks(positions, labels=[MODEL_LABELS[name] for name in MODEL_NAMES], rotation=15, fontsize=7)
     axis.set_ylim(0, 1.02)
     axis.set_ylabel("5 折均值")
-    axis.set_title("图35 模型指标对比（均值±标准差）")
-    axis.legend()
+    legend = [Patch(facecolor="#666666", alpha=a, label=labels[m]) for a, m in zip([0.45, 0.7, 1.0], metrics)]
+    axis.legend(handles=legend, fontsize=7)
     axis.grid(axis="y", alpha=0.25)
     figure.tight_layout()
-    figure.savefig(path, dpi=180)
+    figure.savefig(path, dpi=200)
     plt.close(figure)
 
 
 def plot_importance(importance: pd.DataFrame, path: Path) -> None:
     top = importance.head(20).iloc[::-1]
-    figure, axis = plt.subplots(figsize=(9, 7))
+    figure, axis = plt.subplots(figsize=(6.2, 4.82))
     axis.barh(top["feature"], top["mean"], xerr=top["std"], color="#4C72B0")
     axis.set_xlabel("置换后 ROC-AUC 下降")
-    axis.set_title("图33 全局特征重要性（HistGB，置换重要性）")
     axis.grid(axis="x", alpha=0.25)
     figure.tight_layout()
     figure.savefig(path, dpi=180)
@@ -367,7 +378,7 @@ def plot_importance(importance: pd.DataFrame, path: Path) -> None:
 
 
 def plot_shap(contributions: np.ndarray, base_value: float, feature_names: list[str], samples: list[dict], path: Path) -> None:
-    figure, axes = plt.subplots(1, 3, figsize=(16, 6))
+    figure, axes = plt.subplots(1, 3, figsize=(7.2, 3.27))
     for index in range(3):
         values = contributions[index]
         order = np.argsort(np.abs(values))[-10:][::-1]
@@ -377,11 +388,13 @@ def plot_shap(contributions: np.ndarray, base_value: float, feature_names: list[
             color=["#C44E52" if values[i] > 0 else "#4C72B0" for i in order][::-1],
         )
         axes[index].set_title(
-            f"样本 {index + 1} {samples[index]['group']}  logit={samples[index]['score']:.3f}  实际={samples[index]['label']}"
+            f"{index + 1} {samples[index]['group']}  f={samples[index]['score']:.2f}  y={samples[index]['label']}",
+            fontsize=6.5,
+            pad=3,
         )
-        axes[index].set_xlabel("SHAP 值（正类）")
+        axes[index].tick_params(labelsize=6.5)
+        axes[index].set_xlabel("SHAP 值（正类）", fontsize=6.5)
         axes[index].grid(axis="x", alpha=0.25)
-    figure.suptitle(f"图34 三个局部样本的 SHAP 贡献（基准值 {base_value:.3f}）", fontsize=14)
     figure.tight_layout()
     figure.savefig(path, dpi=180)
     plt.close(figure)

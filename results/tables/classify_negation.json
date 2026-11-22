@@ -48,7 +48,7 @@
   },
   "runtime_seconds": 124.1,
   "outputs": {
-    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_negation_metrics.csv",
-    "figure": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig44_negation_scope.png"
+    "csv": "results/tables/classify_negation_metrics.csv",
+    "figure": "results/figures/fig44_negation_scope.png"
   }
 }

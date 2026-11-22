@@ -27,7 +27,7 @@
     "vote_rows": 442716,
     "image_rows": 28305,
     "seconds": 60.9,
-    "output": "D:\\CodeField\\amazon-games-mining\\data\\processed\\reviews.parquet",
+    "output": "data/processed/reviews.parquet",
     "size_mb": 493.6
   },
   "meta": {
@@ -38,7 +38,7 @@
     "price_parsed": 11908,
     "also_buy_nonempty": 28668,
     "seconds": 5.0,
-    "output": "D:\\CodeField\\amazon-games-mining\\data\\processed\\meta.parquet",
+    "output": "data/processed/meta.parquet",
     "size_mb": 37.9
   },
   "total_seconds": 77.2

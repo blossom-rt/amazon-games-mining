@@ -78,6 +78,6 @@
     "线性 SVM 的分数是 decision_function，阈值用于预测正类。"
   ],
   "outputs": {
-    "csv": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_imbalance.csv"
+    "csv": "results/tables/classify_imbalance.csv"
   }
 }

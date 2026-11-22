@@ -39,8 +39,9 @@ pip install -r requirements-dashboard.txt
 git status --short
 git add requirements.txt src/dashboard_app.py results/tables docs/streamlit_deploy.md
 git commit -m "docs: add Streamlit Cloud deployment guide"
-# main 受保护时，先合入 PR 再触发部署
-git push origin main
+# main 受保护：推到功能分支，开 PR 合入 main 后触发部署
+git switch -c docs/streamlit-deploy
+git push -u origin docs/streamlit-deploy
 ```
 
 提交前确认暂存区不含 `data/raw`、`data/processed` 或 `.parquet`。
@@ -70,7 +71,9 @@ git push origin main
 python src/run_all.py --extras
 git add results/tables/*.json
 git commit -m "chore: refresh dashboard data"
-git push origin main
+git switch -c chore/dashboard-data
+git push -u origin chore/dashboard-data
+# 开 PR 合入 main，合并后 Cloud 自动部署
 ```
 
 Cloud 检测到 `main` 分支更新后会自动重新部署。若页面仍是旧数据，在应用右上角菜单选择 **Reboot app**。

@@ -141,9 +141,9 @@
     "python": "3.11.18"
   },
   "outputs": {
-    "metrics": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_10fold_metrics.csv",
-    "calibration": "D:\\CodeField\\amazon-games-mining\\results\\tables\\classify_calibration.csv",
-    "fig_calibration": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig36_calibration.png",
-    "fig_threshold": "D:\\CodeField\\amazon-games-mining\\results\\figures\\fig37_threshold.png"
+    "metrics": "results/tables/classify_10fold_metrics.csv",
+    "calibration": "results/tables/classify_calibration.csv",
+    "fig_calibration": "results/figures/fig36_calibration.png",
+    "fig_threshold": "results/figures/fig37_threshold.png"
   }
 }
